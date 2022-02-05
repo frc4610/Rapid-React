@@ -4,12 +4,24 @@
 
 package frc.robot;
 
+import java.time.Instant;
+import java.util.List;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
-import frc.robot.commands.AutonomousDriveCommand;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.RotationDriveCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 /**
@@ -53,8 +65,11 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // Back button zeros the gyroscope
     new Button(m_controller::getBackButton)
-            // No requirements because we don't need to interrupt anything
-            .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+            .whenPressed(m_drivetrainSubsystem::zeroGyroscope); // No requirements because we don't need to interrupt anything
+
+    new Button(m_controller::getAButton)
+            .whenPressed(new RotationDriveCommand(m_drivetrainSubsystem, 90)); // No requirements because we don't need to interrupt anything
+
   }
 
   /**
@@ -64,7 +79,38 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new AutonomousDriveCommand(m_drivetrainSubsystem, ()->0.0,  ()->0.0, ()->0.0);
+    // 1. Create trajectory settings
+   /* TrajectoryConfig trajectoryConfig = new TrajectoryConfig(
+      DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+      DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND_SQRT)
+              .setKinematics(m_drivetrainSubsystem.getKinematics());
+
+    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
+          new Pose2d(0, 0, new Rotation2d(0)),
+          List.of(
+                  new Translation2d(1, 0),
+                  new Translation2d(1, -1)),
+          new Pose2d(2, -1, Rotation2d.fromDegrees(180)),
+          trajectoryConfig);
+
+
+    SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
+          trajectory,
+          m_drivetrainSubsystem::getPose,
+          m_drivetrainSubsystem::getKinematics,
+          xController,
+          yController,
+          thetaController,
+          m_drivetrainSubsystem::setModuleStates,
+          m_drivetrainSubsystem);
+
+    // 5. Add some init and wrap-up, and return everything
+    return new SequentialCommandGroup(
+          new InstantCommand(() -> m_drivetrainSubsystem.resetOdometry(trajectory.getInitialPose())),
+          swerveControllerCommand,
+          new InstantCommand(() -> m_drivetrainSubsystem.stopModules()));*/
+
+    return new InstantCommand();
   }
 
   private static double deadband(double value, double deadband) {
