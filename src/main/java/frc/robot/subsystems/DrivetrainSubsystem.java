@@ -10,7 +10,6 @@ import com.swervedrivespecialties.swervelib.Mk3SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
-import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -23,12 +22,11 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.commands.RotationDriveCommand;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.drive.Vector2d;
 
 import static frc.robot.Constants.*;
-
-import java.util.function.DoubleSupplier;
 
 public class DrivetrainSubsystem extends SubsystemBase {
   /**
@@ -85,29 +83,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   private final SwerveDriveOdometry m_odometer = new SwerveDriveOdometry(m_kinematics, new Rotation2d(0));
 
+  private Rotation2d m_targetHeading;
+
   public DrivetrainSubsystem() {
     ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
 
-    // There are 4 methods you can call to create your swerve modules.
-    // The method you use depends on what motors you are using.
-    //
-    // Mk3SwerveModuleHelper.createFalcon500(...)
-    //   Your module has two Falcon 500s on it. One for steering and one for driving.
-    //
-    // Mk3SwerveModuleHelper.createNeo(...)
-    //   Your module has two NEOs on it. One for steering and one for driving.
-    //
-    // Mk3SwerveModuleHelper.createFalcon500Neo(...)
-    //   Your module has a Falcon 500 and a NEO on it. The Falcon 500 is for driving and the NEO is for steering.
-    //
-    // Mk3SwerveModuleHelper.createNeoFalcon500(...)
-    //   Your module has a NEO and a Falcon 500 on it. The NEO is for driving and the Falcon 500 is for steering.
-    //
-    // Similar helpers also exist for Mk4 modules using the Mk4SwerveModuleHelper class.
-
-    // By default we will use Falcon 500s in standard configuration. But if you use a different configuration or motors
-    // you MUST change it. If you do not, your code will crash on startup.
-    // FIXME Setup motor configuration
     m_frontLeftModule = Mk3SwerveModuleHelper.createFalcon500(
             // This parameter is optional, but will allow you to see the current state of the module on the dashboard.
             tab.getLayout("Front Left Module", BuiltInLayouts.kList)
@@ -158,6 +138,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
             BACK_RIGHT_MODULE_STEER_ENCODER,
             BACK_RIGHT_MODULE_STEER_OFFSET
     );
+
+    m_targetHeading = getGyroRotation();
   }
 
   /**
@@ -168,7 +150,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_navx.zeroYaw();
   }
 
-  public Rotation2d getGyroscopeRotation() {
+  public Rotation2d getGyroRotation() {
    if (m_navx.isMagnetometerCalibrated()) {
      // We will only get valid fused headings if the magnetometer is calibrated
      return Rotation2d.fromDegrees(m_navx.getFusedHeading());
@@ -177,20 +159,45 @@ public class DrivetrainSubsystem extends SubsystemBase {
    return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
   }
 
-  public void drive(ChassisSpeeds chassisSpeeds) {
-    m_chassisSpeeds = chassisSpeeds;
+  public Rotation2d getGyroAdjust() {
+    double headingDelta = getGyroRotation().getDegrees() - m_targetHeading.getDegrees();
+    // Normalize Heading
+    headingDelta %= 360;
+    
+    if(headingDelta < -180) {
+      headingDelta += 360;
+    }
+    if(headingDelta > 180) {
+      headingDelta -= 360;
+    }
+    return Rotation2d.fromDegrees(headingDelta * Constants.GYRO_ADJUST_COEFFICENT);
   }
 
-  public void drive(Vector2d translation, double rotation, boolean isFieldOriented) {
-        m_chassisSpeeds = isFieldOriented ? 
-          ChassisSpeeds.fromFieldRelativeSpeeds(translation.x, translation.y, rotation, getGyroscopeRotation()) 
-          : new ChassisSpeeds(translation.x, translation.y, rotation);
+  public void drive(double translation_x, double translation_y, double rotation, boolean isFieldOriented) {
+      // Rotating above deadband update rotation 
+      // If not stay in deadband
+      if(Math.abs(rotation) > Constants.Controller.Z_AXIS_DEADBAND) {
+        m_targetHeading = getGyroRotation();
+      }
+      rotation -= getGyroAdjust().getRadians();
+
+      m_chassisSpeeds = isFieldOriented ? 
+        ChassisSpeeds.fromFieldRelativeSpeeds(translation_x, translation_y, rotation, getGyroRotation()) :
+        new ChassisSpeeds(translation_x, translation_y, rotation);
   }
 
-  public void setRotation(double RadianRotation) {
-    m_chassisSpeeds.omegaRadiansPerSecond = RadianRotation;
+  public void setTargetHeading(Rotation2d rotation, boolean fieldOriented) {
+   if(fieldOriented) {
+     m_targetHeading = rotation;
+   } else {
+     m_targetHeading.plus(rotation);
+   }
   }
   
+  public void setTargetSideways() {
+    setTargetHeading(Rotation2d.fromDegrees(90), true);
+  }
+
   public Pose2d getPose() {
     return m_odometer.getPoseMeters();
   }
@@ -200,7 +207,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   }
 
   public void resetOdometry(Pose2d pose) {
-        m_odometer.resetPosition(pose, getGyroscopeRotation());
+        m_odometer.resetPosition(pose, getGyroRotation());
   }
 
   @Override
@@ -213,12 +220,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
     m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
   
-    m_odometer.update(getGyroscopeRotation(), states); 
-    SmartDashboard.putNumber("Gyro Rotation", getGyroscopeRotation().getRadians());
+    m_odometer.update(getGyroRotation(), states); 
+    SmartDashboard.putNumber("Gyro Rotation", getGyroRotation().getDegrees());
+    SmartDashboard.putNumber("Target Rotation", m_targetHeading.getDegrees());
     SmartDashboard.putNumber("Predicted X m/s", m_chassisSpeeds.vxMetersPerSecond);
     SmartDashboard.putNumber("Predicted Y m/s", m_chassisSpeeds.vyMetersPerSecond);
     SmartDashboard.putNumber("Predicted Rotation m/s", m_chassisSpeeds.omegaRadiansPerSecond);
-    SmartDashboard.putNumber("Pose Rotation m/s", getPose().getRotation().getRadians());
+    SmartDashboard.putNumber("Pose Rotation m/s", getPose().getRotation().getDegrees());
 }
 
   public void stopModules() {
