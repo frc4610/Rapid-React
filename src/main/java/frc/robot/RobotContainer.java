@@ -3,27 +3,15 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
-
-import java.time.Instant;
-import java.util.List;
-
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.commands.UserControllerCommand;
-import frc.robot.commands.RotationDriveCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.utils.MathController;
+import frc.robot.utils.MathUtils;
+import frc.robot.utils.XboxControllerExtended;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -35,24 +23,16 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
 
-  private final XboxController m_controller = new XboxController(0);
+  private final XboxControllerExtended m_controller = new XboxControllerExtended(0);
 
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
   public RobotContainer() {
-    // Set up the default command for the drivetrain.
-    // The controls are for field-oriented driving:
-    // Left stick Y axis -> forward and backwards movement
-    // Left stick X axis -> left and right movement
-    // Right stick X axis -> rotation
     m_drivetrainSubsystem.setDefaultCommand(new UserControllerCommand(
             m_drivetrainSubsystem,
-            () -> -MathController.modifyAxis(m_controller.getLeftY(), Constants.Controller.Y_AXIS_DEADBAND)
+            () -> -MathUtils.modifyAxis(m_controller.getLeftY(), Constants.Controller.Y_AXIS_DEADBAND)
               * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -MathController.modifyAxis(m_controller.getLeftX(), Constants.Controller.X_AXIS_DEADBAND) 
+            () -> -MathUtils.modifyAxis(m_controller.getLeftX(), Constants.Controller.X_AXIS_DEADBAND) 
               * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -MathController.modifyAxis(m_controller.getRightX(), Constants.Controller.Z_AXIS_DEADBAND) 
+            () -> -MathUtils.modifyAxis(m_controller.getRightX(), Constants.Controller.Z_AXIS_DEADBAND) 
               * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
     ));
 
@@ -60,19 +40,23 @@ public class RobotContainer {
     configureButtonBindings();
   }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
   private void configureButtonBindings() {
+    // Start clears command and sets to default
+    new Button(m_controller::getStartButton)
+         .whenPressed(()->{ 
+            if(!m_drivetrainSubsystem.getCurrentCommand().equals( m_drivetrainSubsystem.getDefaultCommand())) {
+              m_drivetrainSubsystem.getCurrentCommand().end(true);
+            }
+          });
+
     // Back button zeros the gyroscope
     new Button(m_controller::getBackButton)
             .whenPressed(m_drivetrainSubsystem::zeroGyroscope); // No requirements because we don't need to interrupt anything
 
-    new Button(m_controller::getAButton)
-            .whenPressed(m_drivetrainSubsystem::setTargetSideways); // No requirements because we don't need to interrupt anything
+    new Button(m_controller::getDPadRight)
+            .whenPressed(()->{ 
+              m_drivetrainSubsystem.setTargetHeading(Rotation2d.fromDegrees(90), false);
+            });
 
   }
 

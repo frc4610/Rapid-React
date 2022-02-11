@@ -29,17 +29,12 @@ public class UserControllerCommand extends CommandBase {
     public void execute() {
         m_drivetrainSubsystem.drive(
                 m_translationXSupplier.getAsDouble(), m_translationYSupplier.getAsDouble(),
-                m_rotationSupplier.getAsDouble(),
-                true
+                m_rotationSupplier.getAsDouble()
         );
     }
 
     @Override
     public void end(boolean interrupted) {
         m_drivetrainSubsystem.stopModules();
-    }
-
-    public void SetControllerRotation(Rotation2d target, boolean fieldOriented) {
-        m_drivetrainSubsystem.setTargetHeading(target, fieldOriented);
     }
 }
