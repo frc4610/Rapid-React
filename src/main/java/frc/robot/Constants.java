@@ -7,8 +7,8 @@ package frc.robot;
 public final class Constants {
   public final static class Limelight {
     public static final double TARGET_HEIGHT = 36.0;
-    public static final double LIMELIGHT_HEIGHT = 8.5;
-    public static final double LIMELIGHT_ANGLE = Math.toRadians(65.0);
+    public static final double LIMELIGHT_HEIGHT = 9;
+    public static final double LIMELIGHT_ANGLE = Math.toRadians(45.0);
   }
 
   public final static class Controller {

@@ -31,7 +31,7 @@ public class XboxControllerExtended extends XboxController {
     return getDPadButton(DPadButton.Direction.RIGHT).get();
   }
 
-  public boolean getDPadRDown() {
+  public boolean getDPadDown() {
     return getDPadButton(DPadButton.Direction.DOWN).get();
   }
 }

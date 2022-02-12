@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.Limelight;
 import frc.robot.utils.MathUtils;
+import frc.robot.utils.Limelight.LedMode;
 
 public class VisionSubsysten extends SubsystemBase {
 
@@ -27,38 +28,55 @@ public class VisionSubsysten extends SubsystemBase {
   private OptionalDouble m_distanceToTarget = OptionalDouble.empty();
   private OptionalDouble m_angleToTarget = OptionalDouble.empty();
 
-  private ShuffleboardTab m_VisionTab;
+  private ShuffleboardTab m_visionTab;
+  private ShuffleboardLayout m_visionLayout;
+  private ShuffleboardLayout m_limelightLayout;
 
   public VisionSubsysten(DrivetrainSubsystem drivetrainSubsystem) {
     m_DrivetrainSubsystem = drivetrainSubsystem;
-    m_VisionTab = Shuffleboard.getTab("Vision");
-    m_distanceToTargetEntry = m_VisionTab.add("distance to target", 0.0)
+    m_visionTab = Shuffleboard.getTab("Vision");
+    m_visionLayout = m_visionTab.getLayout("Vision Data", BuiltInLayouts.kGrid)
+        .withSize(4, 2)
+        .withPosition(0, 0);
+    m_XEntry = m_visionLayout.add("X", 0.0)
         .withPosition(0, 0)
         .withSize(1, 1)
         .getEntry();
-    m_XEntry = m_VisionTab.add("X", 0.0)
+    m_YEntry = m_visionLayout.add("Y", 0.0)
         .withPosition(1, 0)
         .withSize(1, 1)
         .getEntry();
-    m_YEntry = m_VisionTab.add("Y", 0.0)
-        .withPosition(2, 0)
-        .withSize(1, 1)
-        .getEntry();
-    m_VisionTab.addNumber("target angle", () -> Math.toDegrees(getAngleToTarget().orElse(Double.NaN)))
+    m_visionLayout.addBoolean("on target", this::isOnTarget)
+        .withPosition(3, 0)
+        .withSize(1, 1);
+    m_visionLayout.addBoolean("has target", this::hasTarget)
         .withPosition(4, 0)
         .withSize(1, 1);
-    m_VisionTab.addBoolean("Is on target", this::isOnTarget)
-        .withPosition(5, 0)
+    m_distanceToTargetEntry = m_visionLayout.add("distance to target", 0.0)
+        .withPosition(0, 1)
+        .withSize(1, 1)
+        .getEntry();
+    m_visionLayout.addNumber("target angle", () -> Math.toDegrees(getAngleToTarget().orElse(Double.NaN)))
+        .withPosition(1, 1)
         .withSize(1, 1);
-    m_VisionTab.addBoolean("has target", this::hasTarget)
-        .withPosition(6, 0)
-        .withSize(1, 1);
-    m_VisionTab.addNumber("Horizontal Target Error", () -> {
+    m_visionLayout.addNumber("Horizontal Target Error", () -> {
       double gyroAngle = m_DrivetrainSubsystem.getPose().getRotation().getRadians();
       return getDistanceToTarget().orElse(0.0) *
           (Math.sin(gyroAngle - getAngleToTarget().orElse(0.0)) / Math.sin(Math.PI / 2.0 - gyroAngle));
     })
-        .withPosition(6, 0)
+        .withPosition(1, 2)
+        .withSize(1, 1);
+    m_limelightLayout = m_visionTab.getLayout("Limelight Data", BuiltInLayouts.kGrid)
+        .withSize(2, 2)
+        .withPosition(0, 3);
+    m_limelightLayout.addNumber("X", () -> m_LimeLight.getTargetPosition().x)
+        .withPosition(0, 0)
+        .withSize(1, 1);
+    m_limelightLayout.addNumber("Y", () -> m_LimeLight.getTargetPosition().y)
+        .withPosition(1, 0)
+        .withSize(1, 1);
+    m_limelightLayout.addNumber("Skew", () -> m_LimeLight.getTargetSkew())
+        .withPosition(2, 0)
         .withSize(1, 1);
   }
 

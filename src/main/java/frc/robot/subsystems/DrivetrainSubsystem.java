@@ -75,8 +75,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private final InterpolatingTreeMap<Pose2d> m_lagCompensationMap = InterpolatingTreeMap
       .createBuffer(MAX_LATENCY_COMPENSATION_MAP_ENTRIES);
 
-  private Rotation2d m_targetHeading;
-
   public static ShuffleboardTab m_DrivetrainTab;
   public static ShuffleboardTab m_DriveDataTab;
   private final NetworkTableEntry m_isFieldOriented;
@@ -146,7 +144,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         BACK_RIGHT_MODULE_STEER_OFFSET);
 
     zeroGyroscope();
-    m_targetHeading = getGyroRotation();
     m_OdometryData = m_DriveDataTab.getLayout("Odometry Data", BuiltInLayouts.kList)
         .withSize(2, 2)
         .withPosition(0, 0);
@@ -180,9 +177,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_OtherData.addNumber("Gyro Rotation", () -> {
       return getGyroRotation().getDegrees();
     });
-    m_OtherData.addNumber("Target Rotation", () -> {
-      return getTargetRotation().getDegrees();
-    });
 
   }
 
@@ -205,41 +199,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
     return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
   }
 
-  public Rotation2d getGyroAdjust() {
-    return Rotation2d.fromDegrees(
-        MathUtils.normalize(
-            m_targetHeading.getDegrees() -
-                MathUtils.normalize(getGyroRotation().getDegrees())))
-        .times(Constants.GYRO_ADJUST_COEFFICENT);
-  }
-
   public void drive(double translation_x, double translation_y, double rotation) {
-    // Rotating above deadband update rotation
-    // If not stay in deadband
-    if (Math.abs(rotation) > Constants.Controller.Z_AXIS_DEADBAND) {
-      m_targetHeading = getGyroRotation();
-    }
-    rotation -= getGyroAdjust().getRadians();
 
     m_chassisSpeeds = m_isFieldOriented.getBoolean(true)
         ? ChassisSpeeds.fromFieldRelativeSpeeds(translation_x, translation_y, rotation, getGyroRotation())
         : new ChassisSpeeds(translation_x, translation_y, rotation);
   }
 
-  public void setTargetHeading(Rotation2d rotation, boolean fieldOriented) {
-    if (fieldOriented) {
-      m_targetHeading = rotation;
-    } else {
-      m_targetHeading.plus(rotation);
-    }
-  }
-
   public double getTurnRate() {
     return m_navx.getRate();
-  }
-
-  public Rotation2d getTargetRotation() {
-    return m_targetHeading;
   }
 
   public ChassisSpeeds getChassisSpeeds() {

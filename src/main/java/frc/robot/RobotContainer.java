@@ -4,13 +4,13 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.commands.UserControllerCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.VisionSubsysten;
+import frc.robot.utils.Limelight;
 import frc.robot.utils.MathUtils;
 import frc.robot.utils.XboxControllerExtended;
 
@@ -26,7 +26,7 @@ import frc.robot.utils.XboxControllerExtended;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
-  private final VisionSubsysten m_VisionSubsystem = new VisionSubsysten(m_drivetrainSubsystem);
+  private final VisionSubsysten m_visionSubsystem = new VisionSubsysten(m_drivetrainSubsystem);
 
   private final XboxControllerExtended m_controller = new XboxControllerExtended(0);
 
@@ -42,6 +42,8 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
+
+    m_visionSubsystem.setLedMode(Limelight.LedMode.ON);
   }
 
   private void configureButtonBindings() {
@@ -55,14 +57,7 @@ public class RobotContainer {
 
     // Back button zeros the gyroscope
     new Button(m_controller::getBackButton)
-        .whenPressed(m_drivetrainSubsystem::zeroGyroscope); // No requirements because we don't need to interrupt
-                                                            // anything
-
-    new Button(m_controller::getDPadRight)
-        .whenPressed(() -> {
-          m_drivetrainSubsystem.setTargetHeading(Rotation2d.fromDegrees(90), false);
-        });
-
+        .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
   }
 
   /**
