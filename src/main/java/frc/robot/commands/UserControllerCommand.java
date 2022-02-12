@@ -14,9 +14,9 @@ public class UserControllerCommand extends CommandBase {
     private final DoubleSupplier m_rotationSupplier;
 
     public UserControllerCommand(DrivetrainSubsystem drivetrainSubsystem,
-                               DoubleSupplier translationXSupplier,
-                               DoubleSupplier translationYSupplier,
-                               DoubleSupplier rotationSupplier) {
+            DoubleSupplier translationXSupplier,
+            DoubleSupplier translationYSupplier,
+            DoubleSupplier rotationSupplier) {
         this.m_drivetrainSubsystem = drivetrainSubsystem;
         this.m_translationXSupplier = translationXSupplier;
         this.m_translationYSupplier = translationYSupplier;
@@ -29,8 +29,7 @@ public class UserControllerCommand extends CommandBase {
     public void execute() {
         m_drivetrainSubsystem.drive(
                 m_translationXSupplier.getAsDouble(), m_translationYSupplier.getAsDouble(),
-                m_rotationSupplier.getAsDouble()
-        );
+                m_rotationSupplier.getAsDouble());
     }
 
     @Override
