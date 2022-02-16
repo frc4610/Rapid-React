@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.AutonomousSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
@@ -32,10 +33,14 @@ public class AutonomousCommand extends SequentialCommandGroup {
         driveSubsystem::setModuleStates,
         driveSubsystem);
 
+    RobotContainer.dashboardField.getRobotObject().setTrajectory(trajectory);
+    // RobotContainer.dashboardField.getObject("traj").setTrajectory(trajectory);
+
     // ---------------------The Actual Command List That will Run-----------------//
 
     addCommands(
         new InstantCommand(() -> driveSubsystem.resetPose(trajectory.getInitialPose())),
-        driveCommandController);
+        driveCommandController,
+        new InstantCommand(() -> driveSubsystem.stopModules()));
   }
 }

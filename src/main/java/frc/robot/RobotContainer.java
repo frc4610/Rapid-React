@@ -67,6 +67,10 @@ public class RobotContainer {
 
     new Button(m_controller::getBButton)
         .whileHeld(new AimAtTargetCommand(m_drivetrainSubsystem, m_visionSubsystem));
+
+    new Button(m_controller::getAButton)
+        .whileHeld(new AutonomousCommand(m_drivetrainSubsystem, m_autonomousSubsystem));
+
   }
 
   /**

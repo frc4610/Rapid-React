@@ -5,7 +5,6 @@ import java.util.OptionalDouble;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.drive.Vector2d;
 import edu.wpi.first.wpilibj.shuffleboard.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -57,11 +56,7 @@ public class VisionSubsysten extends SubsystemBase {
     m_visionLayout.addNumber("target angle", () -> Math.toDegrees(m_angleToTarget.orElse(Double.NaN)))
         .withPosition(1, 1)
         .withSize(1, 1);
-    m_visionLayout.addNumber("target error", () -> {
-      double gyroAngle = m_drivetrainSubsystem.getPose().getRotation().getRadians();
-      return getDistanceToTarget().orElse(0.0) *
-          (Math.sin(gyroAngle - m_angleToTarget.orElse(0.0)) / Math.sin(Math.PI / 2.0 - gyroAngle));
-    })
+    m_visionLayout.addNumber("target error", () -> getHorizontalError().getAsDouble())
         .withPosition(1, 2)
         .withSize(1, 1);
     m_limelightLayout = m_visionTab.getLayout("Limelight Data", BuiltInLayouts.kGrid)
@@ -139,15 +134,14 @@ public class VisionSubsysten extends SubsystemBase {
     m_hasTarget = m_LimeLight.hasTarget();
     if (m_hasTarget) {
       // Calculate the distance to the outer target
-      Vector2d targetPosition = m_LimeLight.getTargetPosition();
       double distanceToTarget = m_LimeLight.getDistance(
           Constants.Limelight.LIMELIGHT_HEIGHT,
           Constants.Limelight.TARGET_HEIGHT,
           Constants.Limelight.LIMELIGHT_ANGLE);
 
       double angleToTarget = m_drivetrainSubsystem.getLagCompPose(Timer.getFPGATimestamp() -
-          m_LimeLight.getPipelineLatency() / 1000.0).getRotation().getDegrees() -
-          targetPosition.x;
+          m_LimeLight.getPipelineLatency() / 1000.0).getRotation().getRadians() -
+          Rotation2d.fromDegrees(m_LimeLight.getTargetPosition().x).getRadians();
 
       m_XEntry.setDouble(distanceToTarget * Math.sin(angleToTarget));
       m_YEntry.setDouble(distanceToTarget * Math.cos(angleToTarget));

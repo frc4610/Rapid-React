@@ -149,13 +149,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
     });
 
     m_ChassisData.addNumber("X", () -> {
-      return getChassisSpeeds().vxMetersPerSecond;
+      return m_chassisSpeeds.vxMetersPerSecond;
     });
     m_ChassisData.addNumber("Y", () -> {
-      return getChassisSpeeds().vyMetersPerSecond;
+      return m_chassisSpeeds.vyMetersPerSecond;
     });
     m_ChassisData.addNumber("Z", () -> {
-      return getChassisSpeeds().omegaRadiansPerSecond;
+      return m_chassisSpeeds.omegaRadiansPerSecond;
     });
 
     m_isFieldOriented = m_OtherData.add("Field Oriented", true).getEntry();
@@ -192,10 +192,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   public double getTurnRate() {
     return m_navx.getRate();
-  }
-
-  public ChassisSpeeds getChassisSpeeds() {
-    return m_chassisSpeeds;
   }
 
   public SwerveDriveKinematics getKinematics() {

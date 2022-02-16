@@ -42,16 +42,17 @@ public final class Constants {
     public static final double PY_CONTROLLER = 1;
     public static final double PTHETA_CONTROLLER = 2;
 
-    // Constraint for the motion profilied robot angle controller
-    public static final TrapezoidProfile.Constraints PTHETA_CONTROLLER_CONSTRAINTS = new TrapezoidProfile.Constraints(
-        Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, Drivetrain.MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND);
-
     // theoretical values do not use mk3 as they are the motor
     // FIXME: calculate the max
-    public static final double MAX_VELOCITY_METERS_PER_SECOND = 3;
+    public static final double MAX_VELOCITY_METERS_PER_SECOND = Drivetrain.MAX_VELOCITY_METERS_PER_SECOND / 4;
+    public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
+        / 10;
     public static final double MAX_ACCELERATION_METERS_PER_SECOND = 3;
-    public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = Math.PI;
-    public static final double MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND = Math.PI;
+    public static final double MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND = Math.PI / 4;
+    // Constraint for the motion profilied robot angle controller
+    public static final TrapezoidProfile.Constraints PTHETA_CONTROLLER_CONSTRAINTS = new TrapezoidProfile.Constraints(
+        MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND);
+
   }
 
   public final static class Wheels {
