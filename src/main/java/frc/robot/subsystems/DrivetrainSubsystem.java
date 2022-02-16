@@ -6,8 +6,8 @@ package frc.robot.subsystems;
 
 //import com.ctre.phoenix.sensors.PigeonIMU;
 import com.kauailabs.navx.frc.AHRS;
-import com.swervedrivespecialties.swervelib.Mk3SwerveModuleHelper;
-import com.swervedrivespecialties.swervelib.SwerveModule;
+import swervelib.Mk3SwerveModuleHelper;
+import swervelib.SwerveModule;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.utils.*;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
@@ -73,8 +74,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private final SwerveModule m_backRightModule;
 
   private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
-
-  private final SwerveDriveOdometry m_odometer = new SwerveDriveOdometry(m_kinematics, new Rotation2d(0));
+  private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, new Rotation2d(0));
 
   public DrivetrainSubsystem() {
     m_DrivetrainTab = Shuffleboard.getTab("Drivetrain");
@@ -162,7 +162,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_OtherData.addNumber("Gyro Rotation", () -> {
       return getGyroRotation().getDegrees();
     });
-
   }
 
   /**
@@ -204,19 +203,20 @@ public class DrivetrainSubsystem extends SubsystemBase {
   }
 
   public Pose2d getPose() {
-    return m_odometer.getPoseMeters();
+    return m_odometry.getPoseMeters();
   }
 
   public void resetPose(Pose2d pose) {
-    m_odometer.resetPosition(pose, getGyroRotation());
+    m_odometry.resetPosition(pose, getGyroRotation());
   }
 
   public void updateOdometry(SwerveModuleState[] states) {
-    m_odometer.update(getGyroRotation(), states);
+    m_odometry.update(getGyroRotation(), states); // Update Pose
+    RobotContainer.dashboardField.setRobotPose(m_odometry.getPoseMeters()); // set field pose
     if (m_lagCompensationMap.size() > MAX_LATENCY_COMPENSATION_MAP_ENTRIES) {
       m_lagCompensationMap.getSample(m_lagCompensationMap.firstKey());
     }
-    m_lagCompensationMap.addSample(Timer.getFPGATimestamp(), m_odometer.getPoseMeters());
+    m_lagCompensationMap.addSample(Timer.getFPGATimestamp(), m_odometry.getPoseMeters()); // Add to interp map
   }
 
   public Pose2d getLagCompPose(double timestamp) {
@@ -227,7 +227,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
   }
 
   public void setModuleStates(SwerveModuleState[] states) {
+    m_chassisSpeeds = m_kinematics.toChassisSpeeds(states);
+  }
+
+  @Override
+  public void periodic() {
+    SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(states, Constants.Drivetrain.MAX_VELOCITY_METERS_PER_SECOND);
+    // FIXME: issues with clamping
     m_frontLeftModule.set(
         states[0].speedMetersPerSecond / Constants.Drivetrain.MAX_VELOCITY_METERS_PER_SECOND
             * Constants.Drivetrain.MAX_VOLTAGE,
@@ -244,12 +251,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         states[3].speedMetersPerSecond / Constants.Drivetrain.MAX_VELOCITY_METERS_PER_SECOND
             * Constants.Drivetrain.MAX_VOLTAGE,
         states[3].angle.getRadians());
-  }
-
-  @Override
-  public void periodic() {
-    SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
-    setModuleStates(states);
     updateOdometry(states);
   }
 

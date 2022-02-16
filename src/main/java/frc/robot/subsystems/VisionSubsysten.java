@@ -25,7 +25,6 @@ public class VisionSubsysten extends SubsystemBase {
   private boolean m_hasTarget;
   private OptionalDouble m_distanceToTarget = OptionalDouble.empty();
   private OptionalDouble m_angleToTarget = OptionalDouble.empty();
-  private OptionalDouble m_angleToTargetCompensated = OptionalDouble.empty();
 
   private ShuffleboardTab m_visionTab;
   private ShuffleboardLayout m_visionLayout;
@@ -57,10 +56,6 @@ public class VisionSubsysten extends SubsystemBase {
         .getEntry();
     m_visionLayout.addNumber("target angle", () -> Math.toDegrees(m_angleToTarget.orElse(Double.NaN)))
         .withPosition(1, 1)
-        .withSize(1, 1);
-    m_visionLayout
-        .addNumber("target angle compensated", () -> Math.toDegrees(m_angleToTargetCompensated.orElse(Double.NaN)))
-        .withPosition(1, 2)
         .withSize(1, 1);
     m_visionLayout.addNumber("target error", () -> {
       double gyroAngle = m_drivetrainSubsystem.getPose().getRotation().getRadians();
@@ -95,6 +90,10 @@ public class VisionSubsysten extends SubsystemBase {
     return Rotation2d.fromDegrees(m_angleToTarget.getAsDouble());
   }
 
+  public Rotation2d getRotationToTargetCompensated() {
+    return Rotation2d.fromDegrees(m_angleToTarget.getAsDouble());
+  }
+
   public OptionalDouble getHorizontalError() {
     if (m_distanceToTarget.isEmpty() || m_angleToTarget.isEmpty()) {
       return OptionalDouble.empty();
@@ -122,7 +121,7 @@ public class VisionSubsysten extends SubsystemBase {
     return MathUtils.epsilonEquals(
         delta,
         0,
-        Constants.Vision.TARGET_ALLOWABLE_ERROR);
+        Constants.Limelight.TARGET_ALLOWABLE_ERROR);
   }
 
   public void setLedMode(Limelight.LedMode mode) {
@@ -146,11 +145,8 @@ public class VisionSubsysten extends SubsystemBase {
           Constants.Limelight.TARGET_HEIGHT,
           Constants.Limelight.LIMELIGHT_ANGLE);
 
-      double angleToTargetCompensated = m_drivetrainSubsystem.getLagCompPose(Timer.getFPGATimestamp() -
-          m_LimeLight.getPipelineLatency() / 1000.0).getRotation().getRadians() -
-          targetPosition.x;
-
-      double angleToTarget = m_drivetrainSubsystem.getPose().getRotation().getRadians() -
+      double angleToTarget = m_drivetrainSubsystem.getLagCompPose(Timer.getFPGATimestamp() -
+          m_LimeLight.getPipelineLatency() / 1000.0).getRotation().getDegrees() -
           targetPosition.x;
 
       m_XEntry.setDouble(distanceToTarget * Math.sin(angleToTarget));
@@ -158,11 +154,9 @@ public class VisionSubsysten extends SubsystemBase {
 
       m_distanceToTarget = OptionalDouble.of(distanceToTarget);
       m_angleToTarget = OptionalDouble.of(angleToTarget);
-      m_angleToTargetCompensated = OptionalDouble.of(angleToTargetCompensated);
     } else {
       m_distanceToTarget = OptionalDouble.empty();
       m_angleToTarget = OptionalDouble.empty();
-      m_angleToTargetCompensated = OptionalDouble.empty();
     }
     // Update shuffleboard
     m_distanceToTargetEntry.setDouble(m_distanceToTarget.orElse(-1.0));

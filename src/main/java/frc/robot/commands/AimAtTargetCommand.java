@@ -2,12 +2,13 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.VisionSubsysten;
 
 public class AimAtTargetCommand extends CommandBase {
 
-  private final PIDController m_PIDController = new PIDController(1, 0.0, 0.0);
+  private final PIDController m_PIDController = new PIDController(0.2, 0.0, 0.1); // from getFalcon500SteerFactory
 
   private final DrivetrainSubsystem m_drivetrainSubsystem;
   private final VisionSubsysten m_visionSubsystem;
@@ -31,7 +32,9 @@ public class AimAtTargetCommand extends CommandBase {
     if (!m_visionSubsystem.hasTarget())
       return;
 
-    double rotation = m_PIDController.calculate(m_visionSubsystem.getRotationToTarget().getDegrees(), 0);
+    double rotation = m_PIDController.calculate(m_visionSubsystem.getRotationToTarget().getRadians(), 0);
+
+    rotation *= Constants.Autonomous.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
 
     m_drivetrainSubsystem.drive(0, 0, rotation);
   }

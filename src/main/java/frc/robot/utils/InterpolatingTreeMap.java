@@ -3,13 +3,11 @@ package frc.robot.utils;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.interpolation.Interpolatable;
 
-import java.io.Serializable;
-import java.util.NavigableMap;
 import java.util.TreeMap;
 
 // This is TimeInterpolatableBuffer but modified
 
-public class InterpolatingTreeMap<T> extends TreeMap<Double, T> implements Serializable {
+public class InterpolatingTreeMap<T> extends TreeMap<Double, T> {
   private final double m_historySize;
   private final InterpolateFunction<T> m_interpolatingFunc;
 

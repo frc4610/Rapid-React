@@ -4,13 +4,14 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.commands.AimAtTargetCommand;
 import frc.robot.commands.AutonomousCommand;
 import frc.robot.commands.UserControllerCommand;
+import frc.robot.subsystems.AutonomousSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.VisionSubsysten;
 import frc.robot.utils.Limelight;
@@ -30,10 +31,12 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final VisionSubsysten m_visionSubsystem = new VisionSubsysten(m_drivetrainSubsystem);
+  private final AutonomousSubsystem m_autonomousSubsystem = new AutonomousSubsystem(m_drivetrainSubsystem);
   private final XboxControllerExtended m_controller = new XboxControllerExtended(0);
-  private final SendableChooser<Command> m_autoChooser = new SendableChooser<Command>();
+  public final static Field2d dashboardField = new Field2d();
 
   public RobotContainer() {
+    SmartDashboard.putData("Field", dashboardField);
     m_drivetrainSubsystem.setDefaultCommand(new UserControllerCommand(
         m_drivetrainSubsystem,
         () -> -MathUtils.modifyAxis(m_controller.getLeftY(), Constants.Controller.XBOX_DEADBAND)
@@ -45,12 +48,6 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
-
-    // Add chooser commands
-    for (AutonomousCommand.Paths path : AutonomousCommand.Paths.values()) {
-      m_autoChooser.addOption(path.name(), new AutonomousCommand(m_drivetrainSubsystem, path));
-    }
-    SmartDashboard.putData("Auto Selector", m_autoChooser);
 
     m_visionSubsystem.setLedMode(Limelight.LedMode.ON);
   }
@@ -78,6 +75,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return m_autoChooser.getSelected();
+    return new AutonomousCommand(m_drivetrainSubsystem, m_autonomousSubsystem);
   }
 }
