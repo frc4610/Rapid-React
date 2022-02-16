@@ -56,7 +56,7 @@ public class VisionSubsysten extends SubsystemBase {
     m_visionLayout.addNumber("target angle", () -> Math.toDegrees(m_angleToTarget.orElse(Double.NaN)))
         .withPosition(1, 1)
         .withSize(1, 1);
-    m_visionLayout.addNumber("target error", () -> getHorizontalError().getAsDouble())
+    m_visionLayout.addNumber("target error", () -> getHorizontalError().orElse(Double.NaN))
         .withPosition(1, 2)
         .withSize(1, 1);
     m_limelightLayout = m_visionTab.getLayout("Limelight Data", BuiltInLayouts.kGrid)
