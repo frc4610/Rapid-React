@@ -82,11 +82,7 @@ public class VisionSubsysten extends SubsystemBase {
   }
 
   public Rotation2d getRotationToTarget() {
-    return Rotation2d.fromDegrees(m_angleToTarget.getAsDouble());
-  }
-
-  public Rotation2d getRotationToTargetCompensated() {
-    return Rotation2d.fromDegrees(m_angleToTarget.getAsDouble());
+    return new Rotation2d(m_angleToTarget.getAsDouble());
   }
 
   public OptionalDouble getHorizontalError() {
@@ -108,7 +104,8 @@ public class VisionSubsysten extends SubsystemBase {
       return false;
     }
 
-    double delta = m_angleToTarget.getAsDouble() - m_drivetrainSubsystem.getPose().getRotation().getRadians();
+    double delta = m_angleToTarget.getAsDouble()
+        - m_drivetrainSubsystem.getPose().getRotation().getRadians();
     if (delta > Math.PI) {
       delta = 2.0 * Math.PI - delta;
     }
@@ -141,7 +138,7 @@ public class VisionSubsysten extends SubsystemBase {
 
       double angleToTarget = m_drivetrainSubsystem.getLagCompPose(Timer.getFPGATimestamp() -
           m_LimeLight.getPipelineLatency() / 1000.0).getRotation().getRadians() -
-          Rotation2d.fromDegrees(m_LimeLight.getTargetPosition().x).getRadians();
+          m_LimeLight.getTargetPosition().x;
 
       m_XEntry.setDouble(distanceToTarget * Math.sin(angleToTarget));
       m_YEntry.setDouble(distanceToTarget * Math.cos(angleToTarget));
