@@ -30,6 +30,8 @@ import edu.wpi.first.wpilibj.Timer;
 
 import static frc.robot.Constants.*;
 
+import java.util.List;
+
 /*
 // This can help when dealing with pathfinding
 https://github.com/acmerobotics/road-runner-quickstart
@@ -208,7 +210,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   public void updateOdometry(SwerveModuleState[] states) {
     m_odometry.update(getGyroRotation(), states); // Update Pose
-    RobotContainer.dashboardField.setRobotPose(m_odometry.getPoseMeters()); // set field pose
+
     if (m_lagCompensationMap.size() > MAX_LATENCY_COMPENSATION_MAP_ENTRIES) {
       m_lagCompensationMap.getSample(m_lagCompensationMap.firstKey());
     }
@@ -224,6 +226,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   public void setModuleStates(SwerveModuleState[] states) {
     m_chassisSpeeds = m_kinematics.toChassisSpeeds(states);
+  }
+
+  public void stopModules() {
+    m_chassisSpeeds = new ChassisSpeeds(0, 0, 0);
   }
 
   @Override
@@ -248,9 +254,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
             * Constants.Drivetrain.MAX_VOLTAGE,
         states[3].angle.getRadians());
     updateOdometry(states);
+
+    RobotContainer.dashboardField.setRobotPose(m_odometry.getPoseMeters()); // set field pose
   }
 
-  public void stopModules() {
-    m_chassisSpeeds = new ChassisSpeeds(0, 0, 0);
+  @Override
+  public void simulationPeriodic() {
+    periodic();
   }
 }

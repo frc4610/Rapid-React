@@ -3,7 +3,9 @@ package frc.robot.subsystems;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 
 public class AutonomousSubsystem extends SubsystemBase {
 
@@ -67,16 +70,7 @@ public class AutonomousSubsystem extends SubsystemBase {
     return m_autoChooser.getSelected();
   }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-
+  public void showCurrentTrajectory(Trajectory trajectory) {
+    RobotContainer.dashboardField.getObject("Trajectory").setTrajectory(trajectory);
   }
-
-  @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-
-  }
-
 }

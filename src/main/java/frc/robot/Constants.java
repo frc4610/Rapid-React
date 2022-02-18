@@ -38,8 +38,8 @@ public final class Constants {
   }
 
   public final static class Autonomous {
-    public static final double PX_CONTROLLER = 1;
-    public static final double PY_CONTROLLER = 1;
+    public static final double PX_CONTROLLER = 4;
+    public static final double PY_CONTROLLER = 4;
     public static final double PTHETA_CONTROLLER = 2;
 
     // theoretical values do not use mk3 as they are the motor
