@@ -3,9 +3,7 @@ package frc.robot.subsystems;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -38,10 +36,10 @@ public class AutonomousSubsystem extends SubsystemBase {
     try {
       File directory = Filesystem.getDeployDirectory();
       for (String trajectoryJSON : directory.list()) {
-        if (!trajectoryJSON.contains(".json"))
+        if (!trajectoryJSON.contains(".json") || trajectoryJSON.isEmpty() || trajectoryJSON.isBlank())
           continue;
         Path trajectoryPath = directory.toPath().resolve(trajectoryPathName + trajectoryJSON);
-        m_autoChooser.addOption(trajectoryJSON, TrajectoryUtil.fromPathweaverJson(trajectoryPath));
+        m_autoChooser.addOption(trajectoryJSON.toLowerCase(), TrajectoryUtil.fromPathweaverJson(trajectoryPath));
       }
     } catch (IOException ex) {
       DriverStation.reportError("Unable to load trajectorys: ", ex.getStackTrace());
@@ -56,11 +54,14 @@ public class AutonomousSubsystem extends SubsystemBase {
         new Pose2d(3, 0, new Rotation2d(0)),
         m_config));
 
-    m_autoChooser.setDefaultOption("2 X", TrajectoryGenerator.generateTrajectory(
+    Trajectory defaultTrajectory = TrajectoryGenerator.generateTrajectory(
         new Pose2d(0, 0, new Rotation2d(0)),
         List.of(new Translation2d(1, 0)),
         new Pose2d(2, 0, new Rotation2d(0)),
-        m_config));
+        m_config);
+    m_autoChooser.addOption("2 X", defaultTrajectory);
+
+    m_autoChooser.setDefaultOption("2 X", defaultTrajectory);
 
     SmartDashboard.putData("Auto Selector", m_autoChooser);
   }

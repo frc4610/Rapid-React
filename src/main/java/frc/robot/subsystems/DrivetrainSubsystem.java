@@ -30,8 +30,6 @@ import edu.wpi.first.wpilibj.Timer;
 
 import static frc.robot.Constants.*;
 
-import java.util.List;
-
 /*
 // This can help when dealing with pathfinding
 https://github.com/acmerobotics/road-runner-quickstart
@@ -172,7 +170,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
    * 'forwards' direction.
    */
   public void zeroGyroscope() {
-    m_navx.zeroYaw();
+    m_navx.reset();
   }
 
   public Rotation2d getGyroRotation() {

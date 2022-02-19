@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.drive.Vector2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -16,6 +18,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.VisionSubsysten;
 import frc.robot.utils.Limelight;
 import frc.robot.utils.MathUtils;
+import frc.robot.utils.Vector3d;
 import frc.robot.utils.XboxControllerExtended;
 
 /**
@@ -80,5 +83,12 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return new AutonomousCommand(m_drivetrainSubsystem, m_autonomousSubsystem);
+  }
+
+  /**
+   * Resets Gyro
+   */
+  public void reset() {
+    m_drivetrainSubsystem.zeroGyroscope();
   }
 }

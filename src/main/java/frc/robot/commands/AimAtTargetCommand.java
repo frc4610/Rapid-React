@@ -8,21 +8,18 @@ import frc.robot.subsystems.VisionSubsysten;
 
 public class AimAtTargetCommand extends CommandBase {
 
-  private final PIDController m_PIDController = new PIDController(0.2, 0.0, 0.1); // from getFalcon500SteerFactory
-
+  private final PIDController m_PIDController;
   private final DrivetrainSubsystem m_drivetrainSubsystem;
   private final VisionSubsysten m_visionSubsystem;
 
   public AimAtTargetCommand(DrivetrainSubsystem driveSubsystem, VisionSubsysten visionSubsysten) {
     m_drivetrainSubsystem = driveSubsystem;
     m_visionSubsystem = visionSubsysten;
+    m_PIDController = new PIDController(0.2, 0.0, 0.1); // from getFalcon500SteerFactory
+    m_PIDController.setIntegratorRange(-Constants.Autonomous.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+        Constants.Autonomous.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
+    m_PIDController.setTolerance(Math.toRadians(5.0));
     addRequirements(m_drivetrainSubsystem);
-  }
-
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-
   }
 
   // Called every time the scheduler runs while the command is scheduled.
