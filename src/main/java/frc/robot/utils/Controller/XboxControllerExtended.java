@@ -1,7 +1,6 @@
-package frc.robot.utils;
+package frc.robot.utils.Controller;
 
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.utils.Controller.DPadButton;
 
 public class XboxControllerExtended extends XboxController {
 

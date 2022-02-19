@@ -42,21 +42,6 @@ public class MathUtils {
     return value;
   }
 
-  public static double normalize(double angleDegree) {
-    double a;
-    a = angleDegree / 360;
-    a = a - (int) a;
-    if (a > 0) {
-      return a * 360;
-    } else {
-      return (1 + a) * 360;
-    }
-  }
-
-  public static Rotation2d normalize(Rotation2d angle) {
-    return Rotation2d.fromDegrees(normalize(angle.getDegrees()));
-  }
-
   public static boolean epsilonEquals(double a, double b) {
     return epsilonEquals(a, b, EPSILON);
   }
@@ -142,5 +127,66 @@ public class MathUtils {
       return nan;
     }
     return PIO2 - asin(arg);
+  }
+
+  /*
+   * return clamp
+   */
+  public static <T extends Comparable<T>> T clamp(T val, T min, T max) {
+    if (val.compareTo(min) < 0)
+      return min;
+    else if (val.compareTo(max) > 0)
+      return max;
+    else
+      return val;
+  }
+
+  /*
+   * returns degree normalized withing 0-369
+   */
+  public static double normalize(double angleDegree) {
+    double a;
+    a = angleDegree / 360;
+    a = a - (int) a;
+    if (a > 0) {
+      return a * 360;
+    } else {
+      return (1 + a) * 360;
+    }
+  }
+
+  /*
+   * returns Rotation normalized
+   */
+  public static Rotation2d normalize(Rotation2d angle) {
+    return Rotation2d.fromDegrees(normalize(angle.getDegrees()));
+  }
+
+  /*
+   * returns Closest angle within 0-360
+   */
+  public static double normalizeInPlace(double curAngle, double newAngle) {
+    double lowerBound;
+    double upperBound;
+    double lowerOffset = curAngle % 360;
+    if (lowerOffset >= 0) {
+      lowerBound = curAngle - lowerOffset;
+      upperBound = curAngle + (360 - lowerOffset);
+    } else {
+      upperBound = curAngle - lowerOffset;
+      lowerBound = curAngle - (360 + lowerOffset);
+    }
+    while (newAngle < lowerBound) {
+      newAngle += 360;
+    }
+    while (newAngle > upperBound) {
+      newAngle -= 360;
+    }
+    if (newAngle - curAngle > 180) {
+      newAngle -= 360;
+    } else if (newAngle - curAngle < -180) {
+      newAngle += 360;
+    }
+    return newAngle;
   }
 }

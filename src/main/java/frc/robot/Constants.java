@@ -20,42 +20,17 @@ public final class Constants {
     public static final double XBOX_DEADBAND = 0.05;
   }
 
-  public final static class Drivetrain {
+  // Motor Specific
+  public final static class Motor {
     public static final double MAX_VOLTAGE = 6.0;
 
-    // EACH MOTOR SPECIFIC
     public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
         SdsModuleConfigurations.MK3_STANDARD.getDriveReduction() *
         SdsModuleConfigurations.MK3_STANDARD.getWheelDiameter() * Math.PI;
 
-    public static final double MAX_ACCELERATION_METERS_PER_SECOND = Math.sqrt(MAX_VELOCITY_METERS_PER_SECOND);
-
     public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND /
-        Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);
+        Math.hypot(TRACKWIDTH_METERS / 2.0, WHEELBASE_METERS / 2.0);
 
-    public static final double MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND = Math
-        .sqrt(MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
-  }
-
-  public final static class Autonomous {
-    public static final double PX_CONTROLLER = 4;
-    public static final double PY_CONTROLLER = 4;
-    public static final double PTHETA_CONTROLLER = 2;
-
-    // theoretical values do not use mk3 as they are the motor
-    // FIXME: calculate the max
-    public static final double MAX_VELOCITY_METERS_PER_SECOND = Drivetrain.MAX_VELOCITY_METERS_PER_SECOND / 4;
-    public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
-        / 10;
-    public static final double MAX_ACCELERATION_METERS_PER_SECOND = 3;
-    public static final double MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND = Math.PI / 4;
-    // Constraint for the motion profilied robot angle controller
-    public static final TrapezoidProfile.Constraints PTHETA_CONTROLLER_CONSTRAINTS = new TrapezoidProfile.Constraints(
-        MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND);
-
-  }
-
-  public final static class Wheels {
     // SDS Billet Wheels 4"D X 1"W
     // 8.16:1 Gear Ratio
     public static final double WHEEL_DIAMETER = Units.inchesToMeters(4.0);
@@ -65,10 +40,28 @@ public final class Constants {
     public static final double ANGLE_GEAR_RATIO = 12.8;
   }
 
+  public final static class Autonomous {
+    public static final double PX_CONTROLLER = 4;
+    public static final double PY_CONTROLLER = 4;
+    public static final double PTHETA_CONTROLLER = 2;
+
+    // theoretical values do not use mk3 as they are the motor
+    // FIXME: calculate the max
+    public static final double MAX_VELOCITY_METERS_PER_SECOND = 3;
+    public static final double MAX_ACCELERATION_METERS_PER_SECOND = 3;
+
+    public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = Math.PI;
+    public static final double MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND = Math.PI;
+    // Constraint for the motion profilied robot angle controller
+    public static final TrapezoidProfile.Constraints PTHETA_CONTROLLER_CONSTRAINTS = new TrapezoidProfile.Constraints(
+        MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND);
+
+  }
+
   // The left-to-right distance between the drivetrain wheels
-  public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.555; // 0.56
+  public static final double TRACKWIDTH_METERS = 0.555; // 0.56
   // The front-to-back distance between the drivetrain wheels.
-  public static final double DRIVETRAIN_WHEELBASE_METERS = 0.55; // 0.545
+  public static final double WHEELBASE_METERS = 0.55; // 0.545
 
   public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 8; // Set front left module drive motor ID - 4
   public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 4; // Set front left module steer motor ID - 8

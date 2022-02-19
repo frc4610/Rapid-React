@@ -47,13 +47,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
       // Front left
-      new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
+      new Translation2d(TRACKWIDTH_METERS / 2.0, WHEELBASE_METERS / 2.0),
       // Front right
-      new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0),
+      new Translation2d(TRACKWIDTH_METERS / 2.0, -WHEELBASE_METERS / 2.0),
       // Back left
-      new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0),
+      new Translation2d(-TRACKWIDTH_METERS / 2.0, WHEELBASE_METERS / 2.0),
       // Back right
-      new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0));
+      new Translation2d(-TRACKWIDTH_METERS / 2.0, -WHEELBASE_METERS / 2.0));
   private static final int MAX_LATENCY_COMPENSATION_MAP_ENTRIES = 25;
 
   private final AHRS m_navx = new AHRS(SPI.Port.kMXP, (byte) 200); // NavX connected over MXP
@@ -128,7 +128,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         BACK_RIGHT_MODULE_STEER_ENCODER,
         BACK_RIGHT_MODULE_STEER_OFFSET);
 
-    zeroGyroscope();
+    zeroGyro();
     m_OdometryData = m_DriveDataTab.getLayout("Odometry Data", BuiltInLayouts.kList)
         .withSize(2, 2)
         .withPosition(0, 0);
@@ -169,7 +169,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
    * robot is currently facing to the
    * 'forwards' direction.
    */
-  public void zeroGyroscope() {
+  public void zeroGyro() {
     m_navx.reset();
   }
 
@@ -233,23 +233,23 @@ public class DrivetrainSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(states, Constants.Drivetrain.MAX_VELOCITY_METERS_PER_SECOND);
+    SwerveDriveKinematics.desaturateWheelSpeeds(states, Constants.Motor.MAX_VELOCITY_METERS_PER_SECOND);
     // FIXME: issues with clamping
     m_frontLeftModule.set(
-        states[0].speedMetersPerSecond / Constants.Drivetrain.MAX_VELOCITY_METERS_PER_SECOND
-            * Constants.Drivetrain.MAX_VOLTAGE,
+        states[0].speedMetersPerSecond / Constants.Motor.MAX_VELOCITY_METERS_PER_SECOND
+            * Constants.Motor.MAX_VOLTAGE,
         states[0].angle.getRadians());
     m_frontRightModule.set(
-        states[1].speedMetersPerSecond / Constants.Drivetrain.MAX_VELOCITY_METERS_PER_SECOND
-            * Constants.Drivetrain.MAX_VOLTAGE,
+        states[1].speedMetersPerSecond / Constants.Motor.MAX_VELOCITY_METERS_PER_SECOND
+            * Constants.Motor.MAX_VOLTAGE,
         states[1].angle.getRadians());
     m_backLeftModule.set(
-        states[2].speedMetersPerSecond / Constants.Drivetrain.MAX_VELOCITY_METERS_PER_SECOND
-            * Constants.Drivetrain.MAX_VOLTAGE,
+        states[2].speedMetersPerSecond / Constants.Motor.MAX_VELOCITY_METERS_PER_SECOND
+            * Constants.Motor.MAX_VOLTAGE,
         states[2].angle.getRadians());
     m_backRightModule.set(
-        states[3].speedMetersPerSecond / Constants.Drivetrain.MAX_VELOCITY_METERS_PER_SECOND
-            * Constants.Drivetrain.MAX_VOLTAGE,
+        states[3].speedMetersPerSecond / Constants.Motor.MAX_VELOCITY_METERS_PER_SECOND
+            * Constants.Motor.MAX_VOLTAGE,
         states[3].angle.getRadians());
     updateOdometry(states);
 

@@ -4,8 +4,8 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.drive.Vector2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -18,8 +18,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.VisionSubsysten;
 import frc.robot.utils.Limelight;
 import frc.robot.utils.MathUtils;
-import frc.robot.utils.Vector3d;
-import frc.robot.utils.XboxControllerExtended;
+import frc.robot.utils.Controller.XboxControllerExtended;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -43,16 +42,20 @@ public class RobotContainer {
     m_drivetrainSubsystem.setDefaultCommand(new UserControllerCommand(
         m_drivetrainSubsystem,
         () -> -MathUtils.modifyAxis(m_controller.getLeftY(), Constants.Controller.XBOX_DEADBAND)
-            * Constants.Drivetrain.MAX_VELOCITY_METERS_PER_SECOND,
+            * Constants.Motor.MAX_VELOCITY_METERS_PER_SECOND,
         () -> -MathUtils.modifyAxis(m_controller.getLeftX(), Constants.Controller.XBOX_DEADBAND)
-            * Constants.Drivetrain.MAX_VELOCITY_METERS_PER_SECOND,
+            * Constants.Motor.MAX_VELOCITY_METERS_PER_SECOND,
         () -> -MathUtils.modifyAxis(m_controller.getRightX(), Constants.Controller.XBOX_DEADBAND)
-            * Constants.Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
+            * Constants.Motor.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
 
     // Configure the button bindings
     configureButtonBindings();
 
     m_visionSubsystem.setLedMode(Limelight.LedMode.ON);
+
+    if (!checkRoboRIO()) {
+      DriverStation.reportWarning("Robot not properly enabled", false);
+    }
   }
 
   private void configureButtonBindings() {
@@ -66,7 +69,7 @@ public class RobotContainer {
 
     // Back button zeros the gyroscope
     new Button(m_controller::getBackButton)
-        .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+        .whenPressed(m_drivetrainSubsystem::zeroGyro);
 
     new Button(m_controller::getBButton)
         .whileHeld(new AimAtTargetCommand(m_drivetrainSubsystem, m_visionSubsystem));
@@ -89,6 +92,34 @@ public class RobotContainer {
    * Resets Gyro
    */
   public void reset() {
-    m_drivetrainSubsystem.zeroGyroscope();
+    m_drivetrainSubsystem.zeroGyro();
+  }
+
+  /**
+   * returns scalar of 5V bus
+   * 0-1
+   */
+  public static double get5VScalar() {
+    return 5 / RobotController.getVoltage5V();
+  }
+
+  /**
+   * returns clock in ms
+   */
+  public static double getMsClock() {
+    return RobotController.getFPGATime() / 1000.0;
+  }
+
+  /**
+   * returns true if everything is working
+   */
+  public static boolean checkRoboRIO() {
+    if (!RobotController.getEnabled5V())
+      return false;
+    if (!RobotController.getEnabled3V3())
+      return false;
+    if (!RobotController.getEnabled6V())
+      return false;
+    return true;
   }
 }
