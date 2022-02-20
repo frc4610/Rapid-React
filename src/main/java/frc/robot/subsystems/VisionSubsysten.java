@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.Limelight;
 import frc.robot.utils.MathUtils;
-import frc.robot.utils.UltrasonicMB1013;
 
 public class VisionSubsysten extends SubsystemBase {
 
@@ -30,21 +29,13 @@ public class VisionSubsysten extends SubsystemBase {
   private final ShuffleboardLayout m_visionLayout;
   private final ShuffleboardLayout m_limelightLayout;
 
-  private final ShuffleboardLayout m_ultrasonicLayout;
-  private final UltrasonicMB1013 m_ultrasoncisOne;
-  private final UltrasonicMB1013 m_ultrasoncisTwo;
-
   public VisionSubsysten(DrivetrainSubsystem drivetrainSubsystem) {
     m_drivetrainSubsystem = drivetrainSubsystem;
-    m_ultrasoncisOne = new UltrasonicMB1013(0);
-    m_ultrasoncisTwo = new UltrasonicMB1013(1);
     m_visionTab = Shuffleboard.getTab("Vision");
+    // Vision
     m_visionLayout = m_visionTab.getLayout("Vision Data", BuiltInLayouts.kGrid)
         .withSize(4, 2)
         .withPosition(0, 0);
-    m_ultrasonicLayout = m_visionTab.getLayout("Ultrasounic Data", BuiltInLayouts.kGrid)
-        .withSize(3, 1)
-        .withPosition(5, 0);
     m_XEntry = m_visionLayout.add("X", 0.0)
         .withPosition(0, 0)
         .withSize(1, 1)
@@ -59,14 +50,6 @@ public class VisionSubsysten extends SubsystemBase {
     m_visionLayout.addBoolean("has target", this::hasTarget)
         .withPosition(4, 0)
         .withSize(1, 1);
-
-    m_ultrasonicLayout.addNumber("Ultrasonic One Range", () -> m_ultrasoncisOne.getRangeInch())
-        .withPosition(5, 0)
-        .withSize(1, 1);
-    m_ultrasonicLayout.addNumber("Ultrasonic Two Range", () -> m_ultrasoncisTwo.getRangeInch())
-        .withPosition(6, 0)
-        .withSize(1, 1);
-
     m_distanceToTargetEntry = m_visionLayout.add("distance to target", 0.0)
         .withPosition(0, 1)
         .withSize(1, 1)

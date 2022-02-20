@@ -76,6 +76,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
   private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, new Rotation2d(0));
 
+  private double m_lastWorldAccelX = -1.0;
+  private double m_lastWorldAccelY = -1.0;
+  private boolean m_didCollide = false;
+  private double m_lastCollisionTime = 0.0;
+
   public DrivetrainSubsystem() {
     m_DrivetrainTab = Shuffleboard.getTab("Drivetrain");
     m_DriveDataTab = Shuffleboard.getTab("Drive Data");
@@ -174,18 +179,40 @@ public class DrivetrainSubsystem extends SubsystemBase {
   }
 
   public Rotation2d getGyroRotation() {
-    if (m_navx.isMagnetometerCalibrated()) {
-      // We will only get valid fused headings if the magnetometer is calibrated
-      return Rotation2d.fromDegrees(m_navx.getFusedHeading());
-    }
     // We have to invert the angle of the NavX so that rotating the robot
     // counter-clockwise makes the angle increase.
-    return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
+
+    return Rotation2d.fromDegrees((INVERT_GYRO ? 360.0 : 0) - m_navx.getYaw());
+  }
+
+  public boolean getDidCollide() {
+    double curWorldAccelX = m_navx.getWorldLinearAccelX();
+    double curWorldAccelY = m_navx.getWorldLinearAccelY();
+
+    double curJerkX = curWorldAccelX - m_lastWorldAccelX;
+    double curJerkY = curWorldAccelY - m_lastWorldAccelY;
+
+    m_lastWorldAccelX = curWorldAccelX;
+    m_lastWorldAccelY = curWorldAccelY;
+
+    if ((Math.abs(curJerkX) > Constants.COLLISION_TRESHOLD_DELTA) ||
+        (Math.abs(curJerkY) > Constants.COLLISION_TRESHOLD_DELTA)) {
+      m_didCollide = true;
+      m_lastCollisionTime = Timer.getFPGATimestamp() + 5.0;
+    } else if (Timer.getFPGATimestamp() > m_lastCollisionTime) {
+      m_didCollide = false;
+    }
+    return m_didCollide;
   }
 
   public void drive(double translation_x, double translation_y, double rotation) {
-
     m_chassisSpeeds = m_isFieldOriented.getBoolean(true)
+        ? ChassisSpeeds.fromFieldRelativeSpeeds(translation_x, translation_y, rotation, getGyroRotation())
+        : new ChassisSpeeds(translation_x, translation_y, rotation);
+  }
+
+  public void drive(double translation_x, double translation_y, double rotation, boolean fieldOriented) {
+    m_chassisSpeeds = fieldOriented
         ? ChassisSpeeds.fromFieldRelativeSpeeds(translation_x, translation_y, rotation, getGyroRotation())
         : new ChassisSpeeds(translation_x, translation_y, rotation);
   }

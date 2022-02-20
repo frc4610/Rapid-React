@@ -16,6 +16,10 @@ public final class Constants {
     public static final double TARGET_ALLOWABLE_ERROR = Math.toRadians(2.0);
   }
 
+  public final static class Ultrasonic {
+    public static final double WIDTH_INCH = 26.95;
+  }
+
   public final static class Controller {
     public static final double XBOX_DEADBAND = 0.05;
   }
@@ -57,6 +61,9 @@ public final class Constants {
         MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND);
 
   }
+
+  public static final boolean INVERT_GYRO = true;
+  public static final double COLLISION_TRESHOLD_DELTA = 0.5f;
 
   // The left-to-right distance between the drivetrain wheels
   public static final double TRACKWIDTH_METERS = 0.555; // 0.56

@@ -10,11 +10,13 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import frc.robot.commands.RotateToAngleCommand;
 import frc.robot.commands.AimAtTargetCommand;
 import frc.robot.commands.AutonomousCommand;
 import frc.robot.commands.UserControllerCommand;
 import frc.robot.subsystems.AutonomousSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.UltrasonicSubsystem;
 import frc.robot.subsystems.VisionSubsysten;
 import frc.robot.utils.Limelight;
 import frc.robot.utils.MathUtils;
@@ -35,6 +37,7 @@ public class RobotContainer {
   private final VisionSubsysten m_visionSubsystem = new VisionSubsysten(m_drivetrainSubsystem);
   private final AutonomousSubsystem m_autonomousSubsystem = new AutonomousSubsystem(m_drivetrainSubsystem);
   private final XboxControllerExtended m_controller = new XboxControllerExtended(0);
+  private final UltrasonicSubsystem m_ultrasonicSubsystem = new UltrasonicSubsystem();
   public final static Field2d dashboardField = new Field2d();
 
   public RobotContainer() {
@@ -73,6 +76,11 @@ public class RobotContainer {
 
     new Button(m_controller::getBButton)
         .whileHeld(new AimAtTargetCommand(m_drivetrainSubsystem, m_visionSubsystem));
+
+    new Button(m_controller::getBButton)
+        .whileHeld(
+            new RotateToAngleCommand(m_drivetrainSubsystem,
+                () -> m_ultrasonicSubsystem.getUltrasonicRotation().getRadians()));
 
     new Button(m_controller::getAButton)
         .whileHeld(new AutonomousCommand(m_drivetrainSubsystem, m_autonomousSubsystem));

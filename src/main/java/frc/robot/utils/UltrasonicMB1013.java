@@ -11,6 +11,8 @@ import frc.robot.RobotContainer;
 public class UltrasonicMB1013 {
   private final DigitalOutput m_trigger;
   private final AnalogInput m_sensor;
+  private double m_lastMsUpdateTime;
+  public static double refreshRate = 100.0;
 
   public UltrasonicMB1013(int port) {
     m_trigger = new DigitalOutput(port);
@@ -20,17 +22,18 @@ public class UltrasonicMB1013 {
 
   public void setStatus(boolean value) {
     m_trigger.set(value);
+    m_lastMsUpdateTime = RobotContainer.getMsClock();
   }
 
-  public double getRangeMeters() {
-    return MathUtils.clamp(m_sensor.getValue() * RobotContainer.get5VScalar(), 0.3, 5.0); // 30cm - 500cm
+  private double getRawRange() {
+    return m_sensor.getValue() * RobotContainer.get5VScalar();
   }
 
   public double getRangeInch() {
-    return getRangeMeters() * 0.0492;
+    return MathUtils.clamp(getRawRange() * 0.0492, 12.0, 190.0);
   }
 
-  public double getRangeCm() {
-    return getRangeMeters() * 0.125;
+  public double getLastMsUpdateTime() {
+    return m_lastMsUpdateTime;
   }
 }
