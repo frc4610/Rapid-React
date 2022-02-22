@@ -36,14 +36,6 @@ https://github.com/acmerobotics/road-runner-quickstart
 */
 
 public class DrivetrainSubsystem extends SubsystemBase {
-  // The formula for calculating the theoretical maximum velocity is:
-  // <Motor free speed RPM> / 60 * <Drive reduction> * <Wheel diameter meters> *
-  // pi
-  // By default this value is setup for a Mk3 standard module using Falcon500s to
-  // drive.
-  // An example of this constant for a Mk4 L2 module with NEOs to drive is:
-  // 5880.0 / 60.0 / SdsModuleConfigurations.MK4_L2.getDriveReduction() *
-  // SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI
 
   private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
       // Front left
@@ -61,23 +53,16 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private final InterpolatingTreeMap<Pose2d> m_lagCompensationMap = InterpolatingTreeMap
       .createBuffer(MAX_LATENCY_COMPENSATION_MAP_ENTRIES);
 
-  public static ShuffleboardTab m_DrivetrainTab;
-  public static ShuffleboardTab m_DriveDataTab;
+  public static ShuffleboardTab m_DrivetrainTab, m_DriveDataTab;
   private final NetworkTableEntry m_isFieldOriented;
-  private static ShuffleboardLayout m_OdometryData;
-  private static ShuffleboardLayout m_ChassisData;
-  private static ShuffleboardLayout m_OtherData;
+  private static ShuffleboardLayout m_OdometryData, m_ChassisData, m_OtherData;
   // These are our modules. We initialize them in the constructor.
-  private final SwerveModule m_frontLeftModule;
-  private final SwerveModule m_frontRightModule;
-  private final SwerveModule m_backLeftModule;
-  private final SwerveModule m_backRightModule;
+  private final SwerveModule m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule;
 
   private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
   private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, new Rotation2d(0));
 
-  private double m_lastWorldAccelX = -1.0;
-  private double m_lastWorldAccelY = -1.0;
+  private double m_lastWorldAccelX = -1.0, m_lastWorldAccelY = -1.0;
   private boolean m_didCollide = false;
   private double m_lastCollisionTime = 0.0;
 
@@ -182,6 +167,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // We have to invert the angle of the NavX so that rotating the robot
     // counter-clockwise makes the angle increase.
 
+    // FIXME: isMagnetometerCalibrated returns true even when not calibrated
+    /*
+     * if (m_navx.isMagnetometerCalibrated()) {
+     * return Rotation2d.fromDegrees(m_navx.getFusedHeading());
+     * }
+     */
     return Rotation2d.fromDegrees((INVERT_GYRO ? 360.0 : 0) - m_navx.getYaw());
   }
 
@@ -195,8 +186,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_lastWorldAccelX = curWorldAccelX;
     m_lastWorldAccelY = curWorldAccelY;
 
-    if ((Math.abs(curJerkX) > Constants.COLLISION_TRESHOLD_DELTA) ||
-        (Math.abs(curJerkY) > Constants.COLLISION_TRESHOLD_DELTA)) {
+    if ((Math.abs(curJerkX) > Constants.COLLISION_THRESHOLD_DELTA) ||
+        (Math.abs(curJerkY) > Constants.COLLISION_THRESHOLD_DELTA)) {
       m_didCollide = true;
       m_lastCollisionTime = Timer.getFPGATimestamp() + 5.0;
     } else if (Timer.getFPGATimestamp() > m_lastCollisionTime) {

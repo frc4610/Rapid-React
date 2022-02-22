@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import java.util.Optional;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.*;
@@ -20,10 +22,13 @@ public class AutonomousCommand extends SequentialCommandGroup {
   public AutonomousCommand(DrivetrainSubsystem driveSubsystem, AutonomousSubsystem autoSubsystem) {
     m_thetaPIDController.enableContinuousInput(-Math.PI, Math.PI);
 
-    Trajectory trajectory = autoSubsystem.getTrajectory();
+    Optional<Trajectory> trajectory = autoSubsystem.getTrajectory();
+
+    if (!trajectory.isPresent())
+      return;
 
     SwerveControllerCommand driveCommandController = new SwerveControllerCommand(
-        trajectory,
+        trajectory.get(),
         driveSubsystem::getPose,
         driveSubsystem.getKinematics(),
         m_xPIDController,
@@ -33,10 +38,10 @@ public class AutonomousCommand extends SequentialCommandGroup {
         driveSubsystem);
     // ---------------------The Actual Command List That will Run-----------------//
 
-    autoSubsystem.showCurrentTrajectory(trajectory);
+    autoSubsystem.showCurrentTrajectory(trajectory.get());
 
     addCommands(
-        new InstantCommand(() -> driveSubsystem.resetPose(trajectory.getInitialPose())),
+        new InstantCommand(() -> driveSubsystem.resetPose(trajectory.get().getInitialPose())),
         driveCommandController,
         new InstantCommand(() -> driveSubsystem.stopModules()));
   }

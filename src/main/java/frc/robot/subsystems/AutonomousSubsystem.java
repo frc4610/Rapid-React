@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -31,11 +32,13 @@ public class AutonomousSubsystem extends SubsystemBase {
         Constants.Autonomous.MAX_ACCELERATION_METERS_PER_SECOND)
             .setKinematics(driveSubsystem.getKinematics());
 
-    final String trajectoryPathName = "Paths"; // Grrr String literals
-    // Parallel Code Generation
+    // FIXME: Use string builder
+    // UNSURE: If forward slashes work
+    final String trajectoryPathName = "Paths\\"; // Grrr String literals
+    // FIXME: thread this or parallelprocess this
     try {
       File directory = Filesystem.getDeployDirectory();
-      for (String trajectoryJSON : directory.list()) {
+      for (final String trajectoryJSON : directory.list()) {
         if (!trajectoryJSON.contains(".json") || trajectoryJSON.isEmpty() || trajectoryJSON.isBlank())
           continue;
         Path trajectoryPath = directory.toPath().resolve(trajectoryPathName + trajectoryJSON);
@@ -59,16 +62,16 @@ public class AutonomousSubsystem extends SubsystemBase {
         List.of(new Translation2d(1, 0)),
         new Pose2d(2, 0, new Rotation2d(0)),
         m_config);
-    m_autoChooser.addOption("2 X", defaultTrajectory);
 
+    // FIXME: Trajectory's added by default seems to break
+    m_autoChooser.addOption("2 X", defaultTrajectory);
     m_autoChooser.setDefaultOption("2 X", defaultTrajectory);
 
     SmartDashboard.putData("Auto Selector", m_autoChooser);
   }
 
-  // std::optional?
-  public Trajectory getTrajectory() {
-    return m_autoChooser.getSelected();
+  public Optional<Trajectory> getTrajectory() {
+    return Optional.ofNullable(m_autoChooser.getSelected());
   }
 
   public void showCurrentTrajectory(Trajectory trajectory) {

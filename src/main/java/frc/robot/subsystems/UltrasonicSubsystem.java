@@ -12,11 +12,11 @@ import frc.robot.utils.UltrasonicMB1013;
 // not sure how mutexs work in java/ threads
 class UltrasonicThread implements Runnable {
   private Thread m_thread;
-  private String m_threadName;
+  private final String m_threadName;
   private final UltrasonicMB1013 m_ultrasoncisOne;
   private final UltrasonicMB1013 m_ultrasoncisTwo;
 
-  UltrasonicThread(String name, UltrasonicMB1013 one, UltrasonicMB1013 two) {
+  UltrasonicThread(final String name, final UltrasonicMB1013 one, final UltrasonicMB1013 two) {
     m_threadName = name;
     m_ultrasoncisOne = one;
     m_ultrasoncisTwo = two;
@@ -53,8 +53,7 @@ public class UltrasonicSubsystem extends SubsystemBase {
   private final ShuffleboardTab m_ultrasonicTab;
   private final ShuffleboardLayout m_ultrasonicLayout;
   private final UltrasonicThread m_ultrasonicThread;
-  private final UltrasonicMB1013 m_ultrasoncisOne;
-  private final UltrasonicMB1013 m_ultrasoncisTwo;
+  private final UltrasonicMB1013 m_ultrasoncisOne, m_ultrasoncisTwo;
 
   public UltrasonicSubsystem() {
     // Ultrasonic

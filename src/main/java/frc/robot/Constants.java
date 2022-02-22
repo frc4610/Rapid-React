@@ -63,7 +63,8 @@ public final class Constants {
   }
 
   public static final boolean INVERT_GYRO = true;
-  public static final double COLLISION_TRESHOLD_DELTA = 0.5;
+  // FIXME: Calculate the threshold manually
+  public static final double COLLISION_THRESHOLD_DELTA = 0.5;
 
   // The left-to-right distance between the drivetrain wheels
   public static final double TRACKWIDTH_METERS = 0.555; // 0.56
