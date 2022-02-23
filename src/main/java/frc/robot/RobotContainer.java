@@ -16,6 +16,7 @@ import frc.robot.commands.AutonomousCommand;
 import frc.robot.commands.UserControllerCommand;
 import frc.robot.subsystems.AutonomousSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.UltrasonicSubsystem;
 import frc.robot.subsystems.VisionSubsysten;
 import frc.robot.utils.Limelight;
@@ -38,6 +39,7 @@ public class RobotContainer {
   private final AutonomousSubsystem m_autonomousSubsystem = new AutonomousSubsystem(m_drivetrainSubsystem);
   private final XboxControllerExtended m_controller = new XboxControllerExtended(0);
   private final UltrasonicSubsystem m_ultrasonicSubsystem = new UltrasonicSubsystem();
+  private final LEDSubsystem m_ledSubsystem = new LEDSubsystem();
   public final static Field2d dashboardField = new Field2d();
 
   public RobotContainer() {
@@ -101,6 +103,7 @@ public class RobotContainer {
    */
   public void reset() {
     m_drivetrainSubsystem.zeroGyro();
+    m_ledSubsystem.setLEDStripColor(255, 0, 0);
   }
 
   /**
