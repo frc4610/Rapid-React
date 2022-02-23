@@ -35,18 +35,15 @@ public class LEDSubsystem extends SubsystemBase {
     return m_ledController.animate(anim);
   }
 
-  // [nodiscard]
   public ErrorCode setStatusLEDColor(int r, int g, int b, int idx) {
     return m_ledController.setLEDs(r, g, b, 0, idx, idx);
   }
 
   // FIXME: Java has no default params?
-  // [nodiscard]
   public ErrorCode setLEDStripColor(int r, int g, int b) {
     return setLEDStripColor(r, g, b, 0);
   }
 
-  // [nodiscard]
   public ErrorCode setLEDStripColor(int r, int g, int b, int white) {
     return m_ledController.setLEDs(r, g, b, white, LED_COUNT - LED_STRIP_COUNT, LED_COUNT);
   }

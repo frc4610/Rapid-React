@@ -7,61 +7,43 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.utils.ThreadPool;
 import frc.robot.utils.UltrasonicMB1013;
-
-// not sure how mutexs work in java/ threads
-class UltrasonicThread implements Runnable {
-  private Thread m_thread;
-  private final String m_threadName;
-  private final UltrasonicMB1013 m_ultrasoncisOne;
-  private final UltrasonicMB1013 m_ultrasoncisTwo;
-
-  UltrasonicThread(final String name, final UltrasonicMB1013 one, final UltrasonicMB1013 two) {
-    m_threadName = name;
-    m_ultrasoncisOne = one;
-    m_ultrasoncisTwo = two;
-    System.out.println("Creating " + m_threadName);
-  }
-
-  public void run() {
-    System.out.println("Running " + m_threadName);
-    try {
-      while (true) {
-        m_ultrasoncisOne.setStatus(false);
-        m_ultrasoncisTwo.setStatus(true);
-        Thread.sleep(Double.doubleToLongBits(UltrasonicMB1013.refreshRate));
-        m_ultrasoncisOne.setStatus(true);
-        m_ultrasoncisTwo.setStatus(false);
-        Thread.sleep(Double.doubleToLongBits(UltrasonicMB1013.refreshRate));
-      }
-    } catch (InterruptedException e) {
-      System.out.println("Thread " + m_threadName + " interrupted.");
-    }
-    System.out.println("Thread " + m_threadName + " exiting.");
-  }
-
-  public void start() {
-    System.out.println("Starting " + m_threadName);
-    if (m_thread == null) {
-      m_thread = new Thread(this, m_threadName);
-      m_thread.start();
-    }
-  }
-}
 
 public class UltrasonicSubsystem extends SubsystemBase {
   private final ShuffleboardTab m_ultrasonicTab;
   private final ShuffleboardLayout m_ultrasonicLayout;
-  private final UltrasonicThread m_ultrasonicThread;
   private final UltrasonicMB1013 m_ultrasoncisOne, m_ultrasoncisTwo;
 
   public UltrasonicSubsystem() {
     // Ultrasonic
     m_ultrasonicTab = Shuffleboard.getTab("Ultrasonic");
+    // FIXME: Atomic or Mutex lock ultrasonic
     m_ultrasoncisOne = new UltrasonicMB1013(0);
     m_ultrasoncisTwo = new UltrasonicMB1013(1);
-    m_ultrasonicThread = new UltrasonicThread("Ultrasonic", m_ultrasoncisOne, m_ultrasoncisTwo);
-    m_ultrasonicThread.start();
+    ThreadPool.threadPool.execute(() -> {
+      try {
+        while (true) {
+          // synchronized should fix deadlocking if it happens
+          synchronized (m_ultrasoncisOne) {
+            m_ultrasoncisOne.setStatus(false);
+          }
+          synchronized (m_ultrasoncisTwo) {
+            m_ultrasoncisTwo.setStatus(true);
+          }
+          Thread.sleep(Double.doubleToLongBits(UltrasonicMB1013.refreshRate));
+          synchronized (m_ultrasoncisOne) {
+            m_ultrasoncisOne.setStatus(true);
+          }
+          synchronized (m_ultrasoncisTwo) {
+            m_ultrasoncisTwo.setStatus(false);
+          }
+          Thread.sleep(Double.doubleToLongBits(UltrasonicMB1013.refreshRate));
+        }
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    });
 
     m_ultrasonicLayout = m_ultrasonicTab.getLayout("Data", BuiltInLayouts.kGrid)
         .withSize(3, 1)
