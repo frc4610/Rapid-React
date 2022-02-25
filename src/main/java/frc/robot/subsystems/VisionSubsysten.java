@@ -72,6 +72,9 @@ public class VisionSubsysten extends SubsystemBase {
     m_limelightLayout.addNumber("Skew", () -> m_LimeLight.getTargetSkew())
         .withPosition(2, 0)
         .withSize(1, 1);
+
+    // Enabled Limelight to find reflection
+    setLedMode(Limelight.LedMode.ON);
   }
 
   public void setCamMode(Limelight.CamMode mode) {

@@ -9,6 +9,29 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
 public final class Constants {
+
+  public final static class Ids {
+    public static final int LED_CANDLE = 9;
+    public static final int LEFT_ULTRASONIC = 1;
+    public static final int RIGHT_ULTRASONIC = 0;
+
+    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 8; // Set front left module drive motor ID - 4
+    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 4; // Set front left module steer motor ID - 8
+    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 11; // Set front left steer encoder ID - 12
+
+    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 1; // Set front right drive motor ID - 1
+    public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 5; // Set front right steer motor ID - 5
+    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 9; // Set front right steer encoder ID - 9
+
+    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 3; // Set back left drive motor ID - 3
+    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 7; // Set back left steer motor ID - 7
+    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 12; // Set back left steer encoder ID - 11
+
+    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 2; // Set back right drive motor ID - 2
+    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 6; // Set back right steer motor ID - 6
+    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 10; // Set back right steer encoder ID - 10
+  }
+
   public final static class Limelight {
     public static final double TARGET_HEIGHT = 36.0;
     public static final double LIMELIGHT_HEIGHT = 9;
@@ -62,6 +85,9 @@ public final class Constants {
 
   }
 
+  // FIXME: Add Gyro I/O device to handle Pigion, navX, and the other
+  // FIXME: navX firmware config changing causing issues
+  public static final boolean ENABLE_MAGNETOMETER = true;
   public static final boolean INVERT_GYRO = true;
   // FIXME: Calculate the threshold manually
   public static final double COLLISION_THRESHOLD_DELTA = 0.5;
@@ -71,23 +97,8 @@ public final class Constants {
   // The front-to-back distance between the drivetrain wheels.
   public static final double WHEELBASE_METERS = 0.55; // 0.545
 
-  public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 8; // Set front left module drive motor ID - 4
-  public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 4; // Set front left module steer motor ID - 8
-  public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 11; // Set front left steer encoder ID - 12
   public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(149.85);
-
-  public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 1; // Set front right drive motor ID - 1
-  public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 5; // Set front right steer motor ID - 5
-  public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 9; // Set front right steer encoder ID - 9
   public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(181.40);
-
-  public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 3; // Set back left drive motor ID - 3
-  public static final int BACK_LEFT_MODULE_STEER_MOTOR = 7; // Set back left steer motor ID - 7
-  public static final int BACK_LEFT_MODULE_STEER_ENCODER = 12; // Set back left steer encoder ID - 11
   public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(128.76);
-
-  public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 2; // Set back right drive motor ID - 2
-  public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 6; // Set back right steer motor ID - 6
-  public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 10; // Set back right steer encoder ID - 10
   public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(30.05);
 }

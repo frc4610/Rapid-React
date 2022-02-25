@@ -114,7 +114,7 @@ public final class Limelight {
    * Gets the distance
    */
   public double getDistance(double height, double targetHeight, double radianAngle) {
-    return ((targetHeight - height) / Math.tan(radianAngle + ty.getDouble(0)));
+    return ((targetHeight - height) / Math.tan(radianAngle + Math.toRadians(ty.getDouble(0))));
   }
 
   /**

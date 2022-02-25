@@ -8,7 +8,7 @@ package frc.robot.subsystems;
 import com.kauailabs.navx.frc.AHRS;
 import swervelib.Mk3SwerveModuleHelper;
 import swervelib.SwerveModule;
-
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.utils.*;
 import edu.wpi.first.wpilibj.SPI;
@@ -78,11 +77,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
         // This can either be STANDARD or FAST depending on your gear configuration
         Mk3SwerveModuleHelper.GearRatio.STANDARD,
         // This is the ID of the drive motor
-        FRONT_LEFT_MODULE_DRIVE_MOTOR,
+        Ids.FRONT_LEFT_MODULE_DRIVE_MOTOR,
         // This is the ID of the steer motor
-        FRONT_LEFT_MODULE_STEER_MOTOR,
+        Ids.FRONT_LEFT_MODULE_STEER_MOTOR,
         // This is the ID of the steer encoder
-        FRONT_LEFT_MODULE_STEER_ENCODER,
+        Ids.FRONT_LEFT_MODULE_STEER_ENCODER,
         // This is how much the steer encoder is offset from true zero (In our case,
         // zero is facing straight forward)
         FRONT_LEFT_MODULE_STEER_OFFSET);
@@ -93,9 +92,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
             .withSize(2, 4)
             .withPosition(2, 0),
         Mk3SwerveModuleHelper.GearRatio.STANDARD,
-        FRONT_RIGHT_MODULE_DRIVE_MOTOR,
-        FRONT_RIGHT_MODULE_STEER_MOTOR,
-        FRONT_RIGHT_MODULE_STEER_ENCODER,
+        Ids.FRONT_RIGHT_MODULE_DRIVE_MOTOR,
+        Ids.FRONT_RIGHT_MODULE_STEER_MOTOR,
+        Ids.FRONT_RIGHT_MODULE_STEER_ENCODER,
         FRONT_RIGHT_MODULE_STEER_OFFSET);
 
     m_backLeftModule = Mk3SwerveModuleHelper.createFalcon500(
@@ -103,9 +102,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
             .withSize(2, 4)
             .withPosition(4, 0),
         Mk3SwerveModuleHelper.GearRatio.STANDARD,
-        BACK_LEFT_MODULE_DRIVE_MOTOR,
-        BACK_LEFT_MODULE_STEER_MOTOR,
-        BACK_LEFT_MODULE_STEER_ENCODER,
+        Ids.BACK_LEFT_MODULE_DRIVE_MOTOR,
+        Ids.BACK_LEFT_MODULE_STEER_MOTOR,
+        Ids.BACK_LEFT_MODULE_STEER_ENCODER,
         BACK_LEFT_MODULE_STEER_OFFSET);
 
     m_backRightModule = Mk3SwerveModuleHelper.createFalcon500(
@@ -113,9 +112,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
             .withSize(2, 4)
             .withPosition(6, 0),
         Mk3SwerveModuleHelper.GearRatio.STANDARD,
-        BACK_RIGHT_MODULE_DRIVE_MOTOR,
-        BACK_RIGHT_MODULE_STEER_MOTOR,
-        BACK_RIGHT_MODULE_STEER_ENCODER,
+        Ids.BACK_RIGHT_MODULE_DRIVE_MOTOR,
+        Ids.BACK_RIGHT_MODULE_STEER_MOTOR,
+        Ids.BACK_RIGHT_MODULE_STEER_ENCODER,
         BACK_RIGHT_MODULE_STEER_OFFSET);
 
     zeroGyro();
@@ -167,12 +166,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // We have to invert the angle of the NavX so that rotating the robot
     // counter-clockwise makes the angle increase.
 
-    // FIXME: isMagnetometerCalibrated returns true even when not calibrated
-    /*
-     * if (m_navx.isMagnetometerCalibrated()) {
-     * return Rotation2d.fromDegrees(m_navx.getFusedHeading());
-     * }
-     */
+    if (ENABLE_MAGNETOMETER && m_navx.isMagnetometerCalibrated()) {
+      return Rotation2d.fromDegrees(m_navx.getFusedHeading());
+    }
     return Rotation2d.fromDegrees((INVERT_GYRO ? 360.0 : 0) - m_navx.getYaw());
   }
 
@@ -186,8 +182,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_lastWorldAccelX = curWorldAccelX;
     m_lastWorldAccelY = curWorldAccelY;
 
-    if ((Math.abs(curJerkX) > Constants.COLLISION_THRESHOLD_DELTA) ||
-        (Math.abs(curJerkY) > Constants.COLLISION_THRESHOLD_DELTA)) {
+    if ((Math.abs(curJerkX) > COLLISION_THRESHOLD_DELTA) ||
+        (Math.abs(curJerkY) > COLLISION_THRESHOLD_DELTA)) {
       m_didCollide = true;
       m_lastCollisionTime = Timer.getFPGATimestamp() + 5.0;
     } else if (Timer.getFPGATimestamp() > m_lastCollisionTime) {
@@ -248,26 +244,47 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_chassisSpeeds = new ChassisSpeeds(0, 0, 0);
   }
 
+  // This is basic drift correction
+  // I added it as it might be usefull later
+  // Currently not used
+  private static PIDController m_driftCorrectionPID = new PIDController(0.07, 0.00, 0.004);
+  private static double m_desiredHeading;
+  private static double m_prevXY = 0;
+
+  public void getDriftCorrection(ChassisSpeeds speeds) {
+
+    double curXY = Math.abs(speeds.vxMetersPerSecond) + Math.abs(speeds.vyMetersPerSecond);
+
+    if (Math.abs(speeds.omegaRadiansPerSecond) > 0.0 || m_prevXY <= 0)
+      m_desiredHeading = getPose().getRotation().getDegrees();
+
+    else if (curXY > 0)
+      speeds.omegaRadiansPerSecond += m_driftCorrectionPID.calculate(getPose().getRotation().getDegrees(),
+          m_desiredHeading);
+
+    m_prevXY = curXY;
+  }
+
   @Override
   public void periodic() {
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(states, Constants.Motor.MAX_VELOCITY_METERS_PER_SECOND);
+    SwerveDriveKinematics.desaturateWheelSpeeds(states, Motor.MAX_VELOCITY_METERS_PER_SECOND);
     // FIXME: issues with clamping
     m_frontLeftModule.set(
-        states[0].speedMetersPerSecond / Constants.Motor.MAX_VELOCITY_METERS_PER_SECOND
-            * Constants.Motor.MAX_VOLTAGE,
+        states[0].speedMetersPerSecond / Motor.MAX_VELOCITY_METERS_PER_SECOND
+            * Motor.MAX_VOLTAGE,
         states[0].angle.getRadians());
     m_frontRightModule.set(
-        states[1].speedMetersPerSecond / Constants.Motor.MAX_VELOCITY_METERS_PER_SECOND
-            * Constants.Motor.MAX_VOLTAGE,
+        states[1].speedMetersPerSecond / Motor.MAX_VELOCITY_METERS_PER_SECOND
+            * Motor.MAX_VOLTAGE,
         states[1].angle.getRadians());
     m_backLeftModule.set(
-        states[2].speedMetersPerSecond / Constants.Motor.MAX_VELOCITY_METERS_PER_SECOND
-            * Constants.Motor.MAX_VOLTAGE,
+        states[2].speedMetersPerSecond / Motor.MAX_VELOCITY_METERS_PER_SECOND
+            * Motor.MAX_VOLTAGE,
         states[2].angle.getRadians());
     m_backRightModule.set(
-        states[3].speedMetersPerSecond / Constants.Motor.MAX_VELOCITY_METERS_PER_SECOND
-            * Constants.Motor.MAX_VOLTAGE,
+        states[3].speedMetersPerSecond / Motor.MAX_VELOCITY_METERS_PER_SECOND
+            * Motor.MAX_VOLTAGE,
         states[3].angle.getRadians());
     updateOdometry(states);
 

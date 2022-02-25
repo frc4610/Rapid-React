@@ -1,5 +1,7 @@
 package frc.robot.utils;
 
+import java.util.Random;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class MathUtils {
@@ -18,6 +20,8 @@ public class MathUtils {
   static final double PIO2 = 1.5707963267948966135E0;
   static final double nan = (0.0 / 0.0);
   static final double EPSILON = 1e-9;
+  // TODO: Make templated random
+  public static final Random random = new Random();
 
   // If we use it in diffrent places move to a Utils class
   public static double deadband(double value, double deadband) {

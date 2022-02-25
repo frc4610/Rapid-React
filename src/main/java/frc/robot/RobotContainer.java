@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Button;
-import frc.robot.commands.RotateToAngleCommand;
 import frc.robot.commands.AimAtTargetCommand;
 import frc.robot.commands.AutonomousCommand;
 import frc.robot.commands.UserControllerCommand;
@@ -19,27 +18,19 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.UltrasonicSubsystem;
 import frc.robot.subsystems.VisionSubsysten;
-import frc.robot.utils.Limelight;
 import frc.robot.utils.MathUtils;
 import frc.robot.utils.Controller.XboxControllerExtended;
 
-/**
- * This class is where the bulk of the robot should be declared. Since
- * Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in
- * the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of
- * the robot (including
- * subsystems, commands, and button mappings) should be declared here.
- */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
+  // FIXME: Tell the vm to not ignore these unused classes
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final VisionSubsysten m_visionSubsystem = new VisionSubsysten(m_drivetrainSubsystem);
   private final AutonomousSubsystem m_autonomousSubsystem = new AutonomousSubsystem(m_drivetrainSubsystem);
   private final XboxControllerExtended m_controller = new XboxControllerExtended(0);
   private final UltrasonicSubsystem m_ultrasonicSubsystem = new UltrasonicSubsystem();
   private final LEDSubsystem m_ledSubsystem = new LEDSubsystem();
+
+  // TODO: Make into a field telometry class with predicted poses
   public final static Field2d dashboardField = new Field2d();
 
   public RobotContainer() {
@@ -54,16 +45,15 @@ public class RobotContainer {
             * Constants.Motor.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
 
     // Configure the button bindings
-    configureButtonBindings();
-
-    m_visionSubsystem.setLedMode(Limelight.LedMode.ON);
+    configureDriveButtons();
+    configureLEDButtons();
 
     if (!checkRoboRIO()) {
       DriverStation.reportWarning("Robot not properly enabled", false);
     }
   }
 
-  private void configureButtonBindings() {
+  private void configureDriveButtons() {
     // Start clears command and sets to default
     new Button(m_controller::getStartButton)
         .whenPressed(() -> {
@@ -79,14 +69,21 @@ public class RobotContainer {
     new Button(m_controller::getBButton)
         .whileHeld(new AimAtTargetCommand(m_drivetrainSubsystem, m_visionSubsystem));
 
-    new Button(m_controller::getBButton)
-        .whileHeld(
-            new RotateToAngleCommand(m_drivetrainSubsystem,
-                () -> m_ultrasonicSubsystem.getUltrasonicRotation().getRadians()));
-
     new Button(m_controller::getAButton)
         .whileHeld(new AutonomousCommand(m_drivetrainSubsystem, m_autonomousSubsystem));
+  }
 
+  private void configureLEDButtons() {
+    new Button(m_controller::getXButton)
+        .whileHeld(() -> {
+          m_ledSubsystem.setLEDStripColor(MathUtils.random.nextInt(255), MathUtils.random.nextInt(255),
+              MathUtils.random.nextInt(255));
+        });
+    new Button(m_controller::getBButton)
+        .whileHeld(() -> {
+          m_ledSubsystem.setStatusLEDColor(MathUtils.random.nextInt(255), MathUtils.random.nextInt(255),
+              MathUtils.random.nextInt(255), 2);
+        });
   }
 
   /**

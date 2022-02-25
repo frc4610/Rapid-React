@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.Constants.*;
 import frc.robot.utils.ThreadPool;
 import frc.robot.utils.UltrasonicMB1013;
 
@@ -19,8 +19,8 @@ public class UltrasonicSubsystem extends SubsystemBase {
     // Ultrasonic
     m_ultrasonicTab = Shuffleboard.getTab("Ultrasonic");
     // FIXME: Atomic or Mutex lock ultrasonic
-    m_ultrasoncisOne = new UltrasonicMB1013(0);
-    m_ultrasoncisTwo = new UltrasonicMB1013(1);
+    m_ultrasoncisOne = new UltrasonicMB1013(Ids.LEFT_ULTRASONIC);
+    m_ultrasoncisTwo = new UltrasonicMB1013(Ids.RIGHT_ULTRASONIC);
     ThreadPool.threadPool.execute(() -> {
       try {
         while (true) {
@@ -65,7 +65,7 @@ public class UltrasonicSubsystem extends SubsystemBase {
   // atan(Delta/Width)
   public Rotation2d getUltrasonicRotation() {
     return new Rotation2d(Math.atan(m_ultrasoncisOne.getRangeInch() - m_ultrasoncisTwo.getRangeInch() /
-        Constants.Ultrasonic.WIDTH_INCH));
+        Ultrasonic.WIDTH_INCH));
   }
 
   public double getUltrasonicDistance() {
