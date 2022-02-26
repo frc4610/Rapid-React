@@ -4,57 +4,88 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
-import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.AimAtTargetCommand;
+import frc.robot.commands.AutonomousCommand;
+import frc.robot.commands.UserControllerCommand;
+import frc.robot.subsystems.AutonomousSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.UltrasonicSubsystem;
+import frc.robot.subsystems.VisionSubsysten;
+import frc.robot.utils.MathUtils;
+import frc.robot.utils.Controller.XboxControllerExtended;
 
-/**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and button mappings) should be declared here.
- */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
+  // FIXME: Tell the vm to not ignore these unused classes
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
+  private final VisionSubsysten m_visionSubsystem = new VisionSubsysten(m_drivetrainSubsystem);
+  private final AutonomousSubsystem m_autonomousSubsystem = new AutonomousSubsystem(m_drivetrainSubsystem);
+  private final XboxControllerExtended m_controller = new XboxControllerExtended(0);
+  private final UltrasonicSubsystem m_ultrasonicSubsystem = new UltrasonicSubsystem();
+  private final LEDSubsystem m_ledSubsystem = new LEDSubsystem();
 
-  private final XboxController m_controller = new XboxController(0);
+  // TODO: Make into a field telometry class with predicted poses
+  public final static Field2d dashboardField = new Field2d();
 
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
   public RobotContainer() {
-    // Set up the default command for the drivetrain.
-    // The controls are for field-oriented driving:
-    // Left stick Y axis -> forward and backwards movement
-    // Left stick X axis -> left and right movement
-    // Right stick X axis -> rotation
-    m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
-            m_drivetrainSubsystem,
-            () -> -modifyAxis(m_controller.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(m_controller.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(m_controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
-    ));
+    Shuffleboard.getTab(Constants.VERSION);
+    SmartDashboard.putData("Field", dashboardField);
+    m_drivetrainSubsystem.setDefaultCommand(new UserControllerCommand(
+        m_drivetrainSubsystem,
+        () -> -MathUtils.modifyAxis(m_controller.getLeftY(), Constants.Controller.XBOX_DEADBAND)
+            * Constants.Motor.MAX_VELOCITY_METERS_PER_SECOND,
+        () -> -MathUtils.modifyAxis(m_controller.getLeftX(), Constants.Controller.XBOX_DEADBAND)
+            * Constants.Motor.MAX_VELOCITY_METERS_PER_SECOND,
+        () -> -MathUtils.modifyAxis(m_controller.getRightX(), Constants.Controller.XBOX_DEADBAND)
+            * Constants.Motor.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
 
     // Configure the button bindings
-    configureButtonBindings();
+    configureDriveButtons();
+    configureLEDButtons();
+
+    if (!checkRoboRIO()) {
+      DriverStation.reportWarning("Robot not properly enabled", false);
+    }
   }
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
-  private void configureButtonBindings() {
+  private void configureDriveButtons() {
+    // Start clears command and sets to default
+    new Button(m_controller::getStartButton)
+        .whenPressed(() -> {
+          if (!m_drivetrainSubsystem.getCurrentCommand().equals(m_drivetrainSubsystem.getDefaultCommand())) {
+            m_drivetrainSubsystem.getCurrentCommand().end(true);
+          }
+        });
+
     // Back button zeros the gyroscope
     new Button(m_controller::getBackButton)
-            // No requirements because we don't need to interrupt anything
-            .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+        .whenPressed(m_drivetrainSubsystem::zeroGyro);
+
+    new Button(m_controller::getBButton)
+        .whileHeld(new AimAtTargetCommand(m_drivetrainSubsystem, m_visionSubsystem));
+
+    new Button(m_controller::getAButton)
+        .whileHeld(new AutonomousCommand(m_drivetrainSubsystem, m_autonomousSubsystem));
+  }
+
+  private void configureLEDButtons() {
+    new Button(m_controller::getXButton)
+        .whileHeld(() -> {
+          m_ledSubsystem.setLEDStripColor(MathUtils.random.nextInt(255), MathUtils.random.nextInt(255),
+              MathUtils.random.nextInt(255));
+        });
+    new Button(m_controller::getBButton)
+        .whileHeld(() -> {
+          m_ledSubsystem.setStatusLEDColor(MathUtils.random.nextInt(255), MathUtils.random.nextInt(255),
+              MathUtils.random.nextInt(255), 2);
+        });
   }
 
   /**
@@ -63,29 +94,42 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return new InstantCommand();
+    return new AutonomousCommand(m_drivetrainSubsystem, m_autonomousSubsystem);
   }
 
-  private static double deadband(double value, double deadband) {
-    if (Math.abs(value) > deadband) {
-      if (value > 0.0) {
-        return (value - deadband) / (1.0 - deadband);
-      } else {
-        return (value + deadband) / (1.0 - deadband);
-      }
-    } else {
-      return 0.0;
-    }
+  /**
+   * Resets Gyro
+   */
+  public void reset() {
+    m_drivetrainSubsystem.zeroGyro();
+    m_ledSubsystem.setLEDStripColor(255, 0, 0);
   }
 
-  private static double modifyAxis(double value) {
-    // Deadband
-    value = deadband(value, 0.05);
+  /**
+   * returns scalar of 5V bus
+   * 0-1
+   */
+  public static double get5VScalar() {
+    return 5 / RobotController.getVoltage5V();
+  }
 
-    // Square the axis
-    value = Math.copySign(value * value, value);
+  /**
+   * returns clock in ms
+   */
+  public static double getMsClock() {
+    return RobotController.getFPGATime() / 1000.0;
+  }
 
-    return value;
+  /**
+   * returns true if everything is working
+   */
+  public static boolean checkRoboRIO() {
+    if (!RobotController.getEnabled5V())
+      return false;
+    if (!RobotController.getEnabled3V3())
+      return false;
+    if (!RobotController.getEnabled6V())
+      return false;
+    return true;
   }
 }
