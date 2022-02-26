@@ -9,22 +9,16 @@ import com.kauailabs.navx.frc.AHRS;
 import com.swervedrivespecialties.swervelib.Mk3SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
-
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
 
 import static frc.robot.Constants.*;
 
@@ -34,8 +28,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
    * <p>
    * This can be reduced to cap the robot's maximum speed. Typically, this is useful during initial testing of the robot.
    */
-
-
   public static final double MAX_VOLTAGE = 6.0;
   // FIXME Measure the drivetrain's maximum velocity or calculate the theoretical.
   //  The formula for calculating the theoretical maximum velocity is:
@@ -87,13 +79,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
   private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
-  
-  private final SwerveDriveOdometry m_odometer = new SwerveDriveOdometry(m_kinematics, new Rotation2d(0));
-      
   public DrivetrainSubsystem() {
-
-     
     ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
+
     // There are 4 methods you can call to create your swerve modules.
     // The method you use depends on what motors you are using.
     //
@@ -114,9 +102,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // By default we will use Falcon 500s in standard configuration. But if you use a different configuration or motors
     // you MUST change it. If you do not, your code will crash on startup.
     // FIXME Setup motor configuration
- 
-    
-
     m_frontLeftModule = Mk3SwerveModuleHelper.createFalcon500(
             // This parameter is optional, but will allow you to see the current state of the module on the dashboard.
             tab.getLayout("Front Left Module", BuiltInLayouts.kList)
@@ -181,7 +166,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_navx.zeroYaw();
   }
 
-
   public Rotation2d getGyroscopeRotation() {
     // FIXME Remove if you are using a Pigeon
     //return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
@@ -200,20 +184,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_chassisSpeeds = chassisSpeeds;
   }
 
-  public Pose2d getpose(){
-        return m_odometer.getPoseMeters();
-
-  }
-  public void resetOdometry(Pose2d pose){
-        m_odometer.resetPosition(pose, getGyroscopeRotation());
-
-  }
-  public double getHeading(){
-        return Math. IEEEremainder(m_navx.getAngle(), 360);
-
-  }
-
-
   @Override
   public void periodic() {
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
@@ -223,11 +193,5 @@ public class DrivetrainSubsystem extends SubsystemBase {
     m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
     m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
     m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
-
-    m_odometer.update(getGyroscopeRotation(), states);
-
-    SmartDashboard.putNumber("robot Heading", getHeading());
-    SmartDashboard.putString("robot location", getpose().getTranslation().toString());
-
   }
 }
