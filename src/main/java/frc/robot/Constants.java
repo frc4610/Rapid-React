@@ -9,6 +9,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
 public final class Constants {
+  public static final String VERSION = "Version 0.1.2";
 
   public final static class Ids {
     public static final int LED_CANDLE = 9;

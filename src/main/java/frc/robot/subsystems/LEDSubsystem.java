@@ -1,7 +1,12 @@
 package frc.robot.subsystems;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.led.*;
@@ -14,7 +19,6 @@ import frc.robot.Constants.*;
 
 class LED {
   public boolean isEnabled = false;
-  public boolean hasBeenSet = false;
   private int m_r;
   private int m_g;
   private int m_b;
@@ -50,6 +54,11 @@ class LED {
     m_r = r;
     m_g = g;
     m_b = b;
+  }
+
+  // returns bitwise of color //0xFFFFFF
+  public int getColorMask() {
+    return (m_r << 16) + (m_g << 8) + m_b;
   }
 }
 
@@ -109,12 +118,30 @@ public class LEDSubsystem extends SubsystemBase {
     // FIXME: buffer this so we don't send it all at once overloading the CAN bus
     // FIXME: use a sorting alg to group together led colors reducing buffer size
     // We currently send 1632 bytes of updates per periodic
-    for (Pair<Integer, LED> pair : m_ledMap) {
-      if (!pair.getSecond().isEnabled || pair.getSecond().hasBeenSet)
-        continue;
-      m_ledController.setLEDs(pair.getSecond().getRed(), pair.getSecond().getGreen(), pair.getSecond().getBlue(),
-          0, pair.getFirst(), pair.getFirst());
-      pair.getSecond().hasBeenSet = true;
+
+    Map<Integer, List<Pair<Integer, LED>>> groupedColorMap = new HashMap<Integer, List<Pair<Integer, LED>>>();
+
+    // Group colors
+    for (var entry : m_ledMap) {
+      int colorHash = entry.getSecond().getColorMask();
+      List<Pair<Integer, LED>> group = groupedColorMap.get(colorHash);
+      if (group == null) {
+        group = new ArrayList<Pair<Integer, LED>>();
+        groupedColorMap.put(colorHash, group);
+      }
+      group.add(entry);
+    }
+    for (var group : groupedColorMap.entrySet()) {
+      Collections.sort(group.getValue(), new Comparator<Pair<Integer, LED>>() {
+        @Override
+        public int compare(Pair<Integer, LED> lhs, Pair<Integer, LED> rhs) {
+          // -1 - less than, 1 - greater than, 0 - equal, all inversed for descending
+          return lhs.getFirst() > rhs.getFirst() ? -1 : (lhs.getFirst() < rhs.getFirst()) ? 1 : 0;
+        }
+      });
+      // check where idx changes in sort
+
+      // Update Leds if Led Enabled then Set enabled false
     }
     // This method will be called once per scheduler run
     if (getLastError() != ErrorCode.OK) {
