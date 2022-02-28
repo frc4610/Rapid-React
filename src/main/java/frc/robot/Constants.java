@@ -12,8 +12,7 @@ public final class Constants {
   public static final String VERSION = "Version 0.1.2";
 
   public final static class Ids {
-    // public static final int LED_CANDLE = 9;
-    public static final int LED_STRIP = 9;
+    public static final int LED_CANDLE = 9;
     public static final int LEFT_ULTRASONIC = 1;
     public static final int RIGHT_ULTRASONIC = 0;
 
