@@ -1,12 +1,7 @@
 package frc.robot.subsystems;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.led.*;
@@ -115,40 +110,14 @@ public class LEDSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // FIXME: buffer this so we don't send it all at once overloading the CAN bus
-    // FIXME: use a sorting alg to group together led colors reducing buffer size
-    // We currently send 1632 bytes of updates per periodic
-
-    Map<Integer, List<Pair<Integer, LED>>> groupedColorMap = new HashMap<Integer, List<Pair<Integer, LED>>>();
-
-    // Group colors
-    for (var entry : m_ledMap) {
-      int colorHash = entry.getSecond().getColorMask();
-      List<Pair<Integer, LED>> group = groupedColorMap.get(colorHash);
-      if (group == null) {
-        group = new ArrayList<Pair<Integer, LED>>();
-        groupedColorMap.put(colorHash, group);
+    // Phoenix does something similar in there multi animation branch
+    // https://github.com/CrossTheRoadElec/Phoenix-Examples-Languages/blob/c733d1c9d8ed89691fbe8c5c05c4e7bac8fe9efb/Java%20General/CANdle%20MultiAnimation/src/main/java/frc/robot/subsystems/CANdleSystem.java#L221
+    for (Pair<Integer, LED> pair : m_ledMap) {
+      if (pair.getSecond().isEnabled) {
+        m_ledController.setLEDs(pair.getSecond().getRed(), pair.getSecond().getGreen(), pair.getSecond().getBlue(), 0,
+            pair.getFirst(), 1);
+        pair.getSecond().isEnabled = false;
       }
-      group.add(entry);
-    }
-    for (var group : groupedColorMap.entrySet()) {
-      Collections.sort(group.getValue(), new Comparator<Pair<Integer, LED>>() {
-        @Override
-        public int compare(Pair<Integer, LED> lhs, Pair<Integer, LED> rhs) {
-          // -1 - less than, 1 - greater than, 0 - equal, all inversed for descending
-          return lhs.getFirst() > rhs.getFirst() ? -1 : (lhs.getFirst() < rhs.getFirst()) ? 1 : 0;
-        }
-      });
-      // check where idx changes in sort
-
-      // Update Leds if Led Enabled then Set enabled false
-    }
-    // This method will be called once per scheduler run
-    if (getLastError() != ErrorCode.OK) {
-      DriverStation.reportWarning("LEDSubsystem " + getLastError().name(), false);
-    }
-    if (m_faults.hasAnyFault()) {
-      DriverStation.reportWarning("LEDSubsystem fault bitwise " + Long.toString(m_faults.toBitfield()), false);
     }
   }
 }
