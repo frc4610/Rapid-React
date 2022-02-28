@@ -61,6 +61,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
   private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, new Rotation2d(0));
 
+  private final double m_wheelMaxVoltage = 6.0;
+  private double m_wheelVoltage = 6.0;
   private double m_lastWorldAccelX = -1.0, m_lastWorldAccelY = -1.0;
   private boolean m_didCollide = false;
   private double m_lastCollisionTime = 0.0;
@@ -208,6 +210,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
     return m_navx.getRate();
   }
 
+  public double getDriveVoltage() {
+    return m_wheelVoltage;
+  }
+
+  public void limitPower() {
+    m_wheelVoltage = m_wheelMaxVoltage / 2;
+  }
+
   public SwerveDriveKinematics getKinematics() {
     return m_kinematics;
   }
@@ -272,27 +282,32 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // FIXME: issues with clamping
     m_frontLeftModule.set(
         states[0].speedMetersPerSecond / Motor.MAX_VELOCITY_METERS_PER_SECOND
-            * Motor.MAX_VOLTAGE,
+            * m_wheelVoltage,
         states[0].angle.getRadians());
     m_frontRightModule.set(
         states[1].speedMetersPerSecond / Motor.MAX_VELOCITY_METERS_PER_SECOND
-            * Motor.MAX_VOLTAGE,
+            * m_wheelVoltage,
         states[1].angle.getRadians());
     m_backLeftModule.set(
         states[2].speedMetersPerSecond / Motor.MAX_VELOCITY_METERS_PER_SECOND
-            * Motor.MAX_VOLTAGE,
+            * m_wheelVoltage,
         states[2].angle.getRadians());
     m_backRightModule.set(
         states[3].speedMetersPerSecond / Motor.MAX_VELOCITY_METERS_PER_SECOND
-            * Motor.MAX_VOLTAGE,
+            * m_wheelVoltage,
         states[3].angle.getRadians());
     updateOdometry(states);
 
     RobotContainer.dashboardField.setRobotPose(m_odometry.getPoseMeters()); // set field pose
+    m_wheelVoltage = m_wheelMaxVoltage;
   }
 
   @Override
   public void simulationPeriodic() {
     periodic();
+  }
+
+  public SwerveModule[] getSwerveModules() {
+    return new SwerveModule[] { m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule };
   }
 }
