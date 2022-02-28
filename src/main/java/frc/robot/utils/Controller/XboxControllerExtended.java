@@ -1,6 +1,7 @@
 package frc.robot.utils.Controller;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID;
 
 public class XboxControllerExtended extends XboxController {
 
@@ -12,6 +13,14 @@ public class XboxControllerExtended extends XboxController {
     for (DPadButton.Direction dir : DPadButton.Direction.values()) {
       dpadButtons[dir.ordinal()] = new DPadButton(this, dir);
     }
+  }
+
+  public void setLeftVibration(double value) {
+    this.setRumble(GenericHID.RumbleType.kLeftRumble, value);
+  }
+
+  public void setRightVibration(double value) {
+    this.setRumble(GenericHID.RumbleType.kRightRumble, value);
   }
 
   public DPadButton getDPadButton(DPadButton.Direction direction) {

@@ -12,7 +12,8 @@ public final class Constants {
   public static final String VERSION = "Version 0.1.2";
 
   public final static class Ids {
-    public static final int LED_CANDLE = 9;
+    // public static final int LED_CANDLE = 9;
+    public static final int LED_STRIP = 9;
     public static final int LEFT_ULTRASONIC = 1;
     public static final int RIGHT_ULTRASONIC = 0;
 
@@ -50,8 +51,6 @@ public final class Constants {
 
   // Motor Specific
   public final static class Motor {
-    public static final double MAX_VOLTAGE = 6.0;
-
     public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
         SdsModuleConfigurations.MK3_STANDARD.getDriveReduction() *
         SdsModuleConfigurations.MK3_STANDARD.getWheelDiameter() * Math.PI;
@@ -102,4 +101,11 @@ public final class Constants {
   public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(181.40);
   public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(128.76);
   public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(30.05);
+
+  public final static class Field {
+    public static final double FIELD_LENGTH = Units.inchesToMeters(54.0 * 12.0);
+    public static final double FIELD_WIDTH = Units.inchesToMeters(27.0 * 12.0);
+    public static final double HANGAR_LENGTH = Units.inchesToMeters(128.75);
+    public static final double HANGAR_WIDTH = Units.inchesToMeters(116.0);
+  }
 }

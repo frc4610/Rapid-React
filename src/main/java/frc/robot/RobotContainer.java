@@ -11,8 +11,9 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Button;
-import frc.robot.commands.AimAtTargetCommand;
 import frc.robot.commands.AutonomousCommand;
+import frc.robot.commands.PlayMidiCommand;
+import frc.robot.commands.RotateToAngleCommand;
 import frc.robot.commands.UserControllerCommand;
 import frc.robot.subsystems.AutonomousSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -48,7 +49,10 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureDriveButtons();
-    configureLEDButtons();
+    // configureLEDButtons();
+    configureSoundButtons();
+
+    DriverStation.silenceJoystickConnectionWarning(true);
 
     if (!checkRoboRIO()) {
       DriverStation.reportWarning("Robot not properly enabled", false);
@@ -56,23 +60,16 @@ public class RobotContainer {
   }
 
   private void configureDriveButtons() {
-    // Start clears command and sets to default
-    new Button(m_controller::getStartButton)
-        .whenPressed(() -> {
-          if (!m_drivetrainSubsystem.getCurrentCommand().equals(m_drivetrainSubsystem.getDefaultCommand())) {
-            m_drivetrainSubsystem.getCurrentCommand().end(true);
-          }
-        });
-
-    // Back button zeros the gyroscope
-    new Button(m_controller::getBackButton)
-        .whenPressed(m_drivetrainSubsystem::zeroGyro);
-
-    new Button(m_controller::getBButton)
-        .whileHeld(new AimAtTargetCommand(m_drivetrainSubsystem, m_visionSubsystem));
-
     new Button(m_controller::getAButton)
-        .whileHeld(new AutonomousCommand(m_drivetrainSubsystem, m_autonomousSubsystem));
+        .whileHeld(() -> { // As class says don't go nathan mode
+          m_drivetrainSubsystem.limitPower();
+          m_controller.setLeftVibration(0.5);
+          m_controller.setRightVibration(0.5);
+        });
+    new Button(m_controller::getDPadLeft)
+        .whenPressed(new RotateToAngleCommand(m_drivetrainSubsystem, () -> Math.toRadians(-90)));
+    new Button(m_controller::getDPadRight)
+        .whenPressed(new RotateToAngleCommand(m_drivetrainSubsystem, () -> Math.toRadians(90)));
   }
 
   private void configureLEDButtons() {
@@ -81,11 +78,11 @@ public class RobotContainer {
           m_ledSubsystem.setLEDStripColor(MathUtils.random.nextInt(255), MathUtils.random.nextInt(255),
               MathUtils.random.nextInt(255));
         });
+  }
+
+  private void configureSoundButtons() {
     new Button(m_controller::getBButton)
-        .whileHeld(() -> {
-          m_ledSubsystem.setStatusLEDColor(MathUtils.random.nextInt(255), MathUtils.random.nextInt(255),
-              MathUtils.random.nextInt(255), 2);
-        });
+        .whenPressed(new PlayMidiCommand(m_drivetrainSubsystem, "among_us.chrp"));
   }
 
   /**
