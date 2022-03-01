@@ -49,11 +49,6 @@ class LED {
     m_g = g;
     m_b = b;
   }
-
-  // returns bitwise of color //0xFFFFFF
-  public int getColorMask() {
-    return (m_r << 16) + (m_g << 8) + m_b;
-  }
 }
 
 public class LEDSubsystem extends SubsystemBase {
