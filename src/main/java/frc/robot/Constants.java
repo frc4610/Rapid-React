@@ -16,6 +16,8 @@ public final class Constants {
     public static final int LED_CANDLE = 9;
     public static final int LEFT_ULTRASONIC = 1;
     public static final int RIGHT_ULTRASONIC = 0;
+    public static final int PIVOT = 13;
+    public static final int INTAKE = 14;
 
     public static final SwerveConfig FRONT_LEFT = new SwerveConfig(8, 4, 11, -Math.toRadians(149.85));
     public static final SwerveConfig FRONT_RIGHT = new SwerveConfig(1, 5, 9, -Math.toRadians(181.40));

@@ -75,7 +75,7 @@ public class RobotContainer {
   private void configureLEDButtons() {
     new Button(m_controller::getXButton)
         .whileHeld(() -> {
-          m_ledSubsystem.setLEDStripColor(MathUtils.random.nextInt(255), MathUtils.random.nextInt(255),
+          m_ledSubsystem.setAll(MathUtils.random.nextInt(255), MathUtils.random.nextInt(255),
               MathUtils.random.nextInt(255));
         });
   }
@@ -99,7 +99,7 @@ public class RobotContainer {
    */
   public void reset() {
     m_drivetrainSubsystem.zeroGyro();
-    m_ledSubsystem.setLEDStripColor(255, 0, 0);
+    m_ledSubsystem.setAll(255, 0, 0);
   }
 
   /**

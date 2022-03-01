@@ -193,4 +193,18 @@ public class MathUtils {
     }
     return newAngle;
   }
+
+  // Why java have no templates comparable is nasty
+  public static int lerp(int a, int b, double v) {
+    return (int) (a + (b - a) * v);
+  }
+
+  public static float lerp(float a, float b, float v) {
+    return a + (b - a) * v;
+  }
+
+  public static double lerp(double a, double b, double v) {
+    return a + (b - a) * v;
+  }
+
 }
