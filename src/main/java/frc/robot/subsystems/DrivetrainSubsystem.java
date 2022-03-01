@@ -61,6 +61,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
   private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, new Rotation2d(0));
 
+  private final double m_wheelMaxVoltage = 6.0;
+  private double m_wheelVoltage = 6.0;
   private double m_lastWorldAccelX = -1.0, m_lastWorldAccelY = -1.0;
   private boolean m_didCollide = false;
   private double m_lastCollisionTime = 0.0;
@@ -76,15 +78,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
             .withPosition(0, 0),
         // This can either be STANDARD or FAST depending on your gear configuration
         Mk3SwerveModuleHelper.GearRatio.STANDARD,
-        // This is the ID of the drive motor
-        Ids.FRONT_LEFT_MODULE_DRIVE_MOTOR,
-        // This is the ID of the steer motor
-        Ids.FRONT_LEFT_MODULE_STEER_MOTOR,
-        // This is the ID of the steer encoder
-        Ids.FRONT_LEFT_MODULE_STEER_ENCODER,
-        // This is how much the steer encoder is offset from true zero (In our case,
-        // zero is facing straight forward)
-        FRONT_LEFT_MODULE_STEER_OFFSET);
+        Ids.FRONT_LEFT.DRIVE_MOTOR,
+        Ids.FRONT_LEFT.STEER_MOTOR,
+        Ids.FRONT_LEFT.STEER_ENCODER,
+        Ids.FRONT_LEFT.STEER_OFFSET);
 
     // We will do the same for the other modules
     m_frontRightModule = Mk3SwerveModuleHelper.createFalcon500(
@@ -92,30 +89,30 @@ public class DrivetrainSubsystem extends SubsystemBase {
             .withSize(2, 4)
             .withPosition(2, 0),
         Mk3SwerveModuleHelper.GearRatio.STANDARD,
-        Ids.FRONT_RIGHT_MODULE_DRIVE_MOTOR,
-        Ids.FRONT_RIGHT_MODULE_STEER_MOTOR,
-        Ids.FRONT_RIGHT_MODULE_STEER_ENCODER,
-        FRONT_RIGHT_MODULE_STEER_OFFSET);
+        Ids.FRONT_RIGHT.DRIVE_MOTOR,
+        Ids.FRONT_RIGHT.STEER_MOTOR,
+        Ids.FRONT_RIGHT.STEER_ENCODER,
+        Ids.FRONT_RIGHT.STEER_OFFSET);
 
     m_backLeftModule = Mk3SwerveModuleHelper.createFalcon500(
         m_DrivetrainTab.getLayout("Back Left Module", BuiltInLayouts.kList)
             .withSize(2, 4)
             .withPosition(4, 0),
         Mk3SwerveModuleHelper.GearRatio.STANDARD,
-        Ids.BACK_LEFT_MODULE_DRIVE_MOTOR,
-        Ids.BACK_LEFT_MODULE_STEER_MOTOR,
-        Ids.BACK_LEFT_MODULE_STEER_ENCODER,
-        BACK_LEFT_MODULE_STEER_OFFSET);
+        Ids.BACK_LEFT.DRIVE_MOTOR,
+        Ids.BACK_LEFT.STEER_MOTOR,
+        Ids.BACK_LEFT.STEER_ENCODER,
+        Ids.BACK_LEFT.STEER_OFFSET);
 
     m_backRightModule = Mk3SwerveModuleHelper.createFalcon500(
         m_DrivetrainTab.getLayout("Back Right Module", BuiltInLayouts.kList)
             .withSize(2, 4)
             .withPosition(6, 0),
         Mk3SwerveModuleHelper.GearRatio.STANDARD,
-        Ids.BACK_RIGHT_MODULE_DRIVE_MOTOR,
-        Ids.BACK_RIGHT_MODULE_STEER_MOTOR,
-        Ids.BACK_RIGHT_MODULE_STEER_ENCODER,
-        BACK_RIGHT_MODULE_STEER_OFFSET);
+        Ids.BACK_RIGHT.DRIVE_MOTOR,
+        Ids.BACK_RIGHT.STEER_MOTOR,
+        Ids.BACK_RIGHT.STEER_ENCODER,
+        Ids.BACK_RIGHT.STEER_OFFSET);
 
     zeroGyro();
     m_OdometryData = m_DriveDataTab.getLayout("Odometry Data", BuiltInLayouts.kList)
@@ -208,6 +205,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
     return m_navx.getRate();
   }
 
+  public double getDriveVoltage() {
+    return m_wheelVoltage;
+  }
+
+  public void limitPower() {
+    m_wheelVoltage = m_wheelMaxVoltage / 2;
+  }
+
   public SwerveDriveKinematics getKinematics() {
     return m_kinematics;
   }
@@ -272,27 +277,32 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // FIXME: issues with clamping
     m_frontLeftModule.set(
         states[0].speedMetersPerSecond / Motor.MAX_VELOCITY_METERS_PER_SECOND
-            * Motor.MAX_VOLTAGE,
+            * m_wheelVoltage,
         states[0].angle.getRadians());
     m_frontRightModule.set(
         states[1].speedMetersPerSecond / Motor.MAX_VELOCITY_METERS_PER_SECOND
-            * Motor.MAX_VOLTAGE,
+            * m_wheelVoltage,
         states[1].angle.getRadians());
     m_backLeftModule.set(
         states[2].speedMetersPerSecond / Motor.MAX_VELOCITY_METERS_PER_SECOND
-            * Motor.MAX_VOLTAGE,
+            * m_wheelVoltage,
         states[2].angle.getRadians());
     m_backRightModule.set(
         states[3].speedMetersPerSecond / Motor.MAX_VELOCITY_METERS_PER_SECOND
-            * Motor.MAX_VOLTAGE,
+            * m_wheelVoltage,
         states[3].angle.getRadians());
     updateOdometry(states);
 
     RobotContainer.dashboardField.setRobotPose(m_odometry.getPoseMeters()); // set field pose
+    m_wheelVoltage = m_wheelMaxVoltage;
   }
 
   @Override
   public void simulationPeriodic() {
     periodic();
+  }
+
+  public SwerveModule[] getSwerveModules() {
+    return new SwerveModule[] { m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule };
   }
 }

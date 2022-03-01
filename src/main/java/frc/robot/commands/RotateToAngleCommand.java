@@ -26,18 +26,12 @@ public class RotateToAngleCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    double rotation = m_PIDController.calculate(m_targetRadianAngle.getAsDouble(), 0);
+    double rotation = m_PIDController.calculate(m_drivetrainSubsystem.getGyroRotation().getRadians(),
+     m_targetRadianAngle.getAsDouble());
 
     rotation *= Autonomous.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
 
     m_drivetrainSubsystem.drive(0, 0, rotation);
-  }
-
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-
   }
 
   // Returns true when the command should end.
