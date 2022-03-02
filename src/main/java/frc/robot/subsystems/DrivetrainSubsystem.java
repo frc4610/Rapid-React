@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.utils.*;
+import oblog.annotations.Config;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -47,7 +48,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
       new Translation2d(-TRACKWIDTH_METERS / 2.0, -WHEELBASE_METERS / 2.0));
   private static final int MAX_LATENCY_COMPENSATION_MAP_ENTRIES = 25;
 
-  private final AHRS m_navx = new AHRS(SPI.Port.kMXP, (byte) 200); // NavX connected over MXP
+  private final AHRS m_navx;
 
   private final InterpolatingTreeMap<Pose2d> m_lagCompensationMap = InterpolatingTreeMap
       .createBuffer(MAX_LATENCY_COMPENSATION_MAP_ENTRIES);
@@ -61,13 +62,20 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
   private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, new Rotation2d(0));
 
-  private final double m_wheelMaxVoltage = 6.0;
-  private double m_wheelVoltage = 6.0;
+  @Config(name = "Max Voltage", tabName = "Drive Data")
+  private final double m_wheelMaxVoltage = 4.0;
+  private double m_wheelVoltage = 2.0;
+
   private double m_lastWorldAccelX = -1.0, m_lastWorldAccelY = -1.0;
   private boolean m_didCollide = false;
   private double m_lastCollisionTime = 0.0;
 
   public DrivetrainSubsystem() {
+    m_navx = new AHRS(SPI.Port.kMXP, (byte) 200); // NavX connected over MXP
+    if (m_navx.isBoardlevelYawResetEnabled()) {
+      m_navx.enableBoardlevelYawReset(false);
+    }
+
     m_DrivetrainTab = Shuffleboard.getTab("Drivetrain");
     m_DriveDataTab = Shuffleboard.getTab("Drive Data");
     m_frontLeftModule = Mk3SwerveModuleHelper.createFalcon500(
@@ -163,9 +171,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // We have to invert the angle of the NavX so that rotating the robot
     // counter-clockwise makes the angle increase.
 
-    if (ENABLE_MAGNETOMETER && m_navx.isMagnetometerCalibrated()) {
-      return Rotation2d.fromDegrees(m_navx.getFusedHeading());
-    }
+    // if (ENABLE_MAGNETOMETER && m_navx.isMagnetometerCalibrated()) {
+    // return Rotation2d.fromDegrees(m_navx.getFusedHeading());
+    // }
     return Rotation2d.fromDegrees((INVERT_GYRO ? 360.0 : 0) - m_navx.getYaw());
   }
 

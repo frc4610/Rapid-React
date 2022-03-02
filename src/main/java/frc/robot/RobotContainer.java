@@ -12,23 +12,24 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.commands.AutonomousCommand;
-import frc.robot.commands.PlayMidiCommand;
 import frc.robot.commands.RotateToAngleCommand;
 import frc.robot.commands.UserControllerCommand;
 import frc.robot.subsystems.AutonomousSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.UltrasonicSubsystem;
-import frc.robot.subsystems.VisionSubsysten;
 import frc.robot.utils.MathUtils;
 import frc.robot.utils.Controller.XboxControllerExtended;
 
 public class RobotContainer {
   // FIXME: Tell the vm to not ignore these unused classes
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
-  private final VisionSubsysten m_visionSubsystem = new VisionSubsysten(m_drivetrainSubsystem);
-  private final AutonomousSubsystem m_autonomousSubsystem = new AutonomousSubsystem(m_drivetrainSubsystem);
   private final XboxControllerExtended m_controller = new XboxControllerExtended(0);
+  // private final VisionSubsysten m_visionSubsystem =
+  // new VisionSubsysten(m_drivetrainSubsystem);
+  private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem(m_controller);
+  private final AutonomousSubsystem m_autonomousSubsystem = new AutonomousSubsystem(m_drivetrainSubsystem);
   private final UltrasonicSubsystem m_ultrasonicSubsystem = new UltrasonicSubsystem();
   private final LEDSubsystem m_ledSubsystem = new LEDSubsystem();
 
@@ -38,6 +39,7 @@ public class RobotContainer {
   public RobotContainer() {
     Shuffleboard.getTab(Constants.VERSION);
     SmartDashboard.putData("Field", dashboardField);
+
     m_drivetrainSubsystem.setDefaultCommand(new UserControllerCommand(
         m_drivetrainSubsystem,
         () -> -MathUtils.modifyAxis(m_controller.getLeftY(), Constants.Controller.XBOX_DEADBAND)
@@ -49,22 +51,22 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureDriveButtons();
-    // configureLEDButtons();
-    configureSoundButtons();
+    configureLEDButtons();
 
     DriverStation.silenceJoystickConnectionWarning(true);
 
-    if (!checkRoboRIO()) {
-      DriverStation.reportWarning("Robot not properly enabled", false);
-    }
+    m_ledSubsystem.setStatus(() -> checkRoboRIO(), 0);
+    m_ledSubsystem.setStatus(() -> m_intakeSubsystem.isOkay(), 1);
+    m_ledSubsystem.setStatus(() -> m_ultrasonicSubsystem.isOkay(), 2);
+    m_ledSubsystem.setStatus(() -> m_ledSubsystem.isOkay(), 3);
   }
 
   private void configureDriveButtons() {
     new Button(m_controller::getAButton)
         .whileHeld(() -> { // As class says don't go nathan mode
           m_drivetrainSubsystem.limitPower();
-          m_controller.setLeftVibration(0.5);
-          m_controller.setRightVibration(0.5);
+          m_controller.setLeftVibration(0.1);
+          m_controller.setRightVibration(0.1);
         });
     new Button(m_controller::getDPadLeft)
         .whenPressed(new RotateToAngleCommand(m_drivetrainSubsystem, () -> Math.toRadians(-90)));
@@ -75,14 +77,9 @@ public class RobotContainer {
   private void configureLEDButtons() {
     new Button(m_controller::getXButton)
         .whileHeld(() -> {
-          m_ledSubsystem.setLEDStripColor(MathUtils.random.nextInt(255), MathUtils.random.nextInt(255),
+          m_ledSubsystem.setAll(MathUtils.random.nextInt(255), MathUtils.random.nextInt(255),
               MathUtils.random.nextInt(255));
         });
-  }
-
-  private void configureSoundButtons() {
-    new Button(m_controller::getBButton)
-        .whenPressed(new PlayMidiCommand(m_drivetrainSubsystem, "among_us.chrp"));
   }
 
   /**
@@ -99,7 +96,7 @@ public class RobotContainer {
    */
   public void reset() {
     m_drivetrainSubsystem.zeroGyro();
-    m_ledSubsystem.setLEDStripColor(255, 0, 0);
+    m_ledSubsystem.setAll(255, 0, 0);
   }
 
   /**

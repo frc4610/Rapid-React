@@ -62,6 +62,11 @@ public class UltrasonicSubsystem extends SubsystemBase {
         .withSize(1, 1);
   }
 
+  public boolean isOkay() {
+    // FIXME: check if ultrasonic is plugged in
+    return true;
+  }
+
   // atan(Delta/Width)
   public Rotation2d getUltrasonicRotation() {
     return new Rotation2d(Math.atan(m_ultrasoncisOne.getRangeInch() - m_ultrasoncisTwo.getRangeInch() /

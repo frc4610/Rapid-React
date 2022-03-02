@@ -10,12 +10,17 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.utils.SwerveConfig;
 
 public final class Constants {
-  public static final String VERSION = "Version 0.1.3";
+  public static final String VERSION = "Version 0.1.4";
 
   public final static class Ids {
-    public static final int LED_CANDLE = 9;
+    // Analog
     public static final int LEFT_ULTRASONIC = 1;
     public static final int RIGHT_ULTRASONIC = 0;
+
+    // CAN bus
+    public static final int LED_CANDLE = 9;
+    public static final int ARM = 13;
+    public static final int INTAKE = 14;
 
     public static final SwerveConfig FRONT_LEFT = new SwerveConfig(8, 4, 11, -Math.toRadians(149.85));
     public static final SwerveConfig FRONT_RIGHT = new SwerveConfig(1, 5, 9, -Math.toRadians(181.40));
@@ -74,8 +79,19 @@ public final class Constants {
 
   }
 
-  // FIXME: Add Gyro I/O device to handle Pigion, navX, and the other
-  // FIXME: navX firmware config changing causing issues
+  public final static class Arm {
+    public static final double TRAVEL_UP_POWER = 0.4;
+    public static final double TRAVEL_DOWN_POWER = 0.2;
+    public static final double TRAVEL_DIFFRENCE = 0.15;
+    public static final double UP_POSITION = 38000;
+    public static final double DOWN_POSITION = 2000;
+
+  }
+
+  public final static class Intake {
+    public static final double POWER = 0.69;
+  }
+
   public static final boolean ENABLE_MAGNETOMETER = false;
   public static final boolean INVERT_GYRO = true;
   // FIXME: Calculate the threshold manually
