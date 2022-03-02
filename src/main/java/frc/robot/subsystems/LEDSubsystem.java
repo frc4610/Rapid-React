@@ -2,13 +2,13 @@ package frc.robot.subsystems;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.led.*;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.*;
 import frc.robot.utils.MathUtils;
@@ -48,9 +48,12 @@ class LED {
   }
 
   public void setColor(int r, int g, int b) {
-    m_r = r;
-    m_g = g;
-    m_b = b;
+    if (m_r != r || m_g != g || m_b != b) {
+      m_r = r;
+      m_g = g;
+      m_b = b;
+      isEnabled = true;
+    }
   }
 }
 
@@ -62,7 +65,7 @@ class LEDSegment {
     m_offset = offsetIdx;
     m_total = totalCount;
     for (int i = 0; i < totalCount; i++) {
-      m_leds.add(Pair.of(offsetIdx + i, new LED(0, 0, 0)));
+      m_leds.add(Pair.of(offsetIdx + i, new LED()));
     }
   }
 
@@ -102,12 +105,43 @@ class LEDSegment {
   }
 }
 
+class Status {
+  private final BooleanSupplier m_status;
+  private boolean m_oldStatus;
+  private final int m_index;
+
+  Status(final BooleanSupplier status, final int idx) {
+    m_status = status;
+    m_oldStatus = status.getAsBoolean();
+    m_index = idx;
+  }
+
+  boolean checkStatus() {
+    if (m_status.getAsBoolean() != m_oldStatus) {
+      m_oldStatus = m_status.getAsBoolean();
+      return true;
+    }
+    return false;
+  }
+
+  boolean getStatus() {
+    return m_oldStatus;
+  }
+
+  int getIndex() {
+    return m_index;
+  }
+}
+
 public class LEDSubsystem extends SubsystemBase {
   private final CANdle m_ledController;
   private final CANdleConfiguration m_ledControllerConfig;
   private final CANdleFaults m_faults;
 
   private final List<LEDSegment> m_ledSegmentMap = new ArrayList<>();
+  private final List<Status> m_statusList = new ArrayList<>();
+
+  private final LEDSegment m_statusSegment, m_firstSegment, m_secondSegment;
 
   public LEDSubsystem() {
     m_ledController = new CANdle(Ids.LED_CANDLE);
@@ -119,13 +153,18 @@ public class LEDSubsystem extends SubsystemBase {
     m_ledControllerConfig.disableWhenLOS = true; // when losing connection turn off
     m_ledController.configAllSettings(m_ledControllerConfig);
 
-    m_ledSegmentMap.add(new LEDSegment(0, 8));
-    m_ledSegmentMap.add(new LEDSegment(8, 30));
-    m_ledSegmentMap.add(new LEDSegment(30, 30));
+    m_statusSegment = new LEDSegment(0, 8);
+    m_firstSegment = new LEDSegment(8, 30);
+    m_secondSegment = new LEDSegment(30, 30);
+
+    m_ledSegmentMap.add(m_statusSegment);
+    m_ledSegmentMap.add(m_firstSegment);
+    m_ledSegmentMap.add(m_secondSegment);
   }
 
-  public ErrorCode setAnimation(Animation anim) {
-    return m_ledController.animate(anim);
+  public boolean isOkay() {
+    // FIXME: check if CANdle is plugged in
+    return true;
   }
 
   public ErrorCode getLastError() {
@@ -136,17 +175,41 @@ public class LEDSubsystem extends SubsystemBase {
     return m_ledController.getFaults(m_faults);
   }
 
+  public void setStatusDefault() {
+    m_statusSegment.setAll(255, 255, 255);
+  }
+
+  public void setStatus(final int r, final int g, final int b, final int idx) {
+    m_statusSegment.setIndex(r, g, b, idx);
+  }
+
+  public void setStatus(final boolean enabled, final int idx) {
+    if (enabled)
+      m_statusSegment.setIndex(0, 255, 0, idx);
+    else
+      m_statusSegment.setIndex(255, 0, 0, idx);
+  }
+
+  public void setStatus(final BooleanSupplier enabled, final int idx) {
+    m_statusList.add(new Status(enabled, idx));
+  }
+
   public void setAll(int r, int g, int b) {
-    for (LEDSegment segment : m_ledSegmentMap) {
+    for (final LEDSegment segment : m_ledSegmentMap) {
       segment.setAll(r, g, b);
     }
   }
 
   @Override
   public void periodic() {
+    for (final Status status : m_statusList) {
+      if (status.checkStatus()) {
+        setStatus(status.getStatus(), status.getIndex());
+      }
+    }
     // Phoenix does something similar in there multi animation branch
     // https://github.com/CrossTheRoadElec/Phoenix-Examples-Languages/blob/c733d1c9d8ed89691fbe8c5c05c4e7bac8fe9efb/Java%20General/CANdle%20MultiAnimation/src/main/java/frc/robot/subsystems/CANdleSystem.java#L221
-    for (LEDSegment segment : m_ledSegmentMap) {
+    for (final LEDSegment segment : m_ledSegmentMap) {
       segment.updateLEDs(m_ledController);
     }
   }
