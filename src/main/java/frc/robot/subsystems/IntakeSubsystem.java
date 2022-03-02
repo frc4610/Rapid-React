@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
@@ -9,26 +8,28 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.Arm;
 import frc.robot.Constants.Ids;
+import frc.robot.Constants.Intake;
 import frc.robot.utils.Controller.XboxControllerExtended;
 import oblog.annotations.Config;
 
 public class IntakeSubsystem extends SubsystemBase {
 
   private final WPI_TalonFX m_intake = new WPI_TalonFX(Ids.INTAKE);
-  private final WPI_TalonFX m_arm = new WPI_TalonFX(Ids.PIVOT);
+  private final WPI_TalonFX m_arm = new WPI_TalonFX(Ids.ARM);
   private final XboxControllerExtended m_controller;
 
-  // FIXME: Config these values
-  private final double m_armTravelPower = 0.5;
-  private final double m_armTimeUp = 0.85;
-  private final double m_armTimeDown = 0.45;
-  private final double m_armHoldPower = 0.08;
+  private final double m_armTimeUp = 0.7;
+  private final double m_armTimeDown = 0.3;
 
-  @Config
-  private final double m_intakePower = 0.6;
+  // TODO: Add zeroing
+  // 38991 when up
+  // 1555 when down
 
-  private boolean m_armUp = true;
+  // true == up false == down
+  private boolean m_armState = true;
+  private boolean m_verifiedArmState = true;
   private double m_lastBurstTime = 0;
   private ShuffleboardTab m_intakeTab;
 
@@ -36,11 +37,13 @@ public class IntakeSubsystem extends SubsystemBase {
     m_controller = controller;
     m_arm.setInverted(false);
     m_arm.setNeutralMode(NeutralMode.Brake); // Force Motor in brake mode
-    m_arm.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor); // Talon FX encoder
+
+    m_armState = updateArmState();
 
     m_intakeTab = Shuffleboard.getTab("IntakeSubsystem");
-    m_intakeTab.addBoolean("Arm Up", () -> m_armUp);
-    m_intakeTab.addNumber("Arm Encoder", () -> getArmEncoderValue());
+    m_intakeTab.addBoolean("Arm State", () -> m_armState);
+    m_intakeTab.addBoolean("Verified Arm State", () -> m_verifiedArmState);
+    m_intakeTab.addNumber("Arm Selected Position", () -> m_arm.getSelectedSensorPosition());
   }
 
   public boolean isOkay() {
@@ -48,43 +51,57 @@ public class IntakeSubsystem extends SubsystemBase {
     return true;
   }
 
-  public double getArmEncoderValue() {
-    // gets encoder value in degrees
-    return m_arm.getSelectedSensorPosition() * (360 / 4096);
+  public boolean updateArmState() {
+    if (m_arm.getSelectedSensorPosition() > Arm.UP_POSITION) {
+      m_verifiedArmState = true;
+    } else if (m_arm.getSelectedSensorPosition() > Arm.DOWN_POSITION) {
+      m_verifiedArmState = false;
+    }
+    return m_verifiedArmState;
+  }
+
+  public void updateIntake() {
+    if (m_controller.getLeftBumper()) {
+      m_intake.set(ControlMode.PercentOutput, Intake.POWER);
+    } else if (m_controller.getRightBumper()) {
+      m_intake.set(ControlMode.PercentOutput, -Intake.POWER);
+    } else {
+      m_intake.set(ControlMode.PercentOutput, 0);
+    }
+  }
+
+  public void updateArm() {
+    if (m_armState) {
+      if (Timer.getFPGATimestamp() - m_lastBurstTime < m_armTimeUp) {
+        m_arm.set(Arm.TRAVEL_UP_POWER);
+      } else if (m_arm.getSelectedSensorPosition() < Arm.UP_POSITION) {
+        m_arm.set(Arm.TRAVEL_DIFFRENCE);
+      } else {
+        m_arm.set(0);
+      }
+    } else {
+      if (Timer.getFPGATimestamp() - m_lastBurstTime < m_armTimeDown) {
+        m_arm.set(-Arm.TRAVEL_DOWN_POWER);
+      } else if (m_arm.getSelectedSensorPosition() > Arm.DOWN_POSITION) {
+        m_arm.set(-Arm.TRAVEL_DIFFRENCE);
+      } else {
+        m_arm.set(0);
+      }
+    }
+
+    if (m_controller.getRightTriggerAxis() > 0 && !m_armState) {
+      m_lastBurstTime = Timer.getFPGATimestamp();
+      m_armState = true;
+    } else if (m_controller.getLeftTriggerAxis() > 0 && m_armState) {
+      m_lastBurstTime = Timer.getFPGATimestamp();
+      m_armState = false;
+    }
   }
 
   @Override
   public void periodic() {
-    // Intake controls
-    if (m_controller.getLeftBumper()) {
-      m_intake.set(ControlMode.PercentOutput, m_intakePower);
-    } else if (m_controller.getRightBumper()) {
-      m_intake.set(ControlMode.PercentOutput, -m_intakePower);
-    } else {
-      m_intake.set(ControlMode.PercentOutput, 0);
-    }
-
-    // Arm Controls
-    if (m_armUp) {
-      if (Timer.getFPGATimestamp() - m_lastBurstTime < m_armTimeUp) {
-        m_arm.set(m_armTravelPower);
-      } else {
-        m_arm.set(m_armHoldPower);
-      }
-    } else {
-      if (Timer.getFPGATimestamp() - m_lastBurstTime < m_armTimeDown) {
-        m_arm.set(-m_armTravelPower);
-      } else {
-        m_arm.set(ControlMode.PercentOutput, 0);
-      }
-    }
-
-    if (m_controller.getRightTriggerAxis() > 0 && !m_armUp) {
-      m_lastBurstTime = Timer.getFPGATimestamp();
-      m_armUp = true;
-    } else if (m_controller.getLeftTriggerAxis() > 0 && m_armUp) {
-      m_lastBurstTime = Timer.getFPGATimestamp();
-      m_armUp = false;
-    }
+    updateArmState();
+    updateIntake();
+    updateArm();
   }
 }

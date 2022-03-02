@@ -14,8 +14,8 @@
 | BRE | CANCoder | 10 |
 | BLE | CANCoder | 11 |
 | FLE | CANCoder | 12 |
-| pivot | Talon FX | 13 |
-| intake | Talon FX | 14 |
+| ARM | Talon FX | 13 |
+| INTAKE | Talon FX | 14 |
 
 ## Setting up module offsets
 
