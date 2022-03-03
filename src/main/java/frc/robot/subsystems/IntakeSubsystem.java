@@ -12,7 +12,6 @@ import frc.robot.Constants.Arm;
 import frc.robot.Constants.Ids;
 import frc.robot.Constants.Intake;
 import frc.robot.utils.Controller.XboxControllerExtended;
-import oblog.annotations.Config;
 
 public class IntakeSubsystem extends SubsystemBase {
 
