@@ -29,7 +29,7 @@ public final class Constants {
   }
 
   public final static class Ultrasonic {
-    public static final double LENGTH_FROM_SIDE = 13; // inches from front side
+    public static final double LENGTH_FROM_SIDE = 13.0; // inches from front side
     public static final double WIDTH_INCH = 26.95;
     public static final double ANGULAR_THRESHOLD = 5.0;
     public static final double MIN_DISTANCE = 12.0;
@@ -80,16 +80,15 @@ public final class Constants {
   public final static class Arm {
     public static final double TRAVEL_UP_POWER = 0.3;
     public static final double TRAVEL_DOWN_POWER = 0.2;
-    public static final double TRAVEL_DIFFRENCE = 0.1;
+    public static final double TRAVEL_DIFFRENCE = 0.14;
     public static final double ABS_UP_POSITION = 40000; // Range from RNG - MAX
     public static final double UP_POSITION = 37500; // Range from RNG - MAX
     public static final double DOWN_POSITION = 200; // Enough to hold the bot down
-
   }
 
   public final static class Intake {
-    public static final double POWER_OUT = 0.5; // Keep under 70%
-    public static final double POWER_IN = -0.5;
+    public static final double POWER_OUT = -0.5; // Keep under 70%
+    public static final double POWER_IN = 0.3;
   }
 
   public static final boolean ENABLE_MAGNETOMETER = false;
