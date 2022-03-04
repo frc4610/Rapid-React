@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
 import swervelib.SdsModuleConfigurations;
@@ -11,6 +7,7 @@ import frc.robot.utils.SwerveConfig;
 
 public final class Constants {
   public static final String VERSION = "Version 0.1.4";
+  public static final String RIO_IP = "http://172.22.11.2:1250";
 
   public final static class Ids {
     // Analog
@@ -87,7 +84,7 @@ public final class Constants {
   }
 
   public final static class Intake {
-    public static final double POWER_OUT = -0.5; // Keep under 70%
+    public static final double POWER_OUT = 0.2;
     public static final double POWER_IN = 0.3;
   }
 

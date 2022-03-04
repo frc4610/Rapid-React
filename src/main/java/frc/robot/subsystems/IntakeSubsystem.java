@@ -7,12 +7,12 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.*;
+import frc.robot.utils.BaseSubsystem;
 import frc.robot.utils.MathUtils;
 import frc.robot.utils.Controller.XboxControllerExtended;
 
-public class IntakeSubsystem extends SubsystemBase {
+public class IntakeSubsystem extends BaseSubsystem {
 
   private final WPI_TalonFX m_intake = new WPI_TalonFX(Ids.INTAKE);
   private final WPI_TalonFX m_arm = new WPI_TalonFX(Ids.ARM);
@@ -43,8 +43,8 @@ public class IntakeSubsystem extends SubsystemBase {
     m_intakeTab.addNumber("Arm Selected Position", () -> m_arm.getSelectedSensorPosition());
   }
 
+  @Override
   public boolean isOkay() {
-
     return true;
   }
 
@@ -61,7 +61,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public void updateIntake() {
     if (m_controller.getLeftTriggerAxis() > 0) {
       m_intake.set(ControlMode.PercentOutput,
-          MathUtils.clamp(m_controller.getLeftTriggerAxis(), 0.0,
+          -MathUtils.clamp(m_controller.getLeftTriggerAxis(), 0.0,
               Intake.POWER_OUT));
     } else if (!m_verifiedArmState && m_controller.getRightTriggerAxis() > 0) {
       m_intake.set(ControlMode.PercentOutput, Intake.POWER_IN);

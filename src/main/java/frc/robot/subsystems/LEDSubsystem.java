@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.led.*;
@@ -105,41 +104,10 @@ class LEDSegment {
   }
 }
 
-class Status {
-  private final BooleanSupplier m_status;
-  private boolean m_oldStatus;
-  private final int m_index;
-
-  Status(final BooleanSupplier status, final int idx) {
-    m_status = status;
-    m_oldStatus = status.getAsBoolean();
-    m_index = idx;
-  }
-
-  boolean checkStatus() {
-    if (m_status.getAsBoolean() != m_oldStatus) {
-      m_oldStatus = m_status.getAsBoolean();
-      return true;
-    }
-    return false;
-  }
-
-  boolean getStatus() {
-    return m_oldStatus;
-  }
-
-  int getIndex() {
-    return m_index;
-  }
-}
-
 public class LEDSubsystem extends SubsystemBase {
   private final CANdle m_ledController;
   private final CANdleConfiguration m_ledControllerConfig;
   private final CANdleFaults m_faults;
-
-  private final List<Status> m_statusList = new ArrayList<>();
-
   private final LEDSegment m_statusSegment, m_firstSegment, m_secondSegment;
 
   public LEDSubsystem() {
@@ -155,11 +123,6 @@ public class LEDSubsystem extends SubsystemBase {
     m_statusSegment = new LEDSegment(0, 8);
     m_firstSegment = new LEDSegment(8, 30);
     m_secondSegment = new LEDSegment(30, 30);
-  }
-
-  public boolean isOkay() {
-    // FIXME: check if CANdle is plugged in
-    return true;
   }
 
   public ErrorCode getLastError() {
@@ -185,10 +148,6 @@ public class LEDSubsystem extends SubsystemBase {
       m_statusSegment.setIndex(255, 0, 0, idx);
   }
 
-  public void setStatus(final BooleanSupplier enabled, final int idx) {
-    m_statusList.add(new Status(enabled, idx));
-  }
-
   public void setAll(int r, int g, int b) {
     m_firstSegment.setAll(r, g, b);
     m_secondSegment.setAll(r, g, b);
@@ -212,13 +171,10 @@ public class LEDSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    for (final Status status : m_statusList) {
-      if (status.checkStatus()) {
-        setStatus(status.getStatus(), status.getIndex());
-      }
-    }
+
     // Phoenix does something similar in there multi animation branch
     // https://github.com/CrossTheRoadElec/Phoenix-Examples-Languages/blob/c733d1c9d8ed89691fbe8c5c05c4e7bac8fe9efb/Java%20General/CANdle%20MultiAnimation/src/main/java/frc/robot/subsystems/CANdleSystem.java#L221
+    m_statusSegment.setAll(200, 200, 200);
     m_firstSegment.updateLEDs(m_ledController);
     m_secondSegment.updateLEDs(m_ledController);
     m_statusSegment.updateLEDs(m_ledController);

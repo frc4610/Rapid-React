@@ -4,6 +4,12 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -19,16 +25,19 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.UltrasonicSubsystem;
 import frc.robot.utils.MathUtils;
+import frc.robot.utils.CAN.CANDevice;
 import frc.robot.utils.Controller.XboxControllerExtended;
+import frc.robot.utils.json.JsonReader;
 
 public class RobotContainer {
   // @SuppressWarnings("unused") // to remove warnings
-  private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
-  private final XboxControllerExtended m_controller = new XboxControllerExtended(0);
-  private final LEDSubsystem m_ledSubsystem = new LEDSubsystem();
-  private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem(m_controller);
-  private final AutonomousSubsystem m_autonomousSubsystem = new AutonomousSubsystem(m_drivetrainSubsystem);
-  private final UltrasonicSubsystem m_ultrasonicSubsystem = new UltrasonicSubsystem(m_ledSubsystem);
+  private final static DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
+  private final static XboxControllerExtended m_controller = new XboxControllerExtended(0);
+  private final static LEDSubsystem m_ledSubsystem = new LEDSubsystem();
+  private final static IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem(m_controller);
+  private final static AutonomousSubsystem m_autonomousSubsystem = new AutonomousSubsystem(m_drivetrainSubsystem);
+  private final static UltrasonicSubsystem m_ultrasonicSubsystem = new UltrasonicSubsystem(m_ledSubsystem);
+  private static List<CANDevice> m_canDevices = new ArrayList();
 
   public final static Field2d dashboardField = new Field2d();
 
@@ -50,11 +59,6 @@ public class RobotContainer {
     configureLEDButtons();
 
     DriverStation.silenceJoystickConnectionWarning(true);
-
-    m_ledSubsystem.setStatus(() -> checkRoboRIO(), 0);
-    m_ledSubsystem.setStatus(() -> m_intakeSubsystem.isOkay(), 1);
-    m_ledSubsystem.setStatus(() -> m_ultrasonicSubsystem.isOkay(), 2);
-    m_ledSubsystem.setStatus(() -> m_ledSubsystem.isOkay(), 3);
   }
 
   private void configureDriveButtons() {
@@ -78,6 +82,26 @@ public class RobotContainer {
         });
   }
 
+  public void updateSubsystemStatus() {
+    m_ledSubsystem.setStatus(checkRoboRIO(), 0);
+    m_ledSubsystem.setStatus(!m_canDevices.isEmpty(), 1);
+    m_intakeSubsystem.onLEDCallback(2);
+    m_ultrasonicSubsystem.onLEDCallback(3);
+  }
+
+  public void requestCANBusData() {
+    JSONObject canBusData = JsonReader.getJsonDataFromURL(Constants.RIO_IP + "/?action=getdevices");
+    if (canBusData.isEmpty())
+      return;
+    JSONArray deviceArray = (JSONArray) canBusData.get("DeviceArray");
+    if (deviceArray.isEmpty())
+      return;
+
+    for (Object elem : deviceArray) {
+      m_canDevices.add(new CANDevice((JSONObject) elem));
+    }
+  }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -85,6 +109,10 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return new AutonomousCommand(m_drivetrainSubsystem, m_autonomousSubsystem);
+  }
+
+  public static LEDSubsystem getLEDSubsystem() {
+    return m_ledSubsystem;
   }
 
   /**

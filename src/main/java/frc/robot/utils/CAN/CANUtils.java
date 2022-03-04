@@ -1,4 +1,4 @@
-package frc.robot.utils;
+package frc.robot.utils.CAN;
 
 // 29 bit system
 // Device: 6

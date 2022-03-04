@@ -5,13 +5,13 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.*;
+import frc.robot.utils.BaseSubsystem;
 import frc.robot.utils.MathUtils;
 import frc.robot.utils.ThreadPool;
 import frc.robot.utils.UltrasonicMB1013;
 
-public class UltrasonicSubsystem extends SubsystemBase {
+public class UltrasonicSubsystem extends BaseSubsystem {
   private final ShuffleboardTab m_ultrasonicTab;
   private final ShuffleboardLayout m_ultrasonicLayout;
   private final UltrasonicMB1013 m_ultrasonicLeft, m_ultrasonicRight;
@@ -25,20 +25,11 @@ public class UltrasonicSubsystem extends SubsystemBase {
     ThreadPool.threadPool.execute(() -> {
       try {
         while (true) {
-          // synchronized should fix deadlocking if it happens
-          synchronized (m_ultrasonicLeft) {
-            m_ultrasonicLeft.setStatus(false);
-          }
-          synchronized (m_ultrasonicRight) {
-            m_ultrasonicRight.setStatus(true);
-          }
+          m_ultrasonicLeft.setStatus(false);
+          m_ultrasonicRight.setStatus(true);
           Thread.sleep(Double.doubleToLongBits(UltrasonicMB1013.refreshRate));
-          synchronized (m_ultrasonicLeft) {
-            m_ultrasonicLeft.setStatus(true);
-          }
-          synchronized (m_ultrasonicRight) {
-            m_ultrasonicRight.setStatus(false);
-          }
+          m_ultrasonicLeft.setStatus(true);
+          m_ultrasonicRight.setStatus(false);
           Thread.sleep(Double.doubleToLongBits(UltrasonicMB1013.refreshRate));
         }
       } catch (InterruptedException e) {
@@ -63,15 +54,15 @@ public class UltrasonicSubsystem extends SubsystemBase {
         .withSize(1, 1);
   }
 
+  @Override
   public boolean isOkay() {
-    // FIXME: check if ultrasonic is plugged in
     return true;
   }
 
   // atan(Delta/Width)
   public Rotation2d getUltrasonicRotation() {
-    return new Rotation2d(Math.atan(m_ultrasonicLeft.getRangeInch() - m_ultrasonicRight.getRangeInch() /
-        Ultrasonic.WIDTH_INCH));
+    return new Rotation2d(
+        Math.atan2(m_ultrasonicLeft.getRangeInch() - m_ultrasonicRight.getRangeInch(), Ultrasonic.WIDTH_INCH));
   }
 
   public double getUltrasonicDistance() {

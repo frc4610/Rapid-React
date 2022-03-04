@@ -15,11 +15,11 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.*;
+import frc.robot.utils.BaseSubsystem;
 
-public class AutonomousSubsystem extends SubsystemBase {
+public class AutonomousSubsystem extends BaseSubsystem {
 
   private final SendableChooser<Trajectory> m_autoChooser = new SendableChooser<Trajectory>();
   private TrajectoryConfig m_config;
