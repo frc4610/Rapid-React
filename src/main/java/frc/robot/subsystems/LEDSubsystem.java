@@ -138,7 +138,6 @@ public class LEDSubsystem extends SubsystemBase {
   private final CANdleConfiguration m_ledControllerConfig;
   private final CANdleFaults m_faults;
 
-  private final List<LEDSegment> m_ledSegmentMap = new ArrayList<>();
   private final List<Status> m_statusList = new ArrayList<>();
 
   private final LEDSegment m_statusSegment, m_firstSegment, m_secondSegment;
@@ -156,10 +155,6 @@ public class LEDSubsystem extends SubsystemBase {
     m_statusSegment = new LEDSegment(0, 8);
     m_firstSegment = new LEDSegment(8, 30);
     m_secondSegment = new LEDSegment(30, 30);
-
-    m_ledSegmentMap.add(m_statusSegment);
-    m_ledSegmentMap.add(m_firstSegment);
-    m_ledSegmentMap.add(m_secondSegment);
   }
 
   public boolean isOkay() {
@@ -195,9 +190,24 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   public void setAll(int r, int g, int b) {
-    for (final LEDSegment segment : m_ledSegmentMap) {
-      segment.setAll(r, g, b);
-    }
+    m_firstSegment.setAll(r, g, b);
+    m_secondSegment.setAll(r, g, b);
+  }
+
+  public void setLeftColor(int r, int g, int b) {
+    m_firstSegment.setAll(r, g, b);
+  }
+
+  public void setRightColor(int r, int g, int b) {
+    m_secondSegment.setAll(r, g, b);
+  }
+
+  public void setLeftColorLerped(int r, int g, int b, double t) {
+    m_firstSegment.setPercent(r, g, b, t);
+  }
+
+  public void setRightColorLerped(int r, int g, int b, double t) {
+    m_secondSegment.setPercent(r, g, b, t);
   }
 
   @Override
@@ -209,8 +219,8 @@ public class LEDSubsystem extends SubsystemBase {
     }
     // Phoenix does something similar in there multi animation branch
     // https://github.com/CrossTheRoadElec/Phoenix-Examples-Languages/blob/c733d1c9d8ed89691fbe8c5c05c4e7bac8fe9efb/Java%20General/CANdle%20MultiAnimation/src/main/java/frc/robot/subsystems/CANdleSystem.java#L221
-    for (final LEDSegment segment : m_ledSegmentMap) {
-      segment.updateLEDs(m_ledController);
-    }
+    m_firstSegment.updateLEDs(m_ledController);
+    m_secondSegment.updateLEDs(m_ledController);
+    m_statusSegment.updateLEDs(m_ledController);
   }
 }

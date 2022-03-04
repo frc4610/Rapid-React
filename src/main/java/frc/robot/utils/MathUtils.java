@@ -207,4 +207,9 @@ public class MathUtils {
     return a + (b - a) * v;
   }
 
+  public static <T extends Comparable<T>> Boolean withinRange(T val, T min, T max) {
+    if (val.compareTo(min) < 0 || val.compareTo(max) > 0)
+      return false;
+    return true;
+  }
 }

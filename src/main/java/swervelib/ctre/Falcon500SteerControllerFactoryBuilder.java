@@ -208,6 +208,7 @@ public final class Falcon500SteerControllerFactoryBuilder {
             double currentAngleRadians = motor.getSelectedSensorPosition() * motorEncoderPositionCoefficient;
 
             // FIXME: causes issues in swerve wheels resetting and returning to zero
+            // TODO: change motors encoders to not reset to zero
 
             // Reset the NEO's encoder periodically when the module is not rotating.
             // Sometimes (~5% of the time) when we initialize, the absolute encoder isn't

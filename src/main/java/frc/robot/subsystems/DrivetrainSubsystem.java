@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.utils.*;
-import oblog.annotations.Config;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -62,7 +61,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
   private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
   private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, new Rotation2d(0));
 
-  @Config(name = "Max Voltage", tabName = "Drive Data")
   private final double m_wheelMaxVoltage = 4.0;
   private double m_wheelVoltage = 2.0;
 
@@ -282,7 +280,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
   public void periodic() {
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(states, Motor.MAX_VELOCITY_METERS_PER_SECOND);
-    // FIXME: issues with clamping
     m_frontLeftModule.set(
         states[0].speedMetersPerSecond / Motor.MAX_VELOCITY_METERS_PER_SECOND
             * m_wheelVoltage,

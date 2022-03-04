@@ -18,9 +18,9 @@ public final class Constants {
     public static final int RIGHT_ULTRASONIC = 0;
 
     // CAN bus
-    public static final int LED_CANDLE = 9;
     public static final int ARM = 13;
     public static final int INTAKE = 14;
+    public static final int LED_CANDLE = 15;
 
     public static final SwerveConfig FRONT_LEFT = new SwerveConfig(8, 4, 11, -Math.toRadians(149.85));
     public static final SwerveConfig FRONT_RIGHT = new SwerveConfig(1, 5, 9, -Math.toRadians(181.40));
@@ -28,15 +28,13 @@ public final class Constants {
     public static final SwerveConfig BACK_RIGHT = new SwerveConfig(2, 6, 10, -Math.toRadians(30.05));
   }
 
-  public final static class Limelight {
-    public static final double TARGET_HEIGHT = 36.0;
-    public static final double LIMELIGHT_HEIGHT = 9;
-    public static final double LIMELIGHT_ANGLE = Math.toRadians(45.0);
-    public static final double TARGET_ALLOWABLE_ERROR = Math.toRadians(2.0);
-  }
-
   public final static class Ultrasonic {
+    public static final double LENGTH_FROM_SIDE = 13; // inches from front side
     public static final double WIDTH_INCH = 26.95;
+    public static final double ANGULAR_THRESHOLD = 5.0;
+    public static final double MIN_DISTANCE = 12.0;
+    public static final double MAX_DISTANCE = 18.0;
+    public static final double LED_START_RANGE = 50.0;
   }
 
   public final static class Controller {
@@ -80,21 +78,24 @@ public final class Constants {
   }
 
   public final static class Arm {
-    public static final double TRAVEL_UP_POWER = 0.4;
+    public static final double TRAVEL_UP_POWER = 0.3;
     public static final double TRAVEL_DOWN_POWER = 0.2;
-    public static final double TRAVEL_DIFFRENCE = 0.15;
-    public static final double UP_POSITION = 38000;
-    public static final double DOWN_POSITION = 2000;
+    public static final double TRAVEL_DIFFRENCE = 0.1;
+    public static final double ABS_UP_POSITION = 40000; // Range from RNG - MAX
+    public static final double UP_POSITION = 37500; // Range from RNG - MAX
+    public static final double DOWN_POSITION = 200; // Enough to hold the bot down
 
   }
 
   public final static class Intake {
-    public static final double POWER = 0.69;
+    public static final double POWER_OUT = 0.5; // Keep under 70%
+    public static final double POWER_IN = -0.5;
   }
 
   public static final boolean ENABLE_MAGNETOMETER = false;
   public static final boolean INVERT_GYRO = true;
-  // FIXME: Calculate the threshold manually
+
+  // Not used currently
   public static final double COLLISION_THRESHOLD_DELTA = 0.5;
 
   // The left-to-right distance between the drivetrain wheels

@@ -1,3 +1,5 @@
+# README.MD
+
 ## CAN Bus Ids
 
 | Name | CAN Device | Id |
@@ -16,6 +18,13 @@
 | FLE | CANCoder | 12 |
 | ARM | Talon FX | 13 |
 | INTAKE | Talon FX | 14 |
+| CANdle | CANdle | 15 |
+
+## Firmware Version
+
+naxX2-MXP (Gen2)->Firmware Version(4.0.442)
+
+## Robot Checklist
 
 ## Setting up module offsets
 

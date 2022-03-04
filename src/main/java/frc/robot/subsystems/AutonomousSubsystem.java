@@ -1,10 +1,10 @@
 package frc.robot.subsystems;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+
+import com.pathplanner.lib.PathPlanner;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -12,14 +12,12 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.math.trajectory.TrajectoryUtil;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.*;
 
 public class AutonomousSubsystem extends SubsystemBase {
 
@@ -28,26 +26,30 @@ public class AutonomousSubsystem extends SubsystemBase {
 
   public AutonomousSubsystem(DrivetrainSubsystem driveSubsystem) {
     m_config = new TrajectoryConfig(
-        Constants.Autonomous.MAX_VELOCITY_METERS_PER_SECOND,
-        Constants.Autonomous.MAX_ACCELERATION_METERS_PER_SECOND)
-            .setKinematics(driveSubsystem.getKinematics());
+        Autonomous.MAX_VELOCITY_METERS_PER_SECOND,
+        Autonomous.MAX_ACCELERATION_METERS_PER_SECOND)
+        .setKinematics(driveSubsystem.getKinematics());
 
-    // FIXME: Use string builder
-    // UNSURE: If forward slashes work
-    final String trajectoryPathName = "Paths\\"; // Grrr String literals
-    // FIXME: thread this or parallelprocess this
-    try {
-      File directory = Filesystem.getDeployDirectory();
-      for (final String trajectoryJSON : directory.list()) {
-        if (!trajectoryJSON.contains(".json") || trajectoryJSON.isEmpty() || trajectoryJSON.isBlank())
-          continue;
-        Path trajectoryPath = directory.toPath().resolve(trajectoryPathName + trajectoryJSON);
-        m_autoChooser.addOption(trajectoryJSON.toLowerCase(), TrajectoryUtil.fromPathweaverJson(trajectoryPath));
+    File pathplannerDir = null;
+    File[] deployDir = Filesystem.getDeployDirectory().listFiles();
+    for (File file : deployDir) {
+      if (!file.isDirectory())
+        continue;
+      if (file.getName().contains("pathplanner")) {
+        pathplannerDir = file;
       }
-    } catch (IOException ex) {
-      DriverStation.reportError("Unable to load trajectorys: ", ex.getStackTrace());
     }
+    for (File file : pathplannerDir.listFiles()) {
+      if (!file.isFile())
+        continue;
+      int pathSuffixIndex = file.getName().indexOf(".path");
+      loadPathPlanner(file.getName().substring(0, pathSuffixIndex));
+    }
+    loadInternalTrajectories();
+    SmartDashboard.putData("Auto Selector", m_autoChooser);
+  }
 
+  public void loadInternalTrajectories() {
     m_autoChooser.addOption("S Curve", TrajectoryGenerator.generateTrajectory(
         // Start at the origin facing the +X direction
         new Pose2d(0, 0, new Rotation2d(0)),
@@ -63,11 +65,13 @@ public class AutonomousSubsystem extends SubsystemBase {
         new Pose2d(2, 0, new Rotation2d(0)),
         m_config);
 
-    // FIXME: Trajectory's added by default seems to break
     m_autoChooser.addOption("2 X", defaultTrajectory);
     m_autoChooser.setDefaultOption("2 X", defaultTrajectory);
+  }
 
-    SmartDashboard.putData("Auto Selector", m_autoChooser);
+  public void loadPathPlanner(String name) {
+    m_autoChooser.addOption(name, PathPlanner.loadPath(name, Autonomous.MAX_VELOCITY_METERS_PER_SECOND,
+        Autonomous.MAX_ACCELERATION_METERS_PER_SECOND));
   }
 
   public Optional<Trajectory> getTrajectory() {

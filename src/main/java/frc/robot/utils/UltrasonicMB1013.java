@@ -3,6 +3,7 @@ package frc.robot.utils;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.*;
 
 // https://www.maxbotix.com/firstrobotics
 
@@ -30,7 +31,11 @@ public class UltrasonicMB1013 {
   }
 
   public double getRangeInch() {
-    return MathUtils.clamp(getRawRange() * 0.0492, 12.0, 190.0);
+    return MathUtils.clamp(getRawRange() * 0.0492 - Ultrasonic.LENGTH_FROM_SIDE, 12.0, 190.0);
+  }
+
+  public boolean isWithinRange() {
+    return MathUtils.withinRange(getRawRange() * 0.0492, 12.0, 190.0);
   }
 
   public double getLastMsUpdateTime() {

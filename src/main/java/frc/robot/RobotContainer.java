@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.commands.AutonomousCommand;
-import frc.robot.commands.RotateToAngleCommand;
 import frc.robot.commands.UserControllerCommand;
 import frc.robot.subsystems.AutonomousSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -23,17 +22,14 @@ import frc.robot.utils.MathUtils;
 import frc.robot.utils.Controller.XboxControllerExtended;
 
 public class RobotContainer {
-  // FIXME: Tell the vm to not ignore these unused classes
+  // @SuppressWarnings("unused") // to remove warnings
   private final DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final XboxControllerExtended m_controller = new XboxControllerExtended(0);
-  // private final VisionSubsysten m_visionSubsystem =
-  // new VisionSubsysten(m_drivetrainSubsystem);
+  private final LEDSubsystem m_ledSubsystem = new LEDSubsystem();
   private final IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem(m_controller);
   private final AutonomousSubsystem m_autonomousSubsystem = new AutonomousSubsystem(m_drivetrainSubsystem);
-  private final UltrasonicSubsystem m_ultrasonicSubsystem = new UltrasonicSubsystem();
-  private final LEDSubsystem m_ledSubsystem = new LEDSubsystem();
+  private final UltrasonicSubsystem m_ultrasonicSubsystem = new UltrasonicSubsystem(m_ledSubsystem);
 
-  // TODO: Make into a field telometry class with predicted poses
   public final static Field2d dashboardField = new Field2d();
 
   public RobotContainer() {
@@ -62,16 +58,16 @@ public class RobotContainer {
   }
 
   private void configureDriveButtons() {
+    new Button(m_controller::getBackButton)
+        .whenPressed(() -> {
+          reset();
+        });
     new Button(m_controller::getAButton)
         .whileHeld(() -> { // As class says don't go nathan mode
           m_drivetrainSubsystem.limitPower();
           m_controller.setLeftVibration(0.1);
           m_controller.setRightVibration(0.1);
         });
-    new Button(m_controller::getDPadLeft)
-        .whenPressed(new RotateToAngleCommand(m_drivetrainSubsystem, () -> Math.toRadians(-90)));
-    new Button(m_controller::getDPadRight)
-        .whenPressed(new RotateToAngleCommand(m_drivetrainSubsystem, () -> Math.toRadians(90)));
   }
 
   private void configureLEDButtons() {
@@ -96,7 +92,7 @@ public class RobotContainer {
    */
   public void reset() {
     m_drivetrainSubsystem.zeroGyro();
-    m_ledSubsystem.setAll(255, 0, 0);
+    m_ledSubsystem.setAll(255, 255, 255);
   }
 
   /**
