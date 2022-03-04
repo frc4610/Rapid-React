@@ -23,8 +23,20 @@
 ## Firmware Version
 
 naxX2-MXP (Gen2)->Firmware Version(4.0.442)
+## Robot controls
+1. LeftTrigger - Launches the balls from the intake when in firing position
+2. RightTrigger - moves the arm beetween upper position and lower position
+3. B-button - bypasses the ultrasonic allignment to fire balls
+4. A-button - cuts power to drivetrain down to 50%
+5. MenuButton - resets the field orientation 
+6. D-Pad - rotates the bot in 90 degree increments
+7. RightBumper - drives robot forward at climb speed
+8. LeftBumper - drives backward straight
+
+
 
 ## Robot Checklist
+
 
 ## Setting up module offsets
 
