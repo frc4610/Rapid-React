@@ -37,7 +37,7 @@ public class RobotContainer {
   private final static IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem(m_controller);
   private final static AutonomousSubsystem m_autonomousSubsystem = new AutonomousSubsystem(m_drivetrainSubsystem);
   private final static UltrasonicSubsystem m_ultrasonicSubsystem = new UltrasonicSubsystem(m_ledSubsystem);
-  private static List<CANDevice> m_canDevices = new ArrayList();
+  private static List<CANDevice> m_canDevices = new ArrayList<CANDevice>();
 
   public final static Field2d dashboardField = new Field2d();
 
@@ -56,9 +56,11 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureDriveButtons();
-    configureLEDButtons();
+    // configureLEDButtons();
 
     DriverStation.silenceJoystickConnectionWarning(true);
+
+    requestCANBusData();
   }
 
   private void configureDriveButtons() {
@@ -82,14 +84,15 @@ public class RobotContainer {
         });
   }
 
-  public void updateSubsystemStatus() {
+  public static void updateSubsystemStatus() {
     m_ledSubsystem.setStatus(checkRoboRIO(), 0);
     m_ledSubsystem.setStatus(!m_canDevices.isEmpty(), 1);
-    m_intakeSubsystem.onLEDCallback(2);
-    m_ultrasonicSubsystem.onLEDCallback(3);
+    m_ultrasonicSubsystem.onLEDCallback(2);
+    m_intakeSubsystem.onLEDCallback(3);
+    m_ledSubsystem.setStatus(m_intakeSubsystem.getArmState() == m_intakeSubsystem.getVerifiedArmState(), 4);
   }
 
-  public void requestCANBusData() {
+  public static void requestCANBusData() {
     JSONObject canBusData = JsonReader.getJsonDataFromURL(Constants.RIO_IP + "/?action=getdevices");
     if (canBusData.isEmpty())
       return;

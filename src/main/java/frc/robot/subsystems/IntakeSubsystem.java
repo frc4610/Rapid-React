@@ -48,6 +48,14 @@ public class IntakeSubsystem extends BaseSubsystem {
     return true;
   }
 
+  public boolean getArmState() {
+    return m_armState;
+  }
+
+  public boolean getVerifiedArmState() {
+    return m_verifiedArmState;
+  }
+
   public boolean updateArmState() {
     if (m_arm.getSelectedSensorPosition() > Arm.UP_POSITION) {
       m_verifiedArmState = true;

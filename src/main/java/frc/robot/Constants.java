@@ -26,9 +26,9 @@ public final class Constants {
   }
 
   public final static class Ultrasonic {
-    public static final double LENGTH_FROM_SIDE = 13.0; // inches from front side
-    public static final double WIDTH_INCH = 26.95;
-    public static final double ANGULAR_THRESHOLD = 5.0;
+    public static final double LENGTH_FROM_SIDE = 11.0; // inches from front side
+    public static final double WIDTH_INCH = 25.15;
+    public static final double ANGULAR_THRESHOLD = 10.0;
     public static final double MIN_DISTANCE = 12.0;
     public static final double MAX_DISTANCE = 18.0;
     public static final double LED_START_RANGE = 50.0;
@@ -84,8 +84,8 @@ public final class Constants {
   }
 
   public final static class Intake {
-    public static final double POWER_OUT = 0.2;
-    public static final double POWER_IN = 0.3;
+    public static final double POWER_OUT = 0.6;
+    public static final double POWER_IN = 0.45;
   }
 
   public static final boolean ENABLE_MAGNETOMETER = false;
