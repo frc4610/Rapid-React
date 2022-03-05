@@ -82,6 +82,7 @@ public class RobotContainer {
     m_ultrasonicSubsystem.onLEDCallback(2);
     m_intakeSubsystem.onLEDCallback(3);
     m_ledSubsystem.setStatus(m_intakeSubsystem.getArmState() == m_intakeSubsystem.getVerifiedArmState(), 4);
+    m_ledSubsystem.setStatus(DriverStation.isAutonomousEnabled(), 5);
   }
 
   public static void requestCANBusData() {

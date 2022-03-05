@@ -30,7 +30,6 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     m_robotContainer = new RobotContainer();
-    RobotContainer.getLEDSubsystem().setLEDStripRainbow();
   }
 
   /**
@@ -65,6 +64,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
+    RobotContainer.getLEDSubsystem().setLEDStripRainbow();
   }
 
   /**
