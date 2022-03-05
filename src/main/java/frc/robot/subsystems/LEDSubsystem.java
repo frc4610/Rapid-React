@@ -10,6 +10,8 @@ import com.ctre.phoenix.led.CANdle.LEDStripType;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.*;
 
@@ -114,6 +116,9 @@ public class LEDSubsystem extends SubsystemBase {
   public LEDSubsystem() {
     m_ledStrip = new AddressableLED(Ids.PWM_LED_STRIP);
     m_ledBuffer = new AddressableLEDBuffer(LED_STRIP_COUNT);
+    m_ledStrip.setLength(LED_STRIP_COUNT);
+    m_ledStrip.setData(m_ledBuffer);
+    m_ledStrip.start();
 
     m_ledController = new CANdle(Ids.LED_CANDLE);
     m_ledControllerConfig = new CANdleConfiguration();
@@ -135,7 +140,7 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   public void setLEDColor(int r, int g, int b, int idx) {
-    m_ledBuffer.setRGB(idx, 255, 0, 0);
+    m_ledBuffer.setRGB(idx, r, g, b);
   }
 
   public void setStatusDefault() {
@@ -146,6 +151,13 @@ public class LEDSubsystem extends SubsystemBase {
     m_statusSegment.setIndex(r, g, b, idx);
   }
 
+  public void setStatus(final boolean enabled, boolean vital, final int idx) {
+    if (enabled)
+      m_statusSegment.setIndex(0, 255, 0, idx);
+    else if (vital)
+      m_statusSegment.setIndex(255, 0, 0, idx);
+  }
+
   public void setStatus(final boolean enabled, final int idx) {
     if (enabled)
       m_statusSegment.setIndex(0, 255, 0, idx);
@@ -154,10 +166,10 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   public void setLEDStripRainbow() {
-    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+    for (int i = 0; i < m_ledBuffer.getLength(); i++) {
       // Calculate the hue - hue is easier for rainbows because the color
       // shape is a circle so only one value needs to precess
-      final var hue = (m_rainbowFirstPixelHue + (i * 180 / m_ledBuffer.getLength())) % 180;
+      final int hue = (m_rainbowFirstPixelHue + (i * 180 / m_ledBuffer.getLength())) % 180;
       // Set the value
       m_ledBuffer.setHSV(i, hue, 255, 128);
     }
@@ -165,6 +177,22 @@ public class LEDSubsystem extends SubsystemBase {
     m_rainbowFirstPixelHue += 3;
     // Check bounds
     m_rainbowFirstPixelHue %= 180;
+  }
+
+  public void setAllianceColors() {
+    int red = 0;
+    int blue = 0;
+
+    if (DriverStation.getAlliance() != Alliance.Blue) {
+      red = 255;
+      blue = 0;
+    } else {
+      blue = 255;
+      red = 0;
+    }
+    for (int i = 0; i < m_ledBuffer.getLength(); i++) {
+      m_ledBuffer.setRGB(i, red, 0, blue);
+    }
   }
 
   @Override

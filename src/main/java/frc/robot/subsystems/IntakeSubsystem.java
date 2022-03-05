@@ -18,7 +18,7 @@ public class IntakeSubsystem extends BaseSubsystem {
   private final WPI_TalonFX m_arm = new WPI_TalonFX(Ids.ARM);
   private final XboxControllerExtended m_controller;
 
-  private final double m_armTimeUp = 0.8;
+  private final double m_armTimeUp = 0.83;
   private final double m_armTimeDown = 0.3;
 
   // 38991 when up
@@ -70,11 +70,12 @@ public class IntakeSubsystem extends BaseSubsystem {
   public void updateIntake() {
     if (m_controller.getLeftTriggerAxis() > 0) {
       m_intake.set(ControlMode.PercentOutput,
-          -MathUtils.clamp(m_controller.getLeftTriggerAxis(), 0.0,
-              Intake.POWER_OUT));
+          m_controller.getBackButton() ? 1
+              : -MathUtils.clamp(m_controller.getLeftTriggerAxis(), 0.0,
+                  Intake.POWER_OUT.getDouble(0.8)));
     } else if (!m_verifiedArmState && m_controller.getRightTriggerAxis() > 0) {
       m_intake.set(ControlMode.PercentOutput, MathUtils.clamp(m_controller.getRightTriggerAxis(), 0.0,
-          Intake.POWER_IN));
+          Intake.POWER_IN.getDouble(0.45)));
     } else {
       m_intake.set(ControlMode.PercentOutput, 0);
     }
@@ -84,17 +85,17 @@ public class IntakeSubsystem extends BaseSubsystem {
     final boolean rightTriggerAxis = m_controller.getRightTriggerAxis() > 0;
     if (m_armState) {
       if (Timer.getFPGATimestamp() - m_lastBurstTime < m_armTimeUp) {
-        m_arm.set(Arm.TRAVEL_UP_POWER);
+        m_arm.set(Arm.TRAVEL_UP_POWER.getDouble(0.45));
       } else if (m_arm.getSelectedSensorPosition() < Arm.UP_POSITION) {
-        m_arm.set(Arm.TRAVEL_DIFFRENCE);
+        m_arm.set(Arm.TRAVEL_DIFFRENCE.getDouble(0.14));
       } else {
         m_arm.set(0);
       }
     } else {
       if (Timer.getFPGATimestamp() - m_lastBurstTime < m_armTimeDown) {
-        m_arm.set(-Arm.TRAVEL_DOWN_POWER);
+        m_arm.set(-Arm.TRAVEL_DOWN_POWER.getDouble(0.3));
       } else if (m_arm.getSelectedSensorPosition() > Arm.DOWN_POSITION) {
-        m_arm.set(-Arm.TRAVEL_DIFFRENCE);
+        m_arm.set(-Arm.TRAVEL_DIFFRENCE.getDouble(0.14));
       }
     }
 

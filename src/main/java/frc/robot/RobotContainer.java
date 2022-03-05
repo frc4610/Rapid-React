@@ -104,6 +104,14 @@ public class RobotContainer {
     }
   }
 
+  public static void onModeChange(boolean enabled) {
+    if (enabled) {
+      m_ultrasonicSubsystem.EnableSensors();
+    } else {
+      m_ultrasonicSubsystem.DisableSensors();
+    }
+  }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
