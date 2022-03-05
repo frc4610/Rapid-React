@@ -22,20 +22,8 @@ public class UltrasonicSubsystem extends BaseSubsystem {
     m_ultrasonicTab = Shuffleboard.getTab("Ultrasonic");
     m_ultrasonicLeft = new UltrasonicMB1013(Ids.LEFT_ULTRASONIC);
     m_ultrasonicRight = new UltrasonicMB1013(Ids.RIGHT_ULTRASONIC);
-    ThreadPool.threadPool.execute(() -> {
-      try {
-        while (true) {
-          m_ultrasonicLeft.setStatus(false);
-          m_ultrasonicRight.setStatus(true);
-          Thread.sleep(Double.doubleToLongBits(UltrasonicMB1013.refreshRate * 4));
-          m_ultrasonicLeft.setStatus(true);
-          m_ultrasonicRight.setStatus(false);
-          Thread.sleep(Double.doubleToLongBits(UltrasonicMB1013.refreshRate * 4));
-        }
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    });
+    m_ultrasonicLeft.setStatus(true);
+    m_ultrasonicRight.setStatus(true);
 
     m_ultrasonicLayout = m_ultrasonicTab.getLayout("Data", BuiltInLayouts.kGrid)
         .withSize(3, 1)

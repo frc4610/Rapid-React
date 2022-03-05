@@ -59,8 +59,6 @@ public class RobotContainer {
     // configureLEDButtons();
 
     DriverStation.silenceJoystickConnectionWarning(true);
-
-    requestCANBusData();
   }
 
   private void configureDriveButtons() {

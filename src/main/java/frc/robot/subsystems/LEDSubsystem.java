@@ -8,10 +8,19 @@ import com.ctre.phoenix.led.*;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.*;
 import frc.robot.utils.MathUtils;
+
+class Color {
+  public int red, green, blue;
+
+  public Color(int r, int g, int b) {
+    red = r;
+    green = g;
+    blue = b;
+  }
+}
 
 // I would use typedef but java doesnt have it
 class LED {
@@ -89,7 +98,7 @@ class LEDSegment {
       if (pair.getSecond().isEnabled) {
         if (controller.setLEDs(pair.getSecond().getRed(), pair.getSecond().getGreen(), pair.getSecond().getBlue(), 0,
             pair.getFirst(), 1) != ErrorCode.OK) {
-          pair.getSecond().isEnabled = false;
+          // pair.getSecond().isEnabled = false;
         }
       }
     }
@@ -104,8 +113,8 @@ public class LEDSubsystem extends SubsystemBase {
 
   private int colorLengthLeft = 30;
   private int colorLengthRight = 30;
-  private Color colorLeft = new Color(255, 0, 0);
-  private Color colorRight = new Color(255, 0, 0);
+  private Color colorLeft = new Color(255, 0, 255);
+  private Color colorRight = new Color(255, 0, 255);
 
   public LEDSubsystem() {
     m_ledController = new CANdle(Ids.LED_CANDLE);
@@ -175,8 +184,8 @@ public class LEDSubsystem extends SubsystemBase {
 
     // Phoenix does something similar in there multi animation branch
     // https://github.com/CrossTheRoadElec/Phoenix-Examples-Languages/blob/c733d1c9d8ed89691fbe8c5c05c4e7bac8fe9efb/Java%20General/CANdle%20MultiAnimation/src/main/java/frc/robot/subsystems/CANdleSystem.java#L221
-    m_ledController.setLEDs((int) colorLeft.red, (int) colorLeft.green, (int) colorLeft.blue, 0, 8, colorLengthLeft);
-    m_ledController.setLEDs((int) colorRight.red, (int) colorRight.green, (int) colorRight.blue, 0, 30,
+    m_ledController.setLEDs(colorLeft.red, colorLeft.green, colorLeft.blue, 0, 8, colorLengthLeft);
+    m_ledController.setLEDs(colorRight.red, colorRight.green, colorRight.blue, 0, 30,
         colorLengthRight);
     m_statusSegment.updateLEDs(m_ledController);
   }

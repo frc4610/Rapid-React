@@ -26,7 +26,7 @@ public final class Constants {
   }
 
   public final static class Ultrasonic {
-    public static final double LENGTH_FROM_SIDE = 11.0; // inches from front side
+    public static final double LENGTH_FROM_SIDE = 6.0; // inches from front side
     public static final double WIDTH_INCH = 25.15;
     public static final double ANGULAR_THRESHOLD = 10.0;
     public static final double MIN_DISTANCE = 12.0;
@@ -84,7 +84,7 @@ public final class Constants {
   }
 
   public final static class Intake {
-    public static final double POWER_OUT = 0.6;
+    public static final double POWER_OUT = 0.69;
     public static final double POWER_IN = 0.45;
   }
 
