@@ -56,6 +56,9 @@ public class IntakeSubsystem extends BaseSubsystem {
   }
 
   public boolean updateArmState() {
+    if (m_controller.getStartButton()) {
+      m_arm.setSelectedSensorPosition(Arm.ABS_UP_POSITION);
+    }
     if (m_arm.getSelectedSensorPosition() > Arm.UP_POSITION) {
       m_verifiedArmState = true;
     } else if (m_arm.getSelectedSensorPosition() > Arm.DOWN_POSITION) {
@@ -70,7 +73,8 @@ public class IntakeSubsystem extends BaseSubsystem {
           -MathUtils.clamp(m_controller.getLeftTriggerAxis(), 0.0,
               Intake.POWER_OUT));
     } else if (!m_verifiedArmState && m_controller.getRightTriggerAxis() > 0) {
-      m_intake.set(ControlMode.PercentOutput, Intake.POWER_IN);
+      m_intake.set(ControlMode.PercentOutput, MathUtils.clamp(m_controller.getRightTriggerAxis(), 0.0,
+          Intake.POWER_IN));
     } else {
       m_intake.set(ControlMode.PercentOutput, 0);
     }
@@ -98,16 +102,14 @@ public class IntakeSubsystem extends BaseSubsystem {
       m_lastBurstTime = Timer.getFPGATimestamp();
       m_armState = false;
     } else if (!rightTriggerAxis && !m_armState) {
-      m_lastBurstTime = Timer.getFPGATimestamp();
+      if (!m_verifiedArmState) // Fixes spamming right trigger causing motor stall
+        m_lastBurstTime = Timer.getFPGATimestamp();
       m_armState = true;
     }
   }
 
   @Override
   public void periodic() {
-    if (m_controller.getStartButton()) {
-      m_arm.setSelectedSensorPosition(Arm.ABS_UP_POSITION);
-    }
     updateArmState();
     updateIntake();
     updateArm();
