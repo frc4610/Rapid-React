@@ -115,7 +115,6 @@ public class RobotContainer {
    */
   public void reset() {
     m_drivetrainSubsystem.zeroGyro();
-    m_ledSubsystem.setAll(255, 255, 255);
   }
 
   /**

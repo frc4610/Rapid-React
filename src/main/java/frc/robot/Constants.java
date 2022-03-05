@@ -20,6 +20,8 @@ public final class Constants {
     public static final int INTAKE = 14;
     public static final int LED_CANDLE = 15;
 
+    public static final int PWM_LED_STRIP = 0;
+
     public static final SwerveConfig FRONT_LEFT = new SwerveConfig(8, 4, 11, -Math.toRadians(149.85));
     public static final SwerveConfig FRONT_RIGHT = new SwerveConfig(1, 5, 9, -Math.toRadians(181.40));
     public static final SwerveConfig BACK_LEFT = new SwerveConfig(3, 7, 12, -Math.toRadians(128.76));

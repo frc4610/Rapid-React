@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -59,13 +60,14 @@ public class UltrasonicSubsystem extends BaseSubsystem {
   @Override
   public void periodic() {
     double minDistance = getUltrasonicDistance();
-
-    if (MathUtils.withinRange(getUltrasonicRotation().getDegrees(), -Ultrasonic.ANGULAR_THRESHOLD,
-        Ultrasonic.ANGULAR_THRESHOLD)
-        && MathUtils.withinRange(minDistance, Ultrasonic.MIN_DISTANCE, Ultrasonic.MAX_DISTANCE)) {
-      m_ledSubsystem.setAll(0, 255, 0);
-    } else {
-      m_ledSubsystem.setAll(0, 0, 255);
+    if (DriverStation.isEnabled()) {
+      if (MathUtils.withinRange(getUltrasonicRotation().getDegrees(), -Ultrasonic.ANGULAR_THRESHOLD,
+          Ultrasonic.ANGULAR_THRESHOLD)
+          && MathUtils.withinRange(minDistance, Ultrasonic.MIN_DISTANCE, Ultrasonic.MAX_DISTANCE)) {
+        m_ledSubsystem.setAll(0, 255, 0);
+      } else {
+        m_ledSubsystem.setAll(0, 0, 255);
+      }
     }
   }
 }

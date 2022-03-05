@@ -8,19 +8,12 @@ import com.ctre.phoenix.led.*;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.*;
-import frc.robot.utils.MathUtils;
 
-class Color {
-  public int red, green, blue;
-
-  public Color(int r, int g, int b) {
-    red = r;
-    green = g;
-    blue = b;
-  }
-}
+//https://docs.wpilib.org/en/stable/docs/software/hardware-apis/misc/addressable-leds.html
 
 // I would use typedef but java doesnt have it
 class LED {
@@ -106,17 +99,22 @@ class LEDSegment {
 }
 
 public class LEDSubsystem extends SubsystemBase {
+  private final AddressableLED m_ledStrip;
+  private final AddressableLEDBuffer m_ledBuffer;
+
   private final CANdle m_ledController;
   private final CANdleConfiguration m_ledControllerConfig;
   private final CANdleFaults m_faults;
   private final LEDSegment m_statusSegment;
 
-  private int colorLengthLeft = 30;
-  private int colorLengthRight = 30;
-  private Color colorLeft = new Color(255, 0, 255);
-  private Color colorRight = new Color(255, 0, 255);
+  private int m_rainbowFirstPixelHue = 0;
+
+  public static int LED_STRIP_COUNT = 60;
 
   public LEDSubsystem() {
+    m_ledStrip = new AddressableLED(Ids.PWM_LED_STRIP);
+    m_ledBuffer = new AddressableLEDBuffer(LED_STRIP_COUNT);
+
     m_ledController = new CANdle(Ids.LED_CANDLE);
     m_ledControllerConfig = new CANdleConfiguration();
     m_faults = new CANdleFaults();
@@ -130,12 +128,14 @@ public class LEDSubsystem extends SubsystemBase {
     m_statusSegment = new LEDSegment(0, 8);
   }
 
-  public ErrorCode getLastError() {
-    return m_ledController.getLastError();
+  public void setAll(int r, int g, int b) {
+    for (var idx = 0; idx < m_ledBuffer.getLength(); idx++) {
+      setLEDColor(r, g, b, idx);
+    }
   }
 
-  public ErrorCode getFaults() {
-    return m_ledController.getFaults(m_faults);
+  public void setLEDColor(int r, int g, int b, int idx) {
+    m_ledBuffer.setRGB(idx, 255, 0, 0);
   }
 
   public void setStatusDefault() {
@@ -153,41 +153,31 @@ public class LEDSubsystem extends SubsystemBase {
       m_statusSegment.setIndex(255, 0, 0, idx);
   }
 
-  public void setAll(int r, int g, int b) {
-    colorLengthLeft = 30;
-    colorLengthRight = 30;
-    colorLeft = new Color(r, g, b);
-    colorRight = new Color(r, g, b);
-  }
-
-  public void setLeftColor(int r, int g, int b) {
-    colorLengthLeft = 30;
-    colorLeft = new Color(r, g, b);
-  }
-
-  public void setRightColor(int r, int g, int b) {
-    colorLengthRight = 30;
-    colorRight = new Color(r, g, b);
-  }
-
-  public void setLeftColorLerped(int r, int g, int b, double t) {
-    colorLengthLeft = MathUtils.lerp(0, 30, t);
-    colorLeft = new Color(r, g, b);
-  }
-
-  public void setRightColorLerped(int r, int g, int b, double t) {
-    colorLengthRight = MathUtils.lerp(0, 30, t);
-    colorRight = new Color(r, g, b);
+  public void setLEDStripRainbow() {
+    for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+      // Calculate the hue - hue is easier for rainbows because the color
+      // shape is a circle so only one value needs to precess
+      final var hue = (m_rainbowFirstPixelHue + (i * 180 / m_ledBuffer.getLength())) % 180;
+      // Set the value
+      m_ledBuffer.setHSV(i, hue, 255, 128);
+    }
+    // Increase by to make the rainbow "move"
+    m_rainbowFirstPixelHue += 3;
+    // Check bounds
+    m_rainbowFirstPixelHue %= 180;
   }
 
   @Override
   public void periodic() {
-
-    // Phoenix does something similar in there multi animation branch
-    // https://github.com/CrossTheRoadElec/Phoenix-Examples-Languages/blob/c733d1c9d8ed89691fbe8c5c05c4e7bac8fe9efb/Java%20General/CANdle%20MultiAnimation/src/main/java/frc/robot/subsystems/CANdleSystem.java#L221
-    m_ledController.setLEDs(colorLeft.red, colorLeft.green, colorLeft.blue, 0, 8, colorLengthLeft);
-    m_ledController.setLEDs(colorRight.red, colorRight.green, colorRight.blue, 0, 30,
-        colorLengthRight);
+    m_ledStrip.setData(m_ledBuffer);
     m_statusSegment.updateLEDs(m_ledController);
+  }
+
+  public ErrorCode getLastError() {
+    return m_ledController.getLastError();
+  }
+
+  public ErrorCode getFaults() {
+    return m_ledController.getFaults(m_faults);
   }
 }
