@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.commands.AutonomousCommand;
+import frc.robot.commands.DriveContinuous;
 import frc.robot.commands.UserControllerCommand;
 import frc.robot.subsystems.AutonomousSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -74,6 +75,11 @@ public class RobotContainer {
           m_driverController.setLeftVibration(0.1);
           m_driverController.setRightVibration(0.1);
         });
+
+    new Button(m_driverController::getLeftBumper)
+        .whileHeld(new DriveContinuous(m_drivetrainSubsystem, true));
+    new Button(m_driverController::getRightBumper)
+        .whileHeld(new DriveContinuous(m_drivetrainSubsystem, false));
   }
 
   public static void updateSubsystemStatus() {
