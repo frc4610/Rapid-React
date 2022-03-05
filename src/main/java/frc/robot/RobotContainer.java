@@ -32,9 +32,11 @@ import frc.robot.utils.json.JsonReader;
 public class RobotContainer {
   // @SuppressWarnings("unused") // to remove warnings
   private final static DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
-  private final static XboxControllerExtended m_controller = new XboxControllerExtended(0);
+  private final static XboxControllerExtended m_driverController = new XboxControllerExtended(0);
+  private final static XboxControllerExtended m_operatorController = new XboxControllerExtended(1);
   private final static LEDSubsystem m_ledSubsystem = new LEDSubsystem();
-  private final static IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem(m_controller);
+  private final static IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem(
+      Constants.USE_ONE_CONTROLLER ? m_driverController : m_operatorController);
   private final static AutonomousSubsystem m_autonomousSubsystem = new AutonomousSubsystem(m_drivetrainSubsystem);
   private final static UltrasonicSubsystem m_ultrasonicSubsystem = new UltrasonicSubsystem(m_ledSubsystem);
   private static List<CANDevice> m_canDevices = new ArrayList<CANDevice>();
@@ -47,11 +49,11 @@ public class RobotContainer {
 
     m_drivetrainSubsystem.setDefaultCommand(new UserControllerCommand(
         m_drivetrainSubsystem,
-        () -> -MathUtils.modifyAxis(m_controller.getLeftY(), Constants.Controller.XBOX_DEADBAND)
+        () -> -MathUtils.modifyAxis(m_driverController.getLeftY(), Constants.Controller.XBOX_DEADBAND)
             * Constants.Motor.MAX_VELOCITY_METERS_PER_SECOND,
-        () -> -MathUtils.modifyAxis(m_controller.getLeftX(), Constants.Controller.XBOX_DEADBAND)
+        () -> -MathUtils.modifyAxis(m_driverController.getLeftX(), Constants.Controller.XBOX_DEADBAND)
             * Constants.Motor.MAX_VELOCITY_METERS_PER_SECOND,
-        () -> -MathUtils.modifyAxis(m_controller.getRightX(), Constants.Controller.XBOX_DEADBAND)
+        () -> -MathUtils.modifyAxis(m_driverController.getRightX(), Constants.Controller.XBOX_DEADBAND)
             * Constants.Motor.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
 
     // Configure the button bindings
@@ -62,15 +64,15 @@ public class RobotContainer {
   }
 
   private void configureDriveButtons() {
-    new Button(m_controller::getBackButton)
+    new Button(m_driverController::getBackButton)
         .whenPressed(() -> {
           reset();
         });
-    new Button(m_controller::getAButton)
+    new Button(m_driverController::getAButton)
         .whileHeld(() -> { // As class says don't go nathan mode
           m_drivetrainSubsystem.limitPower();
-          m_controller.setLeftVibration(0.1);
-          m_controller.setRightVibration(0.1);
+          m_driverController.setLeftVibration(0.1);
+          m_driverController.setRightVibration(0.1);
         });
   }
 

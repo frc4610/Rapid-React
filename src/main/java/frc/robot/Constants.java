@@ -6,6 +6,7 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.utils.SwerveConfig;
 
 public final class Constants {
+  public static boolean USE_ONE_CONTROLLER = false;
   public static final String VERSION = "Version 0.2.0";
   public static final String RIO_IP = "http://172.22.11.2:1250";
 
