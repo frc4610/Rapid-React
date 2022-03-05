@@ -23,6 +23,7 @@
 ## Firmware Version
 
 naxX2-MXP (Gen2)->Firmware Version(4.0.442)
+
 ## Robot controls
 1. LeftTrigger - Launches the balls from the intake when in firing position
 2. RightTrigger - moves the arm beetween upper position and lower position
@@ -33,8 +34,6 @@ naxX2-MXP (Gen2)->Firmware Version(4.0.442)
 7. RightBumper - drives robot forward at climb speed
 8. LeftBumper - drives backward straight
 
-
-
 ## Robot Checklist
 
 ## CANdle Status Lights
@@ -44,6 +43,7 @@ naxX2-MXP (Gen2)->Firmware Version(4.0.442)
 2. Ultrasonic
 3. Intake
 4. Arm Position Verification
+5. Is in auto mode
 
 ## Setting up module offsets
 

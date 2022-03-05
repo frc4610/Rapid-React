@@ -3,14 +3,23 @@ package frc.robot;
 import swervelib.SdsModuleConfigurations;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.utils.SwerveConfig;
 
 public final class Constants {
+
+  public static final ShuffleboardTab m_tab = Shuffleboard.getTab("Constants");
+
   public static boolean USE_ONE_CONTROLLER = false;
   public static final String VERSION = "Version 0.2.0";
   public static final String RIO_IP = "http://172.22.11.2:1250";
 
   public final static class Ids {
+    // PWM
+    public static final int PWM_LED_STRIP = 0;
+
     // Analog
     public static final int LEFT_ULTRASONIC = 0;
     public static final int RIGHT_ULTRASONIC = 1;
@@ -55,17 +64,20 @@ public final class Constants {
 
     public static final double DRIVE_GEAR_RATIO = 8.16;
     public static final double ANGLE_GEAR_RATIO = 12.8;
+    public static final NetworkTableEntry MAX_POWER = m_tab.add("Motor max power", 5.0).getEntry();
   }
 
   public final static class Autonomous {
+    public static final double DRIVE_POWER = 4;
+
     public static final double PX_CONTROLLER = 4;
     public static final double PY_CONTROLLER = 4;
     public static final double PTHETA_CONTROLLER = 2;
 
     // theoretical values do not use mk3 as they are the motor
     // FIXME: calculate the max
-    public static final double MAX_VELOCITY_METERS_PER_SECOND = 3;
-    public static final double MAX_ACCELERATION_METERS_PER_SECOND = 3;
+    public static final double MAX_VELOCITY_METERS_PER_SECOND = 4;
+    public static final double MAX_ACCELERATION_METERS_PER_SECOND = 4;
 
     public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = Math.PI;
     public static final double MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND = Math.PI;
@@ -76,17 +88,17 @@ public final class Constants {
   }
 
   public final static class Arm {
-    public static final double TRAVEL_UP_POWER = 0.3;
-    public static final double TRAVEL_DOWN_POWER = 0.2;
-    public static final double TRAVEL_DIFFRENCE = 0.14;
+    public static final NetworkTableEntry TRAVEL_UP_POWER = m_tab.add("Arm up power", 0.45).getEntry(); // .35
+    public static final NetworkTableEntry TRAVEL_DOWN_POWER = m_tab.add("Arm down power", 0.3).getEntry();
+    public static final NetworkTableEntry TRAVEL_DIFFRENCE = m_tab.add("Arm travel diffrence", 0.14).getEntry();
     public static final double ABS_UP_POSITION = 40000; // Range from RNG - MAX
     public static final double UP_POSITION = 37500; // Range from RNG - MAX
     public static final double DOWN_POSITION = 200; // Enough to hold the bot down
   }
 
   public final static class Intake {
-    public static final double POWER_OUT = 0.69;
-    public static final double POWER_IN = 0.45;
+    public static final NetworkTableEntry POWER_OUT = m_tab.add("Intake power out", 0.8).getEntry();
+    public static final NetworkTableEntry POWER_IN = m_tab.add("Intake power out", 0.45).getEntry();
   }
 
   public static final boolean ENABLE_MAGNETOMETER = false;

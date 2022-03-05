@@ -15,14 +15,14 @@ public class UltrasonicSubsystem extends BaseSubsystem {
   private final ShuffleboardLayout m_ultrasonicLayout;
   private final UltrasonicMB1013 m_ultrasonicLeft, m_ultrasonicRight;
   private final LEDSubsystem m_ledSubsystem;
+  private boolean m_isEnabled;
 
   public UltrasonicSubsystem(LEDSubsystem ledsubsystem) {
     m_ledSubsystem = ledsubsystem;
     m_ultrasonicTab = Shuffleboard.getTab("Ultrasonic");
     m_ultrasonicLeft = new UltrasonicMB1013(Ids.LEFT_ULTRASONIC);
     m_ultrasonicRight = new UltrasonicMB1013(Ids.RIGHT_ULTRASONIC);
-    m_ultrasonicLeft.setStatus(true);
-    m_ultrasonicRight.setStatus(true);
+    DisableSensors();
 
     m_ultrasonicLayout = m_ultrasonicTab.getLayout("Data", BuiltInLayouts.kGrid)
         .withSize(3, 1)
@@ -46,6 +46,18 @@ public class UltrasonicSubsystem extends BaseSubsystem {
     return true;
   }
 
+  public void EnableSensors() {
+    m_isEnabled = true;
+    m_ultrasonicLeft.setStatus(true);
+    m_ultrasonicRight.setStatus(true);
+  }
+
+  public void DisableSensors() {
+    m_isEnabled = false;
+    m_ultrasonicLeft.setStatus(false);
+    m_ultrasonicRight.setStatus(false);
+  }
+
   // atan(Delta/Width)
   public Rotation2d getUltrasonicRotation() {
     return new Rotation2d(
@@ -58,14 +70,15 @@ public class UltrasonicSubsystem extends BaseSubsystem {
 
   @Override
   public void periodic() {
-    double minDistance = getUltrasonicDistance();
-
-    if (MathUtils.withinRange(getUltrasonicRotation().getDegrees(), -Ultrasonic.ANGULAR_THRESHOLD,
-        Ultrasonic.ANGULAR_THRESHOLD)
-        && MathUtils.withinRange(minDistance, Ultrasonic.MIN_DISTANCE, Ultrasonic.MAX_DISTANCE)) {
-      m_ledSubsystem.setAll(0, 255, 0);
-    } else {
-      m_ledSubsystem.setAll(0, 0, 255);
+    if (m_isEnabled) {
+      double minDistance = getUltrasonicDistance();
+      if (MathUtils.withinRange(getUltrasonicRotation().getDegrees(), -Ultrasonic.ANGULAR_THRESHOLD,
+          Ultrasonic.ANGULAR_THRESHOLD)
+          && MathUtils.withinRange(minDistance, Ultrasonic.MIN_DISTANCE, Ultrasonic.MAX_DISTANCE)) {
+        m_ledSubsystem.setAll(0, 255, 0);
+      } else {
+        m_ledSubsystem.setAllianceColors();
+      }
     }
   }
 }

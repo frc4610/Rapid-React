@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.commands.AutonomousCommand;
+import frc.robot.commands.DriveContinuous;
 import frc.robot.commands.UserControllerCommand;
 import frc.robot.subsystems.AutonomousSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -74,6 +75,11 @@ public class RobotContainer {
           m_driverController.setLeftVibration(0.1);
           m_driverController.setRightVibration(0.1);
         });
+
+    new Button(m_driverController::getLeftBumper)
+        .whileHeld(new DriveContinuous(m_drivetrainSubsystem, true));
+    new Button(m_driverController::getRightBumper)
+        .whileHeld(new DriveContinuous(m_drivetrainSubsystem, false));
   }
 
   public static void updateSubsystemStatus() {
@@ -82,6 +88,7 @@ public class RobotContainer {
     m_ultrasonicSubsystem.onLEDCallback(2);
     m_intakeSubsystem.onLEDCallback(3);
     m_ledSubsystem.setStatus(m_intakeSubsystem.getArmState() == m_intakeSubsystem.getVerifiedArmState(), 4);
+    m_ledSubsystem.setStatus(DriverStation.isAutonomousEnabled(), 5);
   }
 
   public static void requestCANBusData() {
@@ -94,6 +101,14 @@ public class RobotContainer {
 
     for (Object elem : deviceArray) {
       m_canDevices.add(new CANDevice((JSONObject) elem));
+    }
+  }
+
+  public static void onModeChange(boolean enabled) {
+    if (enabled) {
+      m_ultrasonicSubsystem.EnableSensors();
+    } else {
+      m_ultrasonicSubsystem.DisableSensors();
     }
   }
 
@@ -115,7 +130,6 @@ public class RobotContainer {
    */
   public void reset() {
     m_drivetrainSubsystem.zeroGyro();
-    m_ledSubsystem.setAll(255, 255, 255);
   }
 
   /**
