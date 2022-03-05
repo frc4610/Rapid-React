@@ -60,8 +60,8 @@ public class DrivetrainSubsystem extends BaseSubsystem {
   private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
   private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, new Rotation2d(0));
 
-  private final double m_wheelMaxVoltage = 4.0;
-  private double m_wheelVoltage = 2.0;
+  private final double m_wheelMaxVoltage = 3.0;
+  private double m_wheelVoltage = m_wheelMaxVoltage;
 
   private double m_lastWorldAccelX = -1.0, m_lastWorldAccelY = -1.0;
   private boolean m_didCollide = false;
