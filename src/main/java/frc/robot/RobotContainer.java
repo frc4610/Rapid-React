@@ -74,14 +74,6 @@ public class RobotContainer {
         });
   }
 
-  private void configureLEDButtons() {
-    new Button(m_controller::getXButton)
-        .whileHeld(() -> {
-          m_ledSubsystem.setAll(MathUtils.random.nextInt(255), MathUtils.random.nextInt(255),
-              MathUtils.random.nextInt(255));
-        });
-  }
-
   public static void updateSubsystemStatus() {
     m_ledSubsystem.setStatus(checkRoboRIO(), 0);
     m_ledSubsystem.setStatus(!m_canDevices.isEmpty(), 1);

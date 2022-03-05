@@ -79,7 +79,7 @@ class LEDSegment {
   }
 
   public void setIndex(final int r, final int g, final int b, final int idx) {
-    for (Pair<Integer, LED> pair : m_leds) { // TODO: make index an array instead of Map but java doesnt expose idx
+    for (Pair<Integer, LED> pair : m_leds) {
       if (pair.getFirst() - m_offset == idx) {
         pair.getSecond().setColor(r, g, b);
         break;
@@ -124,6 +124,7 @@ public class LEDSubsystem extends SubsystemBase {
     m_ledControllerConfig.stripType = LEDStripType.GRB; // led strip type
     m_ledControllerConfig.brightnessScalar = 0.5; // dim the LEDs to half brightness
     m_ledControllerConfig.disableWhenLOS = true; // when losing connection turn off
+    m_ledControllerConfig.statusLedOffWhenActive = true; // Removes orange tint
     m_ledController.configAllSettings(m_ledControllerConfig);
 
     m_statusSegment = new LEDSegment(0, 8);

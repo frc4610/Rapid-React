@@ -37,6 +37,13 @@ naxX2-MXP (Gen2)->Firmware Version(4.0.442)
 
 ## Robot Checklist
 
+## CANdle Status Lights
+
+0. RoboRIO
+1. Can Devices
+2. Ultrasonic
+3. Intake
+4. Arm Position Verification
 
 ## Setting up module offsets
 

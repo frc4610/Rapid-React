@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants.*;
 import frc.robot.utils.BaseSubsystem;
 import frc.robot.utils.MathUtils;
-import frc.robot.utils.ThreadPool;
 import frc.robot.utils.UltrasonicMB1013;
 
 public class UltrasonicSubsystem extends BaseSubsystem {

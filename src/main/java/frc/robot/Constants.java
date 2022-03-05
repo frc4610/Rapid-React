@@ -6,13 +6,13 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.utils.SwerveConfig;
 
 public final class Constants {
-  public static final String VERSION = "Version 0.1.4";
+  public static final String VERSION = "Version 0.2.0";
   public static final String RIO_IP = "http://172.22.11.2:1250";
 
   public final static class Ids {
     // Analog
-    public static final int LEFT_ULTRASONIC = 1;
-    public static final int RIGHT_ULTRASONIC = 0;
+    public static final int LEFT_ULTRASONIC = 0;
+    public static final int RIGHT_ULTRASONIC = 1;
 
     // CAN bus
     public static final int ARM = 13;

@@ -21,7 +21,6 @@ public class IntakeSubsystem extends BaseSubsystem {
   private final double m_armTimeUp = 0.8;
   private final double m_armTimeDown = 0.3;
 
-  // TODO: Add zeroing
   // 38991 when up
   // 1555 when down
 
@@ -65,7 +64,6 @@ public class IntakeSubsystem extends BaseSubsystem {
     return m_verifiedArmState;
   }
 
-  // TODO: Remap Controller
   public void updateIntake() {
     if (m_controller.getLeftTriggerAxis() > 0) {
       m_intake.set(ControlMode.PercentOutput,
