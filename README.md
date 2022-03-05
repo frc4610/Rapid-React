@@ -36,6 +36,25 @@ naxX2-MXP (Gen2)->Firmware Version(4.0.442)
 
 ## Robot Checklist
 
+- [ ] Arm articulation
+- [ ] Intake motor
+- [ ] Field orientation(Reset on `start` button)
+- [ ] Limit power(Reset on `A` button)
+- [ ] LEDs and CANdle(Status lights)
+- [ ] Ultrasonic sensor
+- [ ] RoboRIO
+- [ ] NavX
+- [ ] Device status lights
+- [ ] Continuity
+- [ ] CAN bus
+- [ ] Power cables
+- [ ] PCD and breakers
+- [ ] Voltage
+- [ ] Controller Config
+- [ ] Network Hub
+- [ ] Wire connections
+- [ ] Damage
+
 ## CANdle Status Lights
 
 0. RoboRIO
