@@ -19,7 +19,7 @@ public class IntakeSubsystem extends BaseSubsystem {
   private final XboxControllerExtended m_controller;
 
   private final double m_armTimeUp = 0.83;
-  private final double m_armTimeDown = 0.34;
+  private final double m_armTimeDown = 0.4;
 
   // 38991 when up
   // 1555 when down
@@ -96,7 +96,7 @@ public class IntakeSubsystem extends BaseSubsystem {
   public void updateArm() {
     final boolean rightBumper = m_controller.getRightBumper();
     final boolean rightTriggerAxis = m_controller.getRightTriggerAxis() > 0 || rightBumper;
-    final boolean forceOverrideArmDown = MathUtils.withinRange(Math.abs(m_controller.getRightX()), 1.0, 0.5);
+    final boolean forceOverrideArmDown = MathUtils.withinRange(Math.abs(m_controller.getRightX()), 0.5, 1.0);
 
     if (m_armState) {
       if (Timer.getFPGATimestamp() - m_lastBurstTime < m_armTimeUp) {
@@ -112,7 +112,7 @@ public class IntakeSubsystem extends BaseSubsystem {
       } else if (m_arm.getSelectedSensorPosition() > Arm.DOWN_POSITION) {
         m_arm.set(-Arm.TRAVEL_DIFFRENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
       } else {
-        m_arm.set(0);
+        m_arm.set(-0.08);
       }
     }
 

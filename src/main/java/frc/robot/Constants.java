@@ -98,8 +98,8 @@ public final class Constants {
     public static final double DEFAULT_TRAVEL_DISTANCE = 0.16;
     public static final NetworkTableEntry TRAVEL_DIFFRENCE = m_tab.add("Arm travel diffrence", DEFAULT_TRAVEL_DISTANCE)
         .getEntry();
-    public static final double ABS_UP_POSITION = 38000; // Range from RNG - MAX
-    public static final double UP_POSITION = 37500; // Range from RNG - MAX
+    public static final double ABS_UP_POSITION = 45000; // Range from RNG - MAX
+    public static final double UP_POSITION = 45000 - 1500; // Range from RNG - MAX
     public static final double DOWN_POSITION = 100; // Enough to hold the bot down
   }
 
