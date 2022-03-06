@@ -96,7 +96,6 @@ public class IntakeSubsystem extends BaseSubsystem {
   public void updateArm() {
     final boolean rightBumper = m_controller.getRightBumper();
     final boolean rightTriggerAxis = m_controller.getRightTriggerAxis() > 0 || rightBumper;
-    final boolean forceOverrideArmDown = MathUtils.withinRange(Math.abs(m_controller.getRightY()), 0.5, 1.0);
 
     if (m_armState) {
       if (Timer.getFPGATimestamp() - m_lastBurstTime < m_armTimeUp) {
@@ -111,13 +110,7 @@ public class IntakeSubsystem extends BaseSubsystem {
         m_arm.set(-Arm.TRAVEL_DOWN_POWER.getDouble(Arm.DEFAULT_TRAVEL_DOWN_POWER));
       } else if (m_arm.getSelectedSensorPosition() > Arm.DOWN_POSITION) {
         m_arm.set(-Arm.TRAVEL_DIFFRENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
-      } else {
-        m_arm.set(-0.09);
       }
-    }
-
-    if (forceOverrideArmDown) {
-      m_arm.set(-Arm.TRAVEL_DIFFRENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
     }
 
     if (rightTriggerAxis && m_armState) {
