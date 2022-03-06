@@ -25,19 +25,13 @@ public class UltrasonicSubsystem extends BaseSubsystem {
     DisableSensors();
 
     m_ultrasonicLayout = m_ultrasonicTab.getLayout("Data", BuiltInLayouts.kGrid)
-        .withSize(3, 1)
+        .withSize(2, 1)
         .withPosition(5, 0);
-    m_ultrasonicLayout.addNumber("One Range", () -> m_ultrasonicLeft.getRangeInch())
+    m_ultrasonicLayout.addNumber("Rotation", () -> getUltrasonicRotation().getDegrees())
         .withPosition(1, 0)
         .withSize(1, 1);
-    m_ultrasonicLayout.addNumber("Two Range", () -> m_ultrasonicRight.getRangeInch())
-        .withPosition(2, 0)
-        .withSize(1, 1);
-    m_ultrasonicLayout.addNumber("Rotation", () -> getUltrasonicRotation().getDegrees())
-        .withPosition(3, 0)
-        .withSize(1, 1);
     m_ultrasonicLayout.addNumber("Distance", () -> getUltrasonicDistance())
-        .withPosition(4, 0)
+        .withPosition(2, 0)
         .withSize(1, 1);
   }
 

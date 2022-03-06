@@ -19,7 +19,7 @@ public class IntakeSubsystem extends BaseSubsystem {
   private final XboxControllerExtended m_controller;
 
   private final double m_armTimeUp = 0.83;
-  private final double m_armTimeDown = 0.3;
+  private final double m_armTimeDown = 0.34;
 
   // 38991 when up
   // 1555 when down
@@ -28,12 +28,14 @@ public class IntakeSubsystem extends BaseSubsystem {
   private boolean m_armState = true;
   private boolean m_verifiedArmState = true;
   private double m_lastBurstTime = 0;
+  private boolean m_autoControl = false;
   private ShuffleboardTab m_intakeTab;
 
   public IntakeSubsystem(XboxControllerExtended controller) {
     m_controller = controller;
     m_arm.setInverted(false);
     m_arm.setNeutralMode(NeutralMode.Brake); // Force Motor in brake mode
+    m_arm.setSelectedSensorPosition(Arm.ABS_UP_POSITION);
 
     m_armState = updateArmState();
     m_intakeTab = Shuffleboard.getTab("IntakeSubsystem");
@@ -81,26 +83,46 @@ public class IntakeSubsystem extends BaseSubsystem {
     }
   }
 
+  public void autonomousIntakeEnable() {
+    m_autoControl = true;
+    m_intake.set(ControlMode.PercentOutput, -0.35);
+  }
+
+  public void autonomousIntakeDisable() {
+    m_autoControl = false;
+    m_intake.set(ControlMode.PercentOutput, 0);
+  }
+
   public void updateArm() {
-    final boolean rightTriggerAxis = m_controller.getRightTriggerAxis() > 0;
+    final boolean rightBumper = m_controller.getRightBumper();
+    final boolean rightTriggerAxis = m_controller.getRightTriggerAxis() > 0 || rightBumper;
+    final boolean forceOverrideArmDown = MathUtils.withinRange(Math.abs(m_controller.getRightX()), 1.0, 0.5);
+
     if (m_armState) {
       if (Timer.getFPGATimestamp() - m_lastBurstTime < m_armTimeUp) {
-        m_arm.set(Arm.TRAVEL_UP_POWER.getDouble(0.45));
+        m_arm.set(Arm.TRAVEL_UP_POWER.getDouble(Arm.DEFAULT_TRAVEL_UP_POWER));
       } else if (m_arm.getSelectedSensorPosition() < Arm.UP_POSITION) {
-        m_arm.set(Arm.TRAVEL_DIFFRENCE.getDouble(0.14));
+        m_arm.set(Arm.TRAVEL_DIFFRENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
       } else {
         m_arm.set(0);
       }
     } else {
       if (Timer.getFPGATimestamp() - m_lastBurstTime < m_armTimeDown) {
-        m_arm.set(-Arm.TRAVEL_DOWN_POWER.getDouble(0.3));
+        m_arm.set(-Arm.TRAVEL_DOWN_POWER.getDouble(Arm.DEFAULT_TRAVEL_DOWN_POWER));
       } else if (m_arm.getSelectedSensorPosition() > Arm.DOWN_POSITION) {
-        m_arm.set(-Arm.TRAVEL_DIFFRENCE.getDouble(0.14));
+        m_arm.set(-Arm.TRAVEL_DIFFRENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
+      } else {
+        m_arm.set(0);
       }
     }
 
+    if (forceOverrideArmDown) {
+      m_arm.set(-Arm.TRAVEL_DIFFRENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
+    }
+
     if (rightTriggerAxis && m_armState) {
-      m_lastBurstTime = Timer.getFPGATimestamp();
+      if (m_verifiedArmState)
+        m_lastBurstTime = Timer.getFPGATimestamp();
       m_armState = false;
     } else if (!rightTriggerAxis && !m_armState) {
       if (!m_verifiedArmState) // Fixes spamming right trigger causing motor stall
@@ -112,7 +134,9 @@ public class IntakeSubsystem extends BaseSubsystem {
   @Override
   public void periodic() {
     updateArmState();
-    updateIntake();
-    updateArm();
+    if (!m_autoControl) {
+      updateIntake();
+      updateArm();
+    }
   }
 }

@@ -8,6 +8,29 @@ targetCompatibility = JavaVersion.VERSION_11
 
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
 
+tasks.register("writeGitToDeploy") {
+   // Define an output stream to write to instead of terminal
+   def stdout = new ByteArrayOutputStream()
+
+   // Execute the git command
+   exec {
+      commandLine "git", "rev-parse", "--abbrev-ref", "HEAD"
+      // Write to the output stream instead of terminal
+      standardOutput = stdout
+   }
+
+   // Parse the output into a string
+   def branch = stdout.toString().trim()
+
+   // Create a new file
+   new File(
+      // Join project directory and deploy directory
+      projectDir.toString() + "/src/main/deploy",
+      // File name to write to
+      "git.txt"
+   ).text = branch // Set the contents of the file to the variable branch
+}
+
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
 deploy {
@@ -36,6 +59,8 @@ deploy {
         }
     }
 }
+
+deploy.targets.roborio.artifacts.frcStaticFileDeploy.dependsOn(writeGitToDeploy)
 
 def deployArtifact = deploy.targets.roborio.artifacts.frcJava
 

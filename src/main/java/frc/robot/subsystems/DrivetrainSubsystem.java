@@ -59,7 +59,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
 
   private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
   private final SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(m_kinematics, new Rotation2d(0));
-  private double m_wheelVoltage = Motor.MAX_POWER.getDouble(5.0);
+  private double m_wheelVoltage = Motor.MAX_POWER.getDouble(Motor.DEFAULT_MAX_POWER);
 
   private double m_lastWorldAccelX = -1.0, m_lastWorldAccelY = -1.0;
   private boolean m_didCollide = false;
@@ -213,7 +213,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
   }
 
   public void limitPower() {
-    m_wheelVoltage = Motor.MAX_POWER.getDouble(5.0) / 2;
+    m_wheelVoltage = Motor.MAX_POWER.getDouble(Motor.DEFAULT_MAX_POWER) / 2;
   }
 
   public SwerveDriveKinematics getKinematics() {
@@ -296,7 +296,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
     updateOdometry(states);
 
     RobotContainer.dashboardField.setRobotPose(m_odometry.getPoseMeters()); // set field pose
-    m_wheelVoltage = Motor.MAX_POWER.getDouble(5.0);
+    m_wheelVoltage = Motor.MAX_POWER.getDouble(Motor.DEFAULT_MAX_POWER);
   }
 
   @Override

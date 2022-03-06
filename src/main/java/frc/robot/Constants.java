@@ -10,7 +10,7 @@ import frc.robot.utils.SwerveConfig;
 
 public final class Constants {
 
-  public static final ShuffleboardTab m_tab = Shuffleboard.getTab("Constants");
+  private static final ShuffleboardTab m_tab = Shuffleboard.getTab("Constants");
 
   public static boolean USE_ONE_CONTROLLER = false;
   public static final String VERSION = "Version 0.2.0";
@@ -64,7 +64,8 @@ public final class Constants {
 
     public static final double DRIVE_GEAR_RATIO = 8.16;
     public static final double ANGLE_GEAR_RATIO = 12.8;
-    public static final NetworkTableEntry MAX_POWER = m_tab.add("Motor max power", 5.0).getEntry();
+    public static final double DEFAULT_MAX_POWER = 6.0;
+    public static final NetworkTableEntry MAX_POWER = m_tab.add("Motor max power", DEFAULT_MAX_POWER).getEntry();
   }
 
   public final static class Autonomous {
@@ -76,8 +77,8 @@ public final class Constants {
 
     // theoretical values do not use mk3 as they are the motor
     // FIXME: calculate the max
-    public static final double MAX_VELOCITY_METERS_PER_SECOND = 4;
-    public static final double MAX_ACCELERATION_METERS_PER_SECOND = 4;
+    public static final double MAX_VELOCITY_METERS_PER_SECOND = 1;
+    public static final double MAX_ACCELERATION_METERS_PER_SECOND = 1;
 
     public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = Math.PI;
     public static final double MAX_ANGULAR_ACCELERATION_RADIANS_PER_SECOND = Math.PI;
@@ -88,17 +89,23 @@ public final class Constants {
   }
 
   public final static class Arm {
-    public static final NetworkTableEntry TRAVEL_UP_POWER = m_tab.add("Arm up power", 0.45).getEntry(); // .35
-    public static final NetworkTableEntry TRAVEL_DOWN_POWER = m_tab.add("Arm down power", 0.3).getEntry();
-    public static final NetworkTableEntry TRAVEL_DIFFRENCE = m_tab.add("Arm travel diffrence", 0.14).getEntry();
-    public static final double ABS_UP_POSITION = 40000; // Range from RNG - MAX
+    public static final double DEFAULT_TRAVEL_UP_POWER = 0.40;
+    public static final NetworkTableEntry TRAVEL_UP_POWER = m_tab.add("Arm up power", DEFAULT_TRAVEL_UP_POWER)
+        .getEntry(); // .35
+    public static final double DEFAULT_TRAVEL_DOWN_POWER = 0.3;
+    public static final NetworkTableEntry TRAVEL_DOWN_POWER = m_tab.add("Arm down power", DEFAULT_TRAVEL_DOWN_POWER)
+        .getEntry();
+    public static final double DEFAULT_TRAVEL_DISTANCE = 0.16;
+    public static final NetworkTableEntry TRAVEL_DIFFRENCE = m_tab.add("Arm travel diffrence", DEFAULT_TRAVEL_DISTANCE)
+        .getEntry();
+    public static final double ABS_UP_POSITION = 38000; // Range from RNG - MAX
     public static final double UP_POSITION = 37500; // Range from RNG - MAX
-    public static final double DOWN_POSITION = 200; // Enough to hold the bot down
+    public static final double DOWN_POSITION = 100; // Enough to hold the bot down
   }
 
   public final static class Intake {
     public static final NetworkTableEntry POWER_OUT = m_tab.add("Intake power out", 0.8).getEntry();
-    public static final NetworkTableEntry POWER_IN = m_tab.add("Intake power out", 0.45).getEntry();
+    public static final NetworkTableEntry POWER_IN = m_tab.add("Intake power in", 0.55).getEntry();
   }
 
   public static final boolean ENABLE_MAGNETOMETER = false;

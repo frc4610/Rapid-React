@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.*;
+import frc.robot.utils.MathUtils;
 
 //https://docs.wpilib.org/en/stable/docs/software/hardware-apis/misc/addressable-leds.html
 
@@ -125,7 +126,7 @@ public class LEDSubsystem extends SubsystemBase {
     m_faults = new CANdleFaults();
 
     m_ledControllerConfig.stripType = LEDStripType.GRB; // led strip type
-    m_ledControllerConfig.brightnessScalar = 0.5; // dim the LEDs to half brightness
+    m_ledControllerConfig.brightnessScalar = 0.8; // dim the LEDs to half brightness
     m_ledControllerConfig.disableWhenLOS = true; // when losing connection turn off
     m_ledControllerConfig.statusLedOffWhenActive = true; // Removes orange tint
     m_ledController.configAllSettings(m_ledControllerConfig);
@@ -166,12 +167,13 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   public void setLEDStripRainbow() {
-    for (int i = 0; i < m_ledBuffer.getLength(); i++) {
+    for (int i = 0; i < LED_STRIP_COUNT / 2; i++) {
       // Calculate the hue - hue is easier for rainbows because the color
       // shape is a circle so only one value needs to precess
       final int hue = (m_rainbowFirstPixelHue + (i * 180 / m_ledBuffer.getLength())) % 180;
       // Set the value
-      m_ledBuffer.setHSV(i, hue, 255, 128);
+      m_ledBuffer.setHSV(i, hue, 255, 255);
+      m_ledBuffer.setHSV(LED_STRIP_COUNT - i - 1, hue, 255, 255);
     }
     // Increase by to make the rainbow "move"
     m_rainbowFirstPixelHue += 3;

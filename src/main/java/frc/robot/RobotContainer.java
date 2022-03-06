@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,13 +14,13 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Button;
-import frc.robot.commands.AutonomousCommand;
+import frc.robot.commands.AutonomousCompCommand;
 import frc.robot.commands.DriveContinuous;
 import frc.robot.commands.UserControllerCommand;
 import frc.robot.subsystems.AutonomousSubsystem;
@@ -41,11 +44,19 @@ public class RobotContainer {
   private final static AutonomousSubsystem m_autonomousSubsystem = new AutonomousSubsystem(m_drivetrainSubsystem);
   private final static UltrasonicSubsystem m_ultrasonicSubsystem = new UltrasonicSubsystem(m_ledSubsystem);
   private static List<CANDevice> m_canDevices = new ArrayList<CANDevice>();
+  private static File m_deployDirectory;
+  private static FileReader m_gitFile;
 
   public final static Field2d dashboardField = new Field2d();
 
   public RobotContainer() {
-    Shuffleboard.getTab(Constants.VERSION);
+    m_deployDirectory = Filesystem.getDeployDirectory();
+    try {
+      m_gitFile = new FileReader(new File(m_deployDirectory, "git.txt"));
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
+    SmartDashboard.putString("Branch:", Constants.VERSION);
     SmartDashboard.putData("Field", dashboardField);
 
     m_drivetrainSubsystem.setDefaultCommand(new UserControllerCommand(
@@ -118,7 +129,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new AutonomousCommand(m_drivetrainSubsystem, m_autonomousSubsystem);
+    return new AutonomousCompCommand(m_drivetrainSubsystem, m_autonomousSubsystem, m_intakeSubsystem);
   }
 
   public static LEDSubsystem getLEDSubsystem() {
