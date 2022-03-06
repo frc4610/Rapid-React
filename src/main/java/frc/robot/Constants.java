@@ -38,7 +38,7 @@ public final class Constants {
   public final static class Ultrasonic {
     public static final double LENGTH_FROM_SIDE = 6.0; // inches from front side
     public static final double WIDTH_INCH = 25.15;
-    public static final double ANGULAR_THRESHOLD = 10.0;
+    public static final double ANGULAR_THRESHOLD = 5.0;
     public static final double MIN_DISTANCE = 12.0;
     public static final double MAX_DISTANCE = 18.0;
     public static final double LED_START_RANGE = 50.0;
@@ -92,14 +92,14 @@ public final class Constants {
     public static final double DEFAULT_TRAVEL_UP_POWER = 0.40;
     public static final NetworkTableEntry TRAVEL_UP_POWER = m_tab.add("Arm up power", DEFAULT_TRAVEL_UP_POWER)
         .getEntry(); // .35
-    public static final double DEFAULT_TRAVEL_DOWN_POWER = 0.3;
+    public static final double DEFAULT_TRAVEL_DOWN_POWER = 0.4;
     public static final NetworkTableEntry TRAVEL_DOWN_POWER = m_tab.add("Arm down power", DEFAULT_TRAVEL_DOWN_POWER)
         .getEntry();
     public static final double DEFAULT_TRAVEL_DISTANCE = 0.16;
     public static final NetworkTableEntry TRAVEL_DIFFRENCE = m_tab.add("Arm travel diffrence", DEFAULT_TRAVEL_DISTANCE)
         .getEntry();
-    public static final double ABS_UP_POSITION = 45000; // Range from RNG - MAX
-    public static final double UP_POSITION = 45000 - 1500; // Range from RNG - MAX
+    public static final double ABS_UP_POSITION = 60000; // Range from RNG - MAX
+    public static final double UP_POSITION = ABS_UP_POSITION - 1500; // Range from RNG - MAX
     public static final double DOWN_POSITION = 100; // Enough to hold the bot down
   }
 
