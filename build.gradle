@@ -23,13 +23,17 @@ tasks.register("writeGitToDeploy") {
    // Parse the output into a string
    def branch = stdout.toString().trim()
 
-   // Create a new file
-   new File(
-      // Join project directory and deploy directory
-      projectDir.toString() + "/src/main/deploy",
-      // File name to write to
-      "git.txt"
-   ).text = branch // Set the contents of the file to the variable branch
+    try {
+    // Create a new file
+    new File(
+        // Join project directory and deploy directory
+        projectDir.toString() + "/src/main/deploy",
+        // File name to write to
+        "git.txt"
+    ).text = branch // Set the contents of the file to the variable branch
+    } catch (Exception e) {
+        println("Failed to Create File")
+    }
 }
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
