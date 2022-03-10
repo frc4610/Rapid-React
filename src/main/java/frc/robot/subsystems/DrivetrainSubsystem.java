@@ -6,8 +6,9 @@ package frc.robot.subsystems;
 
 //import com.ctre.phoenix.sensors.PigeonIMU;
 import com.kauailabs.navx.frc.AHRS;
-import swervelib.Mk3SwerveModuleHelper;
+
 import swervelib.SwerveModule;
+import swervelib.config.Mk3SwerveModuleHelper;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.RobotContainer;
 import frc.robot.utils.*;
 import frc.robot.utils.math.InterpolatingTreeMap;
+import frc.robot.utils.math.MathUtils;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -193,6 +195,16 @@ public class DrivetrainSubsystem extends BaseSubsystem {
       m_didCollide = false;
     }
     return m_didCollide;
+  }
+
+  public void driveWithHeading(double translation_x, double translation_y, double headingDegrees) {
+
+    double angle = getGyroRotation().getDegrees();
+    double currentAngularRate = -getTurnRate();
+    double angle_error = MathUtils.angleDelta(headingDegrees, angle);
+    double yawCommand = -angle_error * 0.040 - (currentAngularRate);
+
+    drive(translation_x, translation_y, Math.toRadians(yawCommand), true);
   }
 
   public void drive(double translation_x, double translation_y, double rotation) {

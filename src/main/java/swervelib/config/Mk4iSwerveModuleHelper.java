@@ -1,5 +1,10 @@
-package swervelib;
+package swervelib.config;
 
+import swervelib.DriveControllerFactory;
+import swervelib.ModuleConfiguration;
+import swervelib.SteerControllerFactory;
+import swervelib.SwerveModule;
+import swervelib.SwerveModuleFactory;
 import swervelib.ctre.*;
 import swervelib.rev.NeoDriveControllerFactoryBuilder;
 import swervelib.rev.NeoSteerConfiguration;

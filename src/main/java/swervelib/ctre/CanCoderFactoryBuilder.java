@@ -53,7 +53,6 @@ public class CanCoderFactoryBuilder {
     }
 
     private static class EncoderImplementation implements AbsoluteEncoder {
-        private final int ATTEMPTS = 3; // TODO: Allow changing number of tries for getting correct position
         private final CANCoder encoder;
 
         private EncoderImplementation(CANCoder encoder) {
@@ -63,10 +62,15 @@ public class CanCoderFactoryBuilder {
         @Override
         public double getAbsoluteAngle() {
             double angle = Math.toRadians(encoder.getAbsolutePosition());
-            if (Constants.ENABLE_ABS_ENCODER_POSITION) {
+            /* 
+                This will attempt to verify the abs encoder rather then software
+                Due to high can bus usage this can sometimes cause a hang so don't loop only have a set amount of tries
+                
+            */
+            if (Constants.ENABLE_ABS_ENCODER_POS_ERROR_CHECKS) {
                 ErrorCode code = encoder.getLastError();
 
-                for (int i = 0; i < ATTEMPTS; i++) {
+                for (int i = 0; i < Constants.ABS_ENCODER_ERROR_RETRY_COUNT; i++) {
                     if (code == ErrorCode.OK)
                         break;
                     angle = Math.toRadians(encoder.getAbsolutePosition());
@@ -74,7 +78,7 @@ public class CanCoderFactoryBuilder {
                 }
 
                 CtreUtils.checkCtreError(code, "Failed to retrieve CANcoder " + encoder.getDeviceID()
-                        + " absolute position after " + ATTEMPTS + " tries");
+                        + " absolute position after " + Constants.ABS_ENCODER_ERROR_RETRY_COUNT + " tries");
             }
             angle %= 2.0 * Math.PI;
             if (angle < 0.0) {

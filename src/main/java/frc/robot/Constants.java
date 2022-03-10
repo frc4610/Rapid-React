@@ -1,12 +1,12 @@
 package frc.robot;
 
-import swervelib.SdsModuleConfigurations;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.utils.SwerveConfig;
+import swervelib.config.SdsModuleConfigurations;
 
 public final class Constants {
 

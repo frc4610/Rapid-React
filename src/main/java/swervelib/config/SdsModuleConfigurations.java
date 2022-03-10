@@ -1,4 +1,6 @@
-package swervelib;
+package swervelib.config;
+
+import swervelib.ModuleConfiguration;
 
 public final class SdsModuleConfigurations {
         public static final ModuleConfiguration MK3_STANDARD = new ModuleConfiguration(

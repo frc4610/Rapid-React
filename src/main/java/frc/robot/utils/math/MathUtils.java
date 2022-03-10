@@ -261,4 +261,12 @@ public class MathUtils {
     //bring it back to (-180, 180)
     return start - 180;
   }
+
+  public static double angleDelta(double src, double dest) {
+    double delta = (dest - src) % 360.0;
+    if (Math.abs(delta) > 180) {
+      delta = delta - (Math.signum(delta) * 360);
+    }
+    return delta;
+  }
 }
