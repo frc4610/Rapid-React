@@ -93,5 +93,11 @@ public final class NeoDriveControllerFactoryBuilder {
         public double getStateVelocity() {
             return encoder.getVelocity();
         }
+
+        @Override
+        public void configRampRate(double rampRate) {
+            this.motor.setOpenLoopRampRate(rampRate);
+        }
+
     }
 }
