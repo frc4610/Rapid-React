@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.RobotContainer;
 import frc.robot.utils.*;
+import frc.robot.utils.math.InterpolatingTreeMap;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -70,6 +71,8 @@ public class DrivetrainSubsystem extends BaseSubsystem {
     if (m_navx.isBoardlevelYawResetEnabled()) {
       m_navx.enableBoardlevelYawReset(false);
     }
+
+    resetPose(new Pose2d(7, 2, Rotation2d.fromDegrees(-90)));
 
     m_DrivetrainTab = Shuffleboard.getTab("Drivetrain");
     m_DriveDataTab = Shuffleboard.getTab("Drive Data");
@@ -276,21 +279,21 @@ public class DrivetrainSubsystem extends BaseSubsystem {
   @Override
   public void periodic() {
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(states, Motor.MAX_VELOCITY_METERS_PER_SECOND);
+    SwerveDriveKinematics.desaturateWheelSpeeds(states, Motor.MAX_VELOCITY_MPS);
     m_frontLeftModule.set(
-        states[0].speedMetersPerSecond / Motor.MAX_VELOCITY_METERS_PER_SECOND
+        states[0].speedMetersPerSecond / Motor.MAX_VELOCITY_MPS
             * m_wheelVoltage,
         states[0].angle.getRadians());
     m_frontRightModule.set(
-        states[1].speedMetersPerSecond / Motor.MAX_VELOCITY_METERS_PER_SECOND
+        states[1].speedMetersPerSecond / Motor.MAX_VELOCITY_MPS
             * m_wheelVoltage,
         states[1].angle.getRadians());
     m_backLeftModule.set(
-        states[2].speedMetersPerSecond / Motor.MAX_VELOCITY_METERS_PER_SECOND
+        states[2].speedMetersPerSecond / Motor.MAX_VELOCITY_MPS
             * m_wheelVoltage,
         states[2].angle.getRadians());
     m_backRightModule.set(
-        states[3].speedMetersPerSecond / Motor.MAX_VELOCITY_METERS_PER_SECOND
+        states[3].speedMetersPerSecond / Motor.MAX_VELOCITY_MPS
             * m_wheelVoltage,
         states[3].angle.getRadians());
     updateOdometry(states);

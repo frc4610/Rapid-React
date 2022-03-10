@@ -9,8 +9,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants.*;
 import frc.robot.utils.BaseSubsystem;
-import frc.robot.utils.MathUtils;
-import frc.robot.utils.Controller.XboxControllerExtended;
+import frc.robot.utils.controller.XboxControllerExtended;
+import frc.robot.utils.math.MathUtils;
 
 public class IntakeSubsystem extends BaseSubsystem {
 
@@ -83,12 +83,12 @@ public class IntakeSubsystem extends BaseSubsystem {
     }
   }
 
-  public void autonomousIntakeEnable() {
+  public void autonomousIntakeFireEnable() {
     m_autoControl = true;
     m_intake.set(ControlMode.PercentOutput, -0.35);
   }
 
-  public void autonomousIntakeDisable() {
+  public void autonomousIntakeFireDisable() {
     m_autoControl = false;
     m_intake.set(ControlMode.PercentOutput, 0);
   }

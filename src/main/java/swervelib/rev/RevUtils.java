@@ -1,7 +1,6 @@
 package swervelib.rev;
 
 import com.revrobotics.REVLibError;
-
 import edu.wpi.first.wpilibj.DriverStation;
 
 public final class RevUtils {

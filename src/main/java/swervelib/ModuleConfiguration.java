@@ -31,7 +31,7 @@ public class ModuleConfiguration {
      *                       this is typically true.
      */
     public ModuleConfiguration(double wheelDiameter, double driveReduction, boolean driveInverted,
-                               double steerReduction, boolean steerInverted) {
+            double steerReduction, boolean steerInverted) {
         this.wheelDiameter = wheelDiameter;
         this.driveReduction = driveReduction;
         this.driveInverted = driveInverted;
@@ -80,8 +80,10 @@ public class ModuleConfiguration {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         ModuleConfiguration that = (ModuleConfiguration) o;
         return Double.compare(that.getWheelDiameter(), getWheelDiameter()) == 0 &&
                 Double.compare(that.getDriveReduction(), getDriveReduction()) == 0 &&
@@ -97,8 +99,7 @@ public class ModuleConfiguration {
                 getDriveReduction(),
                 isDriveInverted(),
                 getSteerReduction(),
-                isSteerInverted()
-        );
+                isSteerInverted());
     }
 
     @Override

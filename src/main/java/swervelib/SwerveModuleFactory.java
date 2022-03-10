@@ -36,7 +36,7 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
         return new ModuleImplementation(driveController, steerContainer);
     }
 
-    private static class ModuleImplementation implements SwerveModule {
+    private static class ModuleImplementation implements SwerveModule, AbsoluteEncoder {
         private final DriveController driveController;
         private final SteerController steerController;
 
@@ -78,8 +78,7 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
             }
 
             double difference = steerAngle - getSteerAngle();
-            // Change the target angle so the difference is in the range [-pi, pi) instead
-            // of [0, 2pi)
+            // Change the target angle so the difference is in the range [-pi, pi) instead of [0, 2pi)
             if (difference >= Math.PI) {
                 steerAngle -= 2.0 * Math.PI;
             } else if (difference < -Math.PI) {
@@ -87,12 +86,10 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
             }
             difference = steerAngle - getSteerAngle(); // Recalculate difference
 
-            // If the difference is greater than 90 deg or less than -90 deg the drive can
-            // be inverted so the total
+            // If the difference is greater than 90 deg or less than -90 deg the drive can be inverted so the total
             // movement of the module is less than 90 deg
             if (difference > Math.PI / 2.0 || difference < -Math.PI / 2.0) {
-                // Only need to add 180 deg here because the target angle will be put back into
-                // the range [0, 2pi)
+                // Only need to add 180 deg here because the target angle will be put back into the range [0, 2pi)
                 steerAngle += Math.PI;
                 driveVoltage *= -1.0;
             }
@@ -105,6 +102,21 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
 
             driveController.setReferenceVoltage(driveVoltage);
             steerController.setReferenceAngle(steerAngle);
+        }
+
+        /**
+         * Gets the current angle reading of the encoder in radians.
+         *
+         * @return The current angle in radians. Range: [0, 2pi). Returns Double.NaN if the steer controller doesn't
+         *         support returning the absolute encoder position
+         */
+        @Override
+        public double getAbsoluteAngle() {
+            if (steerController instanceof AbsoluteEncoder) {
+                AbsoluteEncoder encoder = (AbsoluteEncoder) steerController;
+                return encoder.getAbsoluteAngle();
+            }
+            return Double.NaN;
         }
     }
 }

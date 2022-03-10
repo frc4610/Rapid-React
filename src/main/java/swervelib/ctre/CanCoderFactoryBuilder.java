@@ -1,11 +1,13 @@
 package swervelib.ctre;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.ctre.phoenix.sensors.CANCoderStatusFrame;
 import swervelib.AbsoluteEncoder;
 import swervelib.AbsoluteEncoderFactory;
+import swervelib.Constants;
 
 public class CanCoderFactoryBuilder {
     private Direction direction = Direction.COUNTER_CLOCKWISE;
@@ -16,25 +18,42 @@ public class CanCoderFactoryBuilder {
         return this;
     }
 
+    public CanCoderFactoryBuilder withDirection(Direction direction) {
+        this.direction = direction;
+        return this;
+    }
+
     public AbsoluteEncoderFactory<CanCoderAbsoluteConfiguration> build() {
         return configuration -> {
             CANCoderConfiguration config = new CANCoderConfiguration();
             config.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
             config.magnetOffsetDegrees = Math.toDegrees(configuration.getOffset());
             config.sensorDirection = direction == Direction.CLOCKWISE;
+            config.initializationStrategy = configuration.getInitStrategy();
 
-            CANCoder encoder = new CANCoder(configuration.getId());
-            CtreUtils.checkCtreError(encoder.configAllSettings(config, 250), "Failed to configure CANCoder");
+            final var encoderId = configuration.getId();
+            if (encoderId != -1) {
+                CANCoder encoder = new CANCoder(configuration.getId());
+                CtreUtils.checkCtreError(encoder.configAllSettings(config, 250), "Failed to configure CANCoder");
 
-            CtreUtils.checkCtreError(
-                    encoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, periodMilliseconds, 250),
-                    "Failed to configure CANCoder update rate");
+                CtreUtils.checkCtreError(
+                        encoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, periodMilliseconds, 250),
+                        "Failed to configure CANCoder update rate");
+                return new EncoderImplementation(encoder);
+            } else {
+                return new AbsoluteEncoder() {
+                    @Override
+                    public double getAbsoluteAngle() {
+                        return Double.NaN;
+                    }
+                };
+            }
 
-            return new EncoderImplementation(encoder);
         };
     }
 
     private static class EncoderImplementation implements AbsoluteEncoder {
+        private final int ATTEMPTS = 3; // TODO: Allow changing number of tries for getting correct position
         private final CANCoder encoder;
 
         private EncoderImplementation(CANCoder encoder) {
@@ -44,6 +63,19 @@ public class CanCoderFactoryBuilder {
         @Override
         public double getAbsoluteAngle() {
             double angle = Math.toRadians(encoder.getAbsolutePosition());
+            if (Constants.ENABLE_ABS_ENCODER_POSITION) {
+                ErrorCode code = encoder.getLastError();
+
+                for (int i = 0; i < ATTEMPTS; i++) {
+                    if (code == ErrorCode.OK)
+                        break;
+                    angle = Math.toRadians(encoder.getAbsolutePosition());
+                    code = encoder.getLastError();
+                }
+
+                CtreUtils.checkCtreError(code, "Failed to retrieve CANcoder " + encoder.getDeviceID()
+                        + " absolute position after " + ATTEMPTS + " tries");
+            }
             angle %= 2.0 * Math.PI;
             if (angle < 0.0) {
                 angle += 2.0 * Math.PI;

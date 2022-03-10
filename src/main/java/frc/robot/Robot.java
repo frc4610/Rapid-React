@@ -4,10 +4,18 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.utils.Logger;
+import frc.robot.utils.LED.TimerPattern;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -20,10 +28,8 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-
+  @SuppressWarnings("unused")
   private RobotContainer m_robotContainer;
-
-  private boolean m_lastEnabled = false;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -33,6 +39,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     m_robotContainer = new RobotContainer();
+    Logger.println("Robot Initalized");
   }
 
   /**
@@ -48,10 +55,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    if (m_lastEnabled != DriverStation.isEnabled()) {
-      RobotContainer.onModeChange(DriverStation.isEnabled());
-      m_lastEnabled = DriverStation.isEnabled();
-    }
     RobotContainer.updateSubsystemStatus();
     CommandScheduler.getInstance().run();
 
@@ -60,12 +63,17 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    m_robotContainer.reset();
+    RobotContainer.reset();
   }
 
   @Override
   public void disabledPeriodic() {
-    RobotContainer.getLEDSubsystem().setLEDStripRainbow();
+    if (RobotController.getInputVoltage() < 12.0) {
+      RobotContainer.getLEDSubsystem().setPattern(LEDSubsystem.m_blinkingYellow);
+    } else {
+      //RobotContainer.getLEDSubsystem().setPattern(LEDSubsystem.m_scannerRedPattern);
+      RobotContainer.getLEDSubsystem().setPattern(LEDSubsystem.m_rainbowPattern);
+    }
   }
 
   /**
@@ -74,28 +82,40 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_autonomousCommand = RobotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
+    }
+    double autoTime = DriverStation.isFMSAttached() ? DriverStation.getMatchTime() : 15;
+    if (DriverStation.getAlliance() == Alliance.Blue) {
+      LEDSubsystem.m_timerPattern = new TimerPattern(Color.kBlue, autoTime);
+    } else {
+      LEDSubsystem.m_timerPattern = new TimerPattern(Color.kRed, autoTime);
     }
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+    RobotContainer.getLEDSubsystem().setPattern(LEDSubsystem.m_timerPattern);
+  }
+
+  @Override
+  public void autonomousExit() {
+    //Reset the odometry rotation as the robot leaves autonomous before teleop
+    RobotContainer.getDrivetrain().resetPose(new Pose2d(0, 0, new Rotation2d(0)));
+    Logger.println("Autonomous Ended");
   }
 
   @Override
   public void teleopInit() {
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    RobotContainer.setDefaultTeleopCommand();
+    Logger.println("Teleop Initalized");
   }
 
   /** This function is called periodically during operator control. */

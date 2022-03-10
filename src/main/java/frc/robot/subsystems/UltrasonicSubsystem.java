@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants.*;
 import frc.robot.utils.BaseSubsystem;
-import frc.robot.utils.MathUtils;
 import frc.robot.utils.UltrasonicMB1013;
+import frc.robot.utils.math.MathUtils;
 
 public class UltrasonicSubsystem extends BaseSubsystem {
   private final ShuffleboardTab m_ultrasonicTab;
@@ -22,7 +22,7 @@ public class UltrasonicSubsystem extends BaseSubsystem {
     m_ultrasonicTab = Shuffleboard.getTab("Ultrasonic");
     m_ultrasonicLeft = new UltrasonicMB1013(Ids.LEFT_ULTRASONIC);
     m_ultrasonicRight = new UltrasonicMB1013(Ids.RIGHT_ULTRASONIC);
-    DisableSensors();
+    EnableSensors();
 
     m_ultrasonicLayout = m_ultrasonicTab.getLayout("Data", BuiltInLayouts.kGrid)
         .withSize(2, 1)
@@ -64,12 +64,12 @@ public class UltrasonicSubsystem extends BaseSubsystem {
 
   @Override
   public void periodic() {
-    if (m_isEnabled) {
+    if (m_isEnabled && getRobotMode() != RobotMode.AUTO) {
       double minDistance = getUltrasonicDistance();
       if (MathUtils.withinRange(getUltrasonicRotation().getDegrees(), -Ultrasonic.ANGULAR_THRESHOLD,
           Ultrasonic.ANGULAR_THRESHOLD)
           && MathUtils.withinRange(minDistance, Ultrasonic.MIN_DISTANCE, Ultrasonic.MAX_DISTANCE)) {
-        m_ledSubsystem.setAll(0, 255, 0);
+        m_ledSubsystem.setPattern(LEDSubsystem.m_greenAlternating);
       } else {
         m_ledSubsystem.setAllianceColors();
       }

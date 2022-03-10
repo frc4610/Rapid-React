@@ -1,7 +1,6 @@
 package swervelib.ctre;
 
 import com.ctre.phoenix.ErrorCode;
-
 import edu.wpi.first.wpilibj.DriverStation;
 
 public final class CtreUtils {

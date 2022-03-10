@@ -4,11 +4,12 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import swervelib.DriveController;
 import swervelib.DriveControllerFactory;
 import swervelib.ModuleConfiguration;
+import edu.wpi.first.wpilibj.RobotBase;
 
 public final class Falcon500DriveControllerFactoryBuilder {
     private static final double TICKS_PER_ROTATION = 2048.0;
@@ -59,7 +60,8 @@ public final class Falcon500DriveControllerFactoryBuilder {
                 motorConfiguration.supplyCurrLimit.enable = true;
             }
 
-            TalonFX motor = new TalonFX(driveConfiguration);
+            WPI_TalonFX motor = new WPI_TalonFX(driveConfiguration);
+            motor.configAllSettings(motorConfiguration);
             CtreUtils.checkCtreError(motor.configAllSettings(motorConfiguration), "Failed to configure Falcon 500");
 
             if (hasVoltageCompensation()) {
@@ -86,13 +88,13 @@ public final class Falcon500DriveControllerFactoryBuilder {
     }
 
     private class ControllerImplementation implements DriveController {
-        private final TalonFX motor;
+        private final WPI_TalonFX motor;
         private final double sensorVelocityCoefficient;
         private final double nominalVoltage = hasVoltageCompensation()
                 ? Falcon500DriveControllerFactoryBuilder.this.nominalVoltage
                 : 12.0;
 
-        private ControllerImplementation(TalonFX motor, double sensorVelocityCoefficient) {
+        private ControllerImplementation(WPI_TalonFX motor, double sensorVelocityCoefficient) {
             this.motor = motor;
             this.sensorVelocityCoefficient = sensorVelocityCoefficient;
         }
@@ -104,7 +106,22 @@ public final class Falcon500DriveControllerFactoryBuilder {
 
         @Override
         public void setReferenceVoltage(double voltage) {
-            motor.set(TalonFXControlMode.PercentOutput, voltage / nominalVoltage);
+            double percentOutput = voltage / nominalVoltage;
+            motor.set(TalonFXControlMode.PercentOutput, percentOutput);
+            if (RobotBase.isSimulation()) {
+                if (motor.getInverted()) {
+                    percentOutput *= -1.0;
+                }
+
+                // SelectedSensorVelocity is raw sensor units per 100ms
+                // See https://store.ctr-electronics.com/content/api/java/html/interfacecom_1_1ctre_1_1phoenix_1_1motorcontrol_1_1_i_motor_controller.html#a2e40db44cfbd62192ffac3fb7ccf5166
+                // Raw sensor units are 2048 ticks per rotation
+                // See https://docs.ctre-phoenix.com/en/stable/ch14_MCSensor.html#sensor-resolution
+                // Max RPM is ~6000 per https://motors.vex.com/vexpro-motors/falcon
+                // Synthetic velocity is outputPercent * 2048 (ticks/rotation) * 6000 RPM / 60 (sec/min) / 10 (100ms/sec)
+                motor.getSimCollection()
+                        .setIntegratedSensorVelocity((int) (percentOutput * 2048.0 * 6000.0 / 60.0 / 10.0));
+            }
         }
 
         @Override

@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -18,64 +19,52 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Button;
-import frc.robot.commands.AutonomousCompCommand;
-import frc.robot.commands.DriveContinuous;
-import frc.robot.commands.UserControllerCommand;
+import frc.robot.commands.DriveContinuousCmd;
+import frc.robot.commands.UserControllerCmd;
+import frc.robot.commands.Autonomous.AutoActionCmd;
 import frc.robot.subsystems.AutonomousSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.UltrasonicSubsystem;
-import frc.robot.utils.MathUtils;
 import frc.robot.utils.CAN.CANDevice;
-import frc.robot.utils.Controller.XboxControllerExtended;
+import frc.robot.utils.controller.XboxControllerExtended;
 import frc.robot.utils.json.JsonReader;
+import frc.robot.utils.math.MathUtils;
 
 public class RobotContainer {
-  // @SuppressWarnings("unused") // to remove warnings
+  public final static File deployDirectory = Filesystem.getDeployDirectory();
+  public final static Field2d dashboardField = new Field2d();
+  public String branch = "null";
   private final static DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final static XboxControllerExtended m_driverController = new XboxControllerExtended(0);
   private final static XboxControllerExtended m_operatorController = new XboxControllerExtended(1);
   private final static LEDSubsystem m_ledSubsystem = new LEDSubsystem();
   private final static IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem(
       Constants.USE_ONE_CONTROLLER ? m_driverController : m_operatorController);
-  private final static AutonomousSubsystem m_autonomousSubsystem = new AutonomousSubsystem(m_drivetrainSubsystem);
   private final static UltrasonicSubsystem m_ultrasonicSubsystem = new UltrasonicSubsystem(m_ledSubsystem);
+  private final static AutonomousSubsystem m_autonomousSubsystem = new AutonomousSubsystem(m_drivetrainSubsystem,
+      m_intakeSubsystem);
   private static List<CANDevice> m_canDevices = new ArrayList<CANDevice>();
-  private static File m_deployDirectory;
-  private static FileReader m_gitFile;
-
-  public final static Field2d dashboardField = new Field2d();
 
   public RobotContainer() {
-    m_deployDirectory = Filesystem.getDeployDirectory();
     try {
-      m_gitFile = new FileReader(new File(m_deployDirectory, "git.txt"));
+      FileReader gitFile = new FileReader(new File(deployDirectory, "git.txt"));
+      Scanner gitReader = new Scanner(gitFile);
+      if (gitReader.hasNextLine())
+        branch = gitReader.nextLine();
+      gitReader.close();
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
-    SmartDashboard.putString("Branch:", Constants.VERSION);
+    SmartDashboard.putString("Branch:", branch);
     SmartDashboard.putData("Field", dashboardField);
-
-    m_drivetrainSubsystem.setDefaultCommand(new UserControllerCommand(
-        m_drivetrainSubsystem,
-        () -> -MathUtils.modifyAxis(m_driverController.getLeftY(), Constants.Controller.XBOX_DEADBAND)
-            * Constants.Motor.MAX_VELOCITY_METERS_PER_SECOND,
-        () -> -MathUtils.modifyAxis(m_driverController.getLeftX(), Constants.Controller.XBOX_DEADBAND)
-            * Constants.Motor.MAX_VELOCITY_METERS_PER_SECOND,
-        () -> -MathUtils.modifyAxis(m_driverController.getRightX(), Constants.Controller.XBOX_DEADBAND)
-            * Constants.Motor.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
-
-    // Configure the button bindings
-    configureDriveButtons();
-    // configureLEDButtons();
 
     DriverStation.silenceJoystickConnectionWarning(true);
   }
 
-  private void configureDriveButtons() {
+  private static void configureDriveButtons() {
     new Button(m_driverController::getBackButton)
         .whenPressed(() -> {
           reset();
@@ -88,9 +77,9 @@ public class RobotContainer {
         });
 
     new Button(m_driverController::getLeftBumper)
-        .whileHeld(new DriveContinuous(m_drivetrainSubsystem, true));
+        .whileHeld(new DriveContinuousCmd(m_drivetrainSubsystem, true));
     new Button(m_driverController::getRightBumper)
-        .whileHeld(new DriveContinuous(m_drivetrainSubsystem, false));
+        .whileHeld(new DriveContinuousCmd(m_drivetrainSubsystem, false));
   }
 
   public static void updateSubsystemStatus() {
@@ -115,21 +104,22 @@ public class RobotContainer {
     }
   }
 
-  public static void onModeChange(boolean enabled) {
-    if (enabled) {
-      m_ultrasonicSubsystem.EnableSensors();
-    } else {
-      m_ultrasonicSubsystem.DisableSensors();
-    }
+  public final static DrivetrainSubsystem getDrivetrain() {
+    return m_drivetrainSubsystem;
   }
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    return new AutonomousCompCommand(m_drivetrainSubsystem, m_autonomousSubsystem, m_intakeSubsystem);
+  public static void setDefaultTeleopCommand() {
+    m_drivetrainSubsystem.setDefaultCommand(new UserControllerCmd(
+        m_drivetrainSubsystem,
+        () -> getDriveForwardAxis(),
+        () -> getDriveStrafeAxis(),
+        () -> getDriveRotationAxis()));
+
+    configureDriveButtons();
+  }
+
+  public static AutoActionCmd getAutonomousCommand() {
+    return m_autonomousSubsystem.getAutoCmd().get();
   }
 
   public static LEDSubsystem getLEDSubsystem() {
@@ -139,7 +129,7 @@ public class RobotContainer {
   /**
    * Resets Gyro
    */
-  public void reset() {
+  public static void reset() {
     m_drivetrainSubsystem.zeroGyro();
   }
 
@@ -169,5 +159,17 @@ public class RobotContainer {
     if (!RobotController.getEnabled6V())
       return false;
     return true;
+  }
+
+  public static double getDriveForwardAxis() {
+    return MathUtils.modifyAxis(m_driverController.getLeftY(), Constants.Controller.XBOX_DEADBAND);
+  }
+
+  public static double getDriveStrafeAxis() {
+    return MathUtils.modifyAxis(m_driverController.getLeftX(), Constants.Controller.XBOX_DEADBAND);
+  }
+
+  public static double getDriveRotationAxis() {
+    return MathUtils.modifyAxis(m_driverController.getRightX(), Constants.Controller.XBOX_DEADBAND);
   }
 }
