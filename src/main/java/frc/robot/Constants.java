@@ -6,6 +6,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.utils.SwerveConfig;
+import frc.robot.utils.PidConfig;
 import swervelib.config.SdsModuleConfigurations;
 
 public final class Constants {
@@ -74,13 +75,10 @@ public final class Constants {
     public static final double DRIVE_POWER = 4;
 
     // FIXME: Use Azmith to calculate th right meters
-    public static final double PXY_CONTROLLER = 0.5;
-    public static final double IXY_CONTROLLER = 0.1;
-    public static final double DXY_CONTROLLER = 0.0;
+    public static final PidConfig PID_XY = new PidConfig(0.5, 0.1, 0.0);
+    public static final PidConfig PID_THETA = new PidConfig(2.5, 0.0, 0.0);
 
-    public static final double PTHETA_CONTROLLER = 2.5;
-    public static final double ITHETA_CONTROLLER = 0.0;
-    public static final double DTHETA_CONTROLLER = 0.0;
+    public static final PidConfig PID_TURN = new PidConfig(0.04, 0.0, 0.0);
 
     // Constraint for the motion profilied robot angle controller
     public static final TrapezoidProfile.Constraints THETA_CONSTRAINTS = new TrapezoidProfile.Constraints(
@@ -96,7 +94,8 @@ public final class Constants {
     public static final NetworkTableEntry TRAVEL_DOWN_POWER = m_tab.add("Arm down power", DEFAULT_TRAVEL_DOWN_POWER)
         .getEntry();
     public static final double DEFAULT_TRAVEL_DISTANCE = 0.2;
-    public static final NetworkTableEntry TRAVEL_DIFFRENCE = m_tab.add("Arm travel diffrence", DEFAULT_TRAVEL_DISTANCE)
+    public static final NetworkTableEntry TRAVEL_DIFFERENCE = m_tab
+        .add("Arm travel difference", DEFAULT_TRAVEL_DISTANCE)
         .getEntry();
     public static final double ABS_UP_POSITION = 60000; // Range from RNG - MAX
     public static final double UP_POSITION = ABS_UP_POSITION - 1500; // Range from RNG - MAX

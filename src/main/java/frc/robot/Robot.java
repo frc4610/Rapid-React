@@ -14,8 +14,8 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.LEDSubsystem;
-import frc.robot.utils.Logger;
 import frc.robot.utils.LED.TimerPattern;
+import oblog.Logger;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -39,7 +39,8 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     m_robotContainer = new RobotContainer();
-    Logger.println("Robot Initalized");
+    Logger.configureLoggingAndConfig(m_robotContainer, false);
+
   }
 
   /**
@@ -57,6 +58,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     RobotContainer.updateSubsystemStatus();
     CommandScheduler.getInstance().run();
+    Logger.updateEntries();
 
   }
 
@@ -106,7 +108,6 @@ public class Robot extends TimedRobot {
   public void autonomousExit() {
     //Reset the odometry rotation as the robot leaves autonomous before teleop
     RobotContainer.getDrivetrain().resetPose(new Pose2d(0, 0, new Rotation2d(0)));
-    Logger.println("Autonomous Ended");
   }
 
   @Override
@@ -115,7 +116,6 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     RobotContainer.setDefaultTeleopCommand();
-    Logger.println("Teleop Initalized");
   }
 
   /** This function is called periodically during operator control. */

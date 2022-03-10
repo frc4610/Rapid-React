@@ -27,13 +27,13 @@ public class AutoFollowPathCmd extends SequentialCommandGroup {
 
   private PPSwerveControllerCommand createTrajectoryFollowerCommand() {
     PIDController xyController = new PIDController(
-        Auto.PXY_CONTROLLER,
-        Auto.IXY_CONTROLLER,
-        Auto.DXY_CONTROLLER);
+        Auto.PID_XY.P,
+        Auto.PID_XY.I,
+        Auto.PID_XY.D);
     ProfiledPIDController thetaController = new ProfiledPIDController(
-        Auto.PTHETA_CONTROLLER,
-        Auto.ITHETA_CONTROLLER,
-        Auto.DTHETA_CONTROLLER,
+        Auto.PID_THETA.P,
+        Auto.PID_THETA.I,
+        Auto.PID_THETA.D,
         Auto.THETA_CONSTRAINTS);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 

@@ -26,6 +26,7 @@ import frc.robot.RobotContainer;
 import frc.robot.utils.*;
 import frc.robot.utils.math.InterpolatingTreeMap;
 import frc.robot.utils.math.MathUtils;
+import oblog.annotations.*;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -202,7 +203,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
     double angle = getGyroRotation().getDegrees();
     double currentAngularRate = -getTurnRate();
     double angle_error = MathUtils.angleDelta(headingDegrees, angle);
-    double yawCommand = -angle_error * 0.040 - (currentAngularRate);
+    double yawCommand = -angle_error * Auto.PID_TURN.P - (currentAngularRate);
 
     drive(translation_x, translation_y, Math.toRadians(yawCommand), true);
   }

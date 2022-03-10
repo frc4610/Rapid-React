@@ -3,8 +3,9 @@ package frc.robot.utils;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
+import oblog.Loggable;
 
-public class BaseSubsystem extends SubsystemBase {
+public class BaseSubsystem extends SubsystemBase implements Loggable {
   public enum RobotMode {
     DISABLED, AUTO, TELEOP
   }

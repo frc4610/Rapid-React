@@ -18,7 +18,6 @@
 | FLE | CANCoder | 12 |
 | ARM | Talon FX | 13 |
 | INTAKE | Talon FX | 14 |
-| CANdle | CANdle | 15 |
 
 ## Firmware Version
 
@@ -55,15 +54,6 @@ naxX2-MXP (Gen2)->Firmware Version(4.0.442)
 - [ ] Wire connections
 - [ ] Damage
 
-## CANdle Status Lights
-
-0. RoboRIO
-1. Can Devices
-2. Ultrasonic
-3. Intake
-4. Arm Position Verification
-5. Is in auto mode
-
 ## Setting up module offsets
 
 Now that we have code running on the robot, we can set up our module steering offsets. In order to do this we must have
@@ -87,3 +77,9 @@ our encoder values displayed to the dashboard.
 5. Re-deploy and try to drive the robot forwards. All wheels should stay parallel to each other.
 6. Make sure all the wheels are spinning in the correct direction. If not, add 180 degrees to the offset of each wheel
 that is spinning in the incorrect direction. (I.e. `-Math.toRadians(<angle> + 180.0))`)
+
+## Tune PID for Rotation
+- [ ] To tune start with a low P value (0.01).
+- [ ] Multiply by 10 until the module starts oscilating around the set point
+- [ ] Scale back by searching for the value (for example, if it starts oscillating at a P of 10, then try (10 -> 5 -> 7.5 -> etc)) until the module overshoots the setpoint but corrects with no oscillation.
+- [ ] Repeat the process for D. The D value will basically help prevent the overshoot. Ignore I.

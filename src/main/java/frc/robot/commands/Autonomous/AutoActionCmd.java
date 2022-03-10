@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.AutonomousSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.utils.Logger;
 
 // Autonomous builder to handle Firing, and getting balls
 public class AutoActionCmd extends SequentialCommandGroup {
@@ -90,7 +89,6 @@ public class AutoActionCmd extends SequentialCommandGroup {
 
   @Override
   public void schedule() {
-    Logger.println("Autonomous Scheduled");
     super.schedule();
   }
 }
