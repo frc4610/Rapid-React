@@ -1,5 +1,7 @@
 # README.MD
 
+[![CI](https://github.com/frc4610/Rapid-React/actions/workflows/main.yml/badge.svg)](https://github.com/frc4610/Rapid-React/actions/workflows/main.yml)
+
 ## CAN Bus Ids
 
 | Name | CAN Device | Id |
@@ -83,3 +85,11 @@ that is spinning in the incorrect direction. (I.e. `-Math.toRadians(<angle> + 18
 - [ ] Multiply by 10 until the module starts oscilating around the set point
 - [ ] Scale back by searching for the value (for example, if it starts oscillating at a P of 10, then try (10 -> 5 -> 7.5 -> etc)) until the module overshoots the setpoint but corrects with no oscillation.
 - [ ] Repeat the process for D. The D value will basically help prevent the overshoot. Ignore I.
+
+## Credits
+
+- [ ] [Oblog](https://github.com/Oblarg/Oblog)
+- [ ] [Swerve Template by SDS](https://github.com/SwerveDriveSpecialties/swerve-template)
+- [ ] [Modified SwerveLib by SDS](https://github.com/SwerveDriveSpecialties/swerve-lib)
+- [ ] [Some util code from Team 2910](https://github.com/FRCTeam2910/Common)
+ 
