@@ -9,8 +9,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants.*;
 import frc.robot.utils.BaseSubsystem;
-import frc.robot.utils.MathUtils;
-import frc.robot.utils.Controller.XboxControllerExtended;
+import frc.robot.utils.controller.XboxControllerExtended;
+import frc.robot.utils.math.MathUtils;
 
 public class IntakeSubsystem extends BaseSubsystem {
 
@@ -83,12 +83,12 @@ public class IntakeSubsystem extends BaseSubsystem {
     }
   }
 
-  public void autonomousIntakeEnable() {
+  public void autonomousIntakeFireEnable() {
     m_autoControl = true;
     m_intake.set(ControlMode.PercentOutput, -0.35);
   }
 
-  public void autonomousIntakeDisable() {
+  public void autonomousIntakeFireDisable() {
     m_autoControl = false;
     m_intake.set(ControlMode.PercentOutput, 0);
   }
@@ -101,7 +101,7 @@ public class IntakeSubsystem extends BaseSubsystem {
       if (Timer.getFPGATimestamp() - m_lastBurstTime < m_armTimeUp) {
         m_arm.set(Arm.TRAVEL_UP_POWER.getDouble(Arm.DEFAULT_TRAVEL_UP_POWER));
       } else if (m_arm.getSelectedSensorPosition() < Arm.UP_POSITION) {
-        m_arm.set(Arm.TRAVEL_DIFFRENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
+        m_arm.set(Arm.TRAVEL_DIFFERENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
       } else {
         m_arm.set(0);
       }
@@ -109,7 +109,7 @@ public class IntakeSubsystem extends BaseSubsystem {
       if (Timer.getFPGATimestamp() - m_lastBurstTime < m_armTimeDown) {
         m_arm.set(-Arm.TRAVEL_DOWN_POWER.getDouble(Arm.DEFAULT_TRAVEL_DOWN_POWER));
       } else if (m_arm.getSelectedSensorPosition() > Arm.DOWN_POSITION) {
-        m_arm.set(-Arm.TRAVEL_DIFFRENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
+        m_arm.set(-Arm.TRAVEL_DIFFERENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
       }
     }
 

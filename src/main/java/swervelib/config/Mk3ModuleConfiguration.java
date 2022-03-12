@@ -1,4 +1,4 @@
-package swervelib;
+package swervelib.config;
 
 import java.util.Objects;
 
@@ -39,10 +39,14 @@ public class Mk3ModuleConfiguration {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Mk3ModuleConfiguration that = (Mk3ModuleConfiguration) o;
-        return Double.compare(that.getNominalVoltage(), getNominalVoltage()) == 0 && Double.compare(that.getDriveCurrentLimit(), getDriveCurrentLimit()) == 0 && Double.compare(that.getSteerCurrentLimit(), getSteerCurrentLimit()) == 0;
+        return Double.compare(that.getNominalVoltage(), getNominalVoltage()) == 0
+                && Double.compare(that.getDriveCurrentLimit(), getDriveCurrentLimit()) == 0
+                && Double.compare(that.getSteerCurrentLimit(), getSteerCurrentLimit()) == 0;
     }
 
     @Override

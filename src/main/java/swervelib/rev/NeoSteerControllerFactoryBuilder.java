@@ -60,8 +60,10 @@ public final class NeoSteerControllerFactoryBuilder {
         @Override
         public void addDashboardEntries(ShuffleboardContainer container, ControllerImplementation controller) {
             SteerControllerFactory.super.addDashboardEntries(container, controller);
-            container.addNumber("Absolute Encoder Angle",
-                    () -> Math.toDegrees(controller.absoluteEncoder.getAbsoluteAngle()));
+            if (container != null) {
+                container.addNumber("Absolute Encoder Angle",
+                        () -> Math.toDegrees(controller.absoluteEncoder.getAbsoluteAngle()));
+            }
         }
 
         @Override
@@ -152,10 +154,8 @@ public final class NeoSteerControllerFactoryBuilder {
             double currentAngleRadians = motorEncoder.getPosition();
 
             // Reset the NEO's encoder periodically when the module is not rotating.
-            // Sometimes (~5% of the time) when we initialize, the absolute encoder isn't
-            // fully set up, and we don't
-            // end up getting a good reading. If we reset periodically this won't matter
-            // anymore.
+            // Sometimes (~5% of the time) when we initialize, the absolute encoder isn't fully set up, and we don't
+            // end up getting a good reading. If we reset periodically this won't matter anymore.
             if (motorEncoder.getVelocity() < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
                 if (++resetIteration >= ENCODER_RESET_ITERATIONS) {
                     resetIteration = 0;
@@ -172,8 +172,7 @@ public final class NeoSteerControllerFactoryBuilder {
                 currentAngleRadiansMod += 2.0 * Math.PI;
             }
 
-            // The reference angle has the range [0, 2pi) but the Neo's encoder can go above
-            // that
+            // The reference angle has the range [0, 2pi) but the Neo's encoder can go above that
             double adjustedReferenceAngleRadians = referenceAngleRadians + currentAngleRadians - currentAngleRadiansMod;
             if (referenceAngleRadians - currentAngleRadiansMod > Math.PI) {
                 adjustedReferenceAngleRadians -= 2.0 * Math.PI;

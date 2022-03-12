@@ -1,4 +1,4 @@
-package frc.robot.utils;
+package frc.robot.utils.math;
 
 import java.util.Random;
 
@@ -20,7 +20,6 @@ public class MathUtils {
   static final double PIO2 = 1.5707963267948966135E0;
   static final double nan = (0.0 / 0.0);
   static final double EPSILON = 1e-9;
-  // TODO: Make templated random
   public static final Random random = new Random();
 
   // If we use it in diffrent places move to a Utils class
@@ -44,6 +43,10 @@ public class MathUtils {
     value = Math.copySign(value * value, value);
 
     return value;
+  }
+
+  public static boolean closeTo(double a, double b, double epsilon) {
+    return epsilonEquals(a, b, epsilon);
   }
 
   public static boolean epsilonEquals(double a, double b) {
@@ -194,6 +197,40 @@ public class MathUtils {
     return newAngle;
   }
 
+  public static double standardDeviation(double[] arr) {
+    double mean = 0.0;
+    double[] temp = new double[arr.length];
+
+    mean = mean(arr);
+
+    for (int i = 0; i < temp.length; i++) {
+      temp[i] = Math.pow((arr[i] - mean), 2);
+    }
+
+    return Math.sqrt(mean(temp));
+  }
+
+  public static double mean(double[] arr) {
+    double sum = 0.0;
+
+    for (int i = 0; i < arr.length; i++) {
+      sum += arr[i];
+    }
+
+    return sum / arr.length;
+  }
+
+  public static double max(double[] arr) {
+    double max = 0;
+    for (int i = 0; i < arr.length; i++) {
+      if (arr[i] > max) {
+        max = arr[i];
+      }
+    }
+
+    return max;
+  }
+
   // Why java have no templates comparable is nasty
   public static int lerp(int a, int b, double v) {
     return (int) (a + (b - a) * v);
@@ -211,5 +248,25 @@ public class MathUtils {
     if (val.compareTo(min) < 0 || val.compareTo(max) > 0)
       return false;
     return true;
+  }
+
+  public static double angleWrap(double degrees) {
+    double start = Math.floorMod((int) degrees + 180, 360); //will work for positive angles
+
+    //angle is (-360, 0), add 360 to make (0, 360)
+    if (start < 0) {
+      start += 360;
+    }
+
+    //bring it back to (-180, 180)
+    return start - 180;
+  }
+
+  public static double angleDelta(double src, double dest) {
+    double delta = (dest - src) % 360.0;
+    if (Math.abs(delta) > 180) {
+      delta = delta - (Math.signum(delta) * 360);
+    }
+    return delta;
   }
 }

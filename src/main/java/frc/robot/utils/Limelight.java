@@ -2,6 +2,7 @@ package frc.robot.utils;
 
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.drive.Vector2d;
+import frc.robot.utils.math.MathUtils;
 
 public final class Limelight {
   private final NetworkTable table;

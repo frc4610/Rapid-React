@@ -1,9 +1,10 @@
 package swervelib.ctre;
 
 import com.ctre.phoenix.motorcontrol.*;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import swervelib.*;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 
 import static swervelib.ctre.CtreUtils.checkCtreError;
@@ -87,8 +88,13 @@ public final class Falcon500SteerControllerFactoryBuilder {
         @Override
         public void addDashboardEntries(ShuffleboardContainer container, ControllerImplementation controller) {
             SteerControllerFactory.super.addDashboardEntries(container, controller);
-            container.addNumber("Absolute Encoder Angle",
-                    () -> Math.toDegrees(controller.absoluteEncoder.getAbsoluteAngle()));
+            final double absoluteAngle = controller.absoluteEncoder.getAbsoluteAngle();
+            if (!Double.isNaN(absoluteAngle)) {
+                if (container != null) {
+                    container.addNumber("Absolute Encoder Angle",
+                            () -> Math.toDegrees(controller.absoluteEncoder.getAbsoluteAngle()));
+                }
+            }
         }
 
         @Override
@@ -111,11 +117,9 @@ public final class Falcon500SteerControllerFactoryBuilder {
                     motorConfiguration.slot0.kF = (1023.0 * sensorVelocityCoefficient / nominalVoltage)
                             * velocityConstant;
                 }
-                // TODO: What should be done if no nominal voltage is configured? Use a default
-                // voltage?
+                // TODO: What should be done if no nominal voltage is configured? Use a default voltage?
 
-                // TODO: Make motion magic max voltages configurable or dynamically determine
-                // optimal values
+                // TODO: Make motion magic max voltages configurable or dynamically determine optimal values
                 motorConfiguration.motionCruiseVelocity = 2.0 / velocityConstant / sensorVelocityCoefficient;
                 motorConfiguration.motionAcceleration = (8.0 - 2.0) / accelerationConstant / sensorVelocityCoefficient;
             }
@@ -127,7 +131,7 @@ public final class Falcon500SteerControllerFactoryBuilder {
                 motorConfiguration.supplyCurrLimit.enable = true;
             }
 
-            TalonFX motor = new TalonFX(steerConfiguration.getMotorPort());
+            WPI_TalonFX motor = new WPI_TalonFX(steerConfiguration.getMotorPort());
             checkCtreError(motor.configAllSettings(motorConfiguration, CAN_TIMEOUT_MS),
                     "Failed to configure Falcon 500 settings");
 
@@ -137,13 +141,18 @@ public final class Falcon500SteerControllerFactoryBuilder {
             checkCtreError(
                     motor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, CAN_TIMEOUT_MS),
                     "Failed to set Falcon 500 feedback sensor");
-            motor.setSensorPhase(moduleConfiguration.isSteerInverted());
-            motor.setInverted(TalonFXInvertType.CounterClockwise);
+            motor.setSensorPhase(true);
+            motor.setInverted(moduleConfiguration.isSteerInverted() ? TalonFXInvertType.CounterClockwise
+                    : TalonFXInvertType.Clockwise);
             motor.setNeutralMode(NeutralMode.Brake);
 
+            double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
+            if (Double.isNaN(absoluteAngle)) {
+                absoluteAngle = 0.0;
+            }
+
             checkCtreError(
-                    motor.setSelectedSensorPosition(absoluteEncoder.getAbsoluteAngle() / sensorPositionCoefficient, 0,
-                            CAN_TIMEOUT_MS),
+                    motor.setSelectedSensorPosition(absoluteAngle / sensorPositionCoefficient, 0, CAN_TIMEOUT_MS),
                     "Failed to set Falcon 500 encoder position");
 
             // Reduce CAN status frame rates
@@ -162,11 +171,11 @@ public final class Falcon500SteerControllerFactoryBuilder {
         }
     }
 
-    private static class ControllerImplementation implements SteerController {
+    private static class ControllerImplementation implements SteerController, AbsoluteEncoder {
         private static final int ENCODER_RESET_ITERATIONS = 500;
         private static final double ENCODER_RESET_MAX_ANGULAR_VELOCITY = Math.toRadians(0.5);
 
-        private final TalonFX motor;
+        private final WPI_TalonFX motor;
         private final double motorEncoderPositionCoefficient;
         private final double motorEncoderVelocityCoefficient;
         private final TalonFXControlMode motorControlMode;
@@ -176,7 +185,7 @@ public final class Falcon500SteerControllerFactoryBuilder {
 
         private double resetIteration = 0;
 
-        private ControllerImplementation(TalonFX motor,
+        private ControllerImplementation(WPI_TalonFX motor,
                 double motorEncoderPositionCoefficient,
                 double motorEncoderVelocityCoefficient,
                 TalonFXControlMode motorControlMode,
@@ -207,21 +216,18 @@ public final class Falcon500SteerControllerFactoryBuilder {
         public void setReferenceAngle(double referenceAngleRadians) {
             double currentAngleRadians = motor.getSelectedSensorPosition() * motorEncoderPositionCoefficient;
 
-            // FIXME: causes issues in swerve wheels resetting and returning to zero
-            // TODO: change motors encoders to not reset to zero
-
             // Reset the NEO's encoder periodically when the module is not rotating.
-            // Sometimes (~5% of the time) when we initialize, the absolute encoder isn't
-            // fully set up, and we don't
-            // end up getting a good reading. If we reset periodically this won't matter
-            // anymore.
+            // Sometimes (~5% of the time) when we initialize, the absolute encoder isn't fully set up, and we don't
+            // end up getting a good reading. If we reset periodically this won't matter anymore.
             if (motor.getSelectedSensorVelocity()
                     * motorEncoderVelocityCoefficient < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
                 if (++resetIteration >= ENCODER_RESET_ITERATIONS) {
                     resetIteration = 0;
-                    double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
-                    motor.setSelectedSensorPosition(absoluteAngle / motorEncoderPositionCoefficient);
-                    currentAngleRadians = absoluteAngle;
+                    final double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
+                    if (!Double.isNaN(absoluteAngle)) {
+                        motor.setSelectedSensorPosition(absoluteAngle / motorEncoderPositionCoefficient);
+                        currentAngleRadians = absoluteAngle;
+                    }
                 }
             } else {
                 resetIteration = 0;
@@ -232,8 +238,7 @@ public final class Falcon500SteerControllerFactoryBuilder {
                 currentAngleRadiansMod += 2.0 * Math.PI;
             }
 
-            // The reference angle has the range [0, 2pi) but the Falcon's encoder can go
-            // above that
+            // The reference angle has the range [0, 2pi) but the Falcon's encoder can go above that
             double adjustedReferenceAngleRadians = referenceAngleRadians + currentAngleRadians - currentAngleRadiansMod;
             if (referenceAngleRadians - currentAngleRadiansMod > Math.PI) {
                 adjustedReferenceAngleRadians -= 2.0 * Math.PI;
@@ -242,6 +247,10 @@ public final class Falcon500SteerControllerFactoryBuilder {
             }
 
             motor.set(motorControlMode, adjustedReferenceAngleRadians / motorEncoderPositionCoefficient);
+            if (RobotBase.isSimulation()) {
+                motor.getSimCollection().setIntegratedSensorRawPosition(
+                        (int) (adjustedReferenceAngleRadians / motorEncoderPositionCoefficient));
+            }
 
             this.referenceAngleRadians = referenceAngleRadians;
         }
@@ -255,6 +264,11 @@ public final class Falcon500SteerControllerFactoryBuilder {
             }
 
             return motorAngleRadians;
+        }
+
+        @Override
+        public double getAbsoluteAngle() {
+            return absoluteEncoder.getAbsoluteAngle();
         }
     }
 }

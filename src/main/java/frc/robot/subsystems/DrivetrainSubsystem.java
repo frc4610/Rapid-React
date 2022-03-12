@@ -6,8 +6,9 @@ package frc.robot.subsystems;
 
 //import com.ctre.phoenix.sensors.PigeonIMU;
 import com.kauailabs.navx.frc.AHRS;
-import swervelib.Mk3SwerveModuleHelper;
+
 import swervelib.SwerveModule;
+import swervelib.config.Mk3SwerveModuleHelper;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -23,6 +24,9 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.RobotContainer;
 import frc.robot.utils.*;
+import frc.robot.utils.math.InterpolatingTreeMap;
+import frc.robot.utils.math.MathUtils;
+import oblog.annotations.*;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -70,6 +74,8 @@ public class DrivetrainSubsystem extends BaseSubsystem {
     if (m_navx.isBoardlevelYawResetEnabled()) {
       m_navx.enableBoardlevelYawReset(false);
     }
+
+    resetPose(new Pose2d(7, 2, Rotation2d.fromDegrees(-90)));
 
     m_DrivetrainTab = Shuffleboard.getTab("Drivetrain");
     m_DriveDataTab = Shuffleboard.getTab("Drive Data");
@@ -192,6 +198,16 @@ public class DrivetrainSubsystem extends BaseSubsystem {
     return m_didCollide;
   }
 
+  public void driveWithHeading(double translation_x, double translation_y, double headingDegrees) {
+
+    double angle = getGyroRotation().getDegrees();
+    double currentAngularRate = -getTurnRate();
+    double angle_error = MathUtils.angleDelta(headingDegrees, angle);
+    double yawCommand = -angle_error * Auto.PID_TURN.P - (currentAngularRate);
+
+    drive(translation_x, translation_y, Math.toRadians(yawCommand), true);
+  }
+
   public void drive(double translation_x, double translation_y, double rotation) {
     m_chassisSpeeds = m_isFieldOriented.getBoolean(true)
         ? ChassisSpeeds.fromFieldRelativeSpeeds(translation_x, translation_y, rotation, getGyroRotation())
@@ -276,21 +292,21 @@ public class DrivetrainSubsystem extends BaseSubsystem {
   @Override
   public void periodic() {
     SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
-    SwerveDriveKinematics.desaturateWheelSpeeds(states, Motor.MAX_VELOCITY_METERS_PER_SECOND);
+    SwerveDriveKinematics.desaturateWheelSpeeds(states, Motor.MAX_VELOCITY_MPS);
     m_frontLeftModule.set(
-        states[0].speedMetersPerSecond / Motor.MAX_VELOCITY_METERS_PER_SECOND
+        states[0].speedMetersPerSecond / Motor.MAX_VELOCITY_MPS
             * m_wheelVoltage,
         states[0].angle.getRadians());
     m_frontRightModule.set(
-        states[1].speedMetersPerSecond / Motor.MAX_VELOCITY_METERS_PER_SECOND
+        states[1].speedMetersPerSecond / Motor.MAX_VELOCITY_MPS
             * m_wheelVoltage,
         states[1].angle.getRadians());
     m_backLeftModule.set(
-        states[2].speedMetersPerSecond / Motor.MAX_VELOCITY_METERS_PER_SECOND
+        states[2].speedMetersPerSecond / Motor.MAX_VELOCITY_MPS
             * m_wheelVoltage,
         states[2].angle.getRadians());
     m_backRightModule.set(
-        states[3].speedMetersPerSecond / Motor.MAX_VELOCITY_METERS_PER_SECOND
+        states[3].speedMetersPerSecond / Motor.MAX_VELOCITY_MPS
             * m_wheelVoltage,
         states[3].angle.getRadians());
     updateOdometry(states);
