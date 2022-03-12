@@ -12,7 +12,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 public class AutoHoloFolowCmd extends CommandBase {
 
   private final DrivetrainSubsystem m_drivetrainSubsystem;
-  private final PIDController m_pidXYController = Auto.PID_XY_HDC.getPIDController();
+  private final PIDController m_pidXYController = Auto.PID_XY_HDC.getPidController();
   private final ProfiledPIDController m_pidRotController = Auto.PID_THETA.getProfiledPidController();
   private final HolonomicDriveController m_driveController = new HolonomicDriveController(
       m_pidXYController, m_pidXYController,

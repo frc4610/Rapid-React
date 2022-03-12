@@ -202,11 +202,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
     double angle = getGyroRotation().getDegrees();
     double currentAngularRate = -getTurnRate();
     double angle_error = MathUtils.angleDelta(headingDegrees, angle);
-<<<<<<< Updated upstream
-    double yawCommand = -angle_error * Auto.PID_TURN.P - (currentAngularRate);
-=======
     double yawCommand = -angle_error * Auto.PID_THETA.P - (currentAngularRate);
->>>>>>> Stashed changes
 
     drive(translation_x, translation_y, Math.toRadians(yawCommand), true);
   }
@@ -265,6 +261,10 @@ public class DrivetrainSubsystem extends BaseSubsystem {
 
   public void setModuleStates(SwerveModuleState[] states) {
     m_chassisSpeeds = m_kinematics.toChassisSpeeds(states);
+  }
+
+  public void setModuleStates(ChassisSpeeds state) {
+    m_chassisSpeeds = state;
   }
 
   public void stopModules() {

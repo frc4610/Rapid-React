@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.utils.SwerveConfig;
 import frc.robot.utils.PidConfig;
+import frc.robot.utils.ProfiledPidConfig;
 import swervelib.config.SdsModuleConfigurations;
 
 public final class Constants {
@@ -78,23 +79,13 @@ public final class Constants {
 
   public final static class Auto {
     public static final double DRIVE_POWER = 4;
-
-    // FIXME: Use Azmith to calculate th right meters
-    public static final PidConfig PID_XY = new PidConfig(0.5, 0.1, 0.0);
-    public static final PidConfig PID_THETA = new PidConfig(2.5, 0.0, 0.0);
-
-    public static final PidConfig PID_TURN = new PidConfig(0.04, 0.0, 0.0);
-
     // Constraint for the motion profilied robot angle controller
     public static final TrapezoidProfile.Constraints THETA_CONSTRAINTS = new TrapezoidProfile.Constraints(
         Motor.MAX_ANGULAR_VELOCITY_RPS, Motor.MAX_ANGULAR_VELOCITY_RPS); //  accel * 0.9
 
-<<<<<<< Updated upstream
-=======
     public static final PidConfig PID_XY = new PidConfig(0.5, 0.1, 0.0);
     public static final ProfiledPidConfig PID_THETA = new ProfiledPidConfig(2.5, 0.0, 0.0, THETA_CONSTRAINTS);
     public static final PidConfig PID_XY_HDC = new PidConfig(2.5, 0.0, 0.0);
->>>>>>> Stashed changes
   }
 
   public final static class Arm {

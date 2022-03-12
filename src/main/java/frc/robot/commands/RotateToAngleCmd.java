@@ -11,12 +11,7 @@ public class RotateToAngleCmd extends CommandBase {
   private final DrivetrainSubsystem m_drivetrainSubsystem;
   private final double m_angleRadian;
 
-<<<<<<< Updated upstream
-  private ProfiledPIDController m_rotationController = new ProfiledPIDController(Auto.PID_TURN.P, 0.0, 0.0,
-      Auto.THETA_CONSTRAINTS);
-=======
   private ProfiledPIDController m_rotationController = Auto.PID_THETA.getProfiledPidController();
->>>>>>> Stashed changes
 
   public RotateToAngleCmd(DrivetrainSubsystem drivetrain, double angleDegree) {
     m_drivetrainSubsystem = drivetrain;
