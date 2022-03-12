@@ -14,9 +14,8 @@ public class UserControllerCmd extends CommandBase {
     private final DoubleSupplier m_translationYSupplier;
     private final DoubleSupplier m_rotationSupplier;
 
-    // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
-    private final SlewRateLimiter m_xSpeedLimiter = new SlewRateLimiter(3);
-    private final SlewRateLimiter m_ySpeedLimiter = new SlewRateLimiter(3);
+    private final SlewRateLimiter m_xSpeedLimiter = new SlewRateLimiter(1);
+    private final SlewRateLimiter m_ySpeedLimiter = new SlewRateLimiter(1);
     private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(3);
 
     public UserControllerCmd(DrivetrainSubsystem drivetrainSubsystem,

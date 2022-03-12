@@ -48,6 +48,11 @@ public final class Constants {
     public static final double XBOX_DEADBAND = 0.2;
   }
 
+  public final static class Camera {
+    public static final int IMG_WIDTH = 1280;
+    public static final int IMG_HEIGHT = 720;
+  }
+
   // Motor Specific
   public final static class Motor {
     public static final int MAX_RPM = 6380;
@@ -84,6 +89,12 @@ public final class Constants {
     public static final TrapezoidProfile.Constraints THETA_CONSTRAINTS = new TrapezoidProfile.Constraints(
         Motor.MAX_ANGULAR_VELOCITY_RPS, Motor.MAX_ANGULAR_VELOCITY_RPS); //  accel * 0.9
 
+<<<<<<< Updated upstream
+=======
+    public static final PidConfig PID_XY = new PidConfig(0.5, 0.1, 0.0);
+    public static final ProfiledPidConfig PID_THETA = new ProfiledPidConfig(2.5, 0.0, 0.0, THETA_CONSTRAINTS);
+    public static final PidConfig PID_XY_HDC = new PidConfig(2.5, 0.0, 0.0);
+>>>>>>> Stashed changes
   }
 
   public final static class Arm {
