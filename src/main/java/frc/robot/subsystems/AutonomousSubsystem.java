@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import java.util.Optional;
 
+import com.pathplanner.lib.PathPlanner;
+
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -35,6 +37,22 @@ public class AutonomousSubsystem extends BaseSubsystem {
         .executeDrivePath("New Path")
         .executePause(1.69)
         .complete());
+    m_autoChooser.addOption("4BallAutoLeft", new AutoActionCmd(this, m_drivetrainSubsystem, m_intakeSubsystem)
+    .executeIntakeEnable()
+    .executeDrivePath("4BallAutoFirstStage")
+    .executeIntakeDisable()
+    .executeDrivePath("4BallAutoSecondStage")
+    .executeIntakeFire()
+    .executePause(1.69)
+    .executeIntakeEnable()
+    .executeDrivePath("4BallAutoThirdStage")
+    .executeDrivePath("4BallAutoFourthStage")
+    .executeIntakeDisable()
+    .executeDrivePath("4BallAutoFithStage")
+    .executeIntakeFire()
+    .executePause(1.69)
+    .executeDrivePath("4BallAutoSixthStage")
+    .complete());
   }
 
   public Optional<AutoActionCmd> getAutoCmd() {

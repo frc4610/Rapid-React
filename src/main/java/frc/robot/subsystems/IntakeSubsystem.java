@@ -96,6 +96,21 @@ public class IntakeSubsystem extends BaseSubsystem {
     m_intake.set(ControlMode.PercentOutput, 0);
   }
 
+  public void autonomousIntakeEnable() {
+    m_autoControl = true;
+    m_intake.set(ControlMode.PercentOutput, 0.35);
+  }
+
+  public void autonomousArmDown() {
+    m_autoControl = true;
+    m_armState = false;
+    }
+
+  public void automousArmUp() {
+    m_autoControl = false;
+    m_armState = true;
+  }
+
   public void updateArm() {
     final boolean rightBumper = m_controller.getRightBumper();
     final boolean rightTriggerAxis = m_controller.getRightTriggerAxis() > 0 || rightBumper;
