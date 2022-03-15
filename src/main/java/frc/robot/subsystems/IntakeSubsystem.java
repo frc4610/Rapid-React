@@ -85,7 +85,7 @@ public class IntakeSubsystem extends BaseSubsystem {
 
   public void autonomousIntakeFireEnable() {
     m_autoControl = true;
-    m_intake.set(ControlMode.PercentOutput, -0.35);
+    m_intake.set(ControlMode.PercentOutput, -0.6);
   }
 
   public void autonomousIntakeFireDisable() {
