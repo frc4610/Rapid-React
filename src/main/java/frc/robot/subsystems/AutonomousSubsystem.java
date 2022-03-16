@@ -52,6 +52,7 @@ public class AutonomousSubsystem extends BaseSubsystem {
     .executeIntakeFire()
     .executePause(1.69)
     .executeDrivePath("4BallAutoSixthStage")
+    .executeFeildReset()
     .complete());
   }
 

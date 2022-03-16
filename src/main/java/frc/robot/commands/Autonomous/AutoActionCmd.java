@@ -44,11 +44,15 @@ public class AutoActionCmd extends SequentialCommandGroup {
   public AutoActionCmd executeIntakeDisable(){
     addCommands(
       new InstantCommand(() -> m_intakeSubystem.autonomousIntakeFireDisable())
-          .andThen(new InstantCommand(() -> m_intakeSubystem.automousArmUp())));
+          .andThen(new InstantCommand(() -> m_intakeSubystem.autonomousArmUp())));
     return this;
   }
 
-  
+  public AutoActionCmd executeFeildReset(){
+    addCommands(
+      new InstantCommand(() -> m_drivetrainSubystem.autonomousFeildReset()));
+      return this;
+  }
   
   public AutoActionCmd executeDrivePath(String pathPlanner) {
     addCommands(new AutoFollowPathCmd(pathPlanner, m_autonomousSubystem, m_drivetrainSubystem));

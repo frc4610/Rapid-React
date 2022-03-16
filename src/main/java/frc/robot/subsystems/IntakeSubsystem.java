@@ -106,7 +106,7 @@ public class IntakeSubsystem extends BaseSubsystem {
     m_armState = false;
     }
 
-  public void automousArmUp() {
+  public void autonomousArmUp() {
     m_autoControl = false;
     m_armState = true;
   }
