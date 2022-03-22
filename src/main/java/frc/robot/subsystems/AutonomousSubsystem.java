@@ -84,8 +84,10 @@ public class AutonomousSubsystem extends BaseSubsystem {
     .executeIntakeDisable()
     .executePause(1.69)
     .executeIntakeFire()
-    .complete()
-    );
+    .executePause(1)
+    .executeDrivePath("HangarDump4")
+    .executeFeildReset()
+    .complete());
   }
 
   public Optional<AutoActionCmd> getAutoCmd() {
