@@ -4,6 +4,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import org.ejml.FancyPrint;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -118,7 +120,7 @@ public class IntakeSubsystem extends BaseSubsystem {
     if (m_armState) {
       if (Timer.getFPGATimestamp() - m_lastBurstTime < m_armTimeUp) {
         m_arm.set(Arm.TRAVEL_UP_POWER.getDouble(Arm.DEFAULT_TRAVEL_UP_POWER));
-      } else if (m_topLimitSwitch.get() == false) {
+      } else if (m_topLimitSwitch.get() == true) {
         m_arm.set(Arm.TRAVEL_DIFFERENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
       } else {
         m_arm.set(0);
@@ -126,10 +128,10 @@ public class IntakeSubsystem extends BaseSubsystem {
     } else {
       if (Timer.getFPGATimestamp() - m_lastBurstTime < m_armTimeDown) {
         m_arm.set(-Arm.TRAVEL_DOWN_POWER.getDouble(Arm.DEFAULT_TRAVEL_DOWN_POWER));
-      } else if (m_bottomLimitSwitch.get() == false) {
+      } else if (m_bottomLimitSwitch.get() == true) {
         m_arm.set(-Arm.TRAVEL_DIFFERENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
       }
-      else if (m_bottomLimitSwitch.get() == true){
+      else if (m_bottomLimitSwitch.get() == false){
         m_arm.set(0);
       }
     }
