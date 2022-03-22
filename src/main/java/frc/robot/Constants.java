@@ -124,9 +124,6 @@ public final class Constants {
     public static final NetworkTableEntry POWER_IN = m_tab.add("Intake power in", 0.55).getEntry();
   }
 
-  public static final boolean ENABLE_MAGNETOMETER = false;
-  public static final boolean INVERT_GYRO = true;
-
   // Not used currently
   public static final double COLLISION_THRESHOLD_DELTA = 0.5;
 
@@ -134,7 +131,7 @@ public final class Constants {
   // The left-to-right distance between the drivetrain wheels
   public static final double TRACKWIDTH_METERS = 0.65532; // 0.56 //21.5"
   // The front-to-back distance between the drivetrain wheels.
-  public static final double WHEELBASE_METERS = 0.76581; // 0.545 // 25 2/16"
+  public static final double WHEELBASE_METERS = 0.76581; // 0.545 // 25.125"
 
   public final static class Field {
     public static final double FIELD_LENGTH = Units.inchesToMeters(54.0 * 12.0);

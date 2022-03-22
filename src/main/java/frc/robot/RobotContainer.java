@@ -18,7 +18,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.commands.DriveContinuousCmd;
@@ -33,10 +32,11 @@ import frc.robot.utils.CAN.CANDevice;
 import frc.robot.utils.controller.XboxControllerExtended;
 import frc.robot.utils.json.JsonReader;
 import frc.robot.utils.math.MathUtils;
+import swervelib.sim.PoseTelemetry;
 
 public class RobotContainer {
   public final static File deployDirectory = Filesystem.getDeployDirectory();
-  public final static Field2d dashboardField = new Field2d();
+  public final static PoseTelemetry telemetry = new PoseTelemetry();
   public String branch = "null";
   private final static DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final static XboxControllerExtended m_driverController = new XboxControllerExtended(0);
@@ -63,7 +63,7 @@ public class RobotContainer {
 
   public void onRobotInit() {
     SmartDashboard.putString("Branch:", branch);
-    SmartDashboard.putData("Field", dashboardField);
+    SmartDashboard.putData("Field", PoseTelemetry.field);
 
     DriverStation.silenceJoystickConnectionWarning(true);
   }

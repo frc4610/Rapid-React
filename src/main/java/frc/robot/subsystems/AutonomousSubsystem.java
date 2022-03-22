@@ -42,6 +42,6 @@ public class AutonomousSubsystem extends BaseSubsystem {
   }
 
   public void showCurrentTrajectory(Trajectory trajectory) {
-    RobotContainer.dashboardField.getObject("Trajectory").setTrajectory(trajectory);
+    RobotContainer.telemetry.setTrajectory(trajectory);
   }
 }

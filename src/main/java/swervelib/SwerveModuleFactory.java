@@ -108,6 +108,11 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
 
             // FIXME: Deadband this as our encoders are f****d
             double difference = steerAngle - getSteerAngle();
+
+            if (Math.abs(difference) < 0.01) { // Within range of a deadband don't update
+                difference = 0;
+            }
+
             // Change the target angle so the difference is in the range [-pi, pi) instead of [0, 2pi)
             if (difference >= Math.PI) {
                 steerAngle -= 2.0 * Math.PI;
