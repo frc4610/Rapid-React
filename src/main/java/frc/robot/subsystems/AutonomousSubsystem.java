@@ -54,6 +54,23 @@ public class AutonomousSubsystem extends BaseSubsystem {
     .executeDrivePath("4BallAutoSixthStage")
     .executeFeildReset()
     .complete());
+
+    m_autoChooser.addOption("4BallAutoRight",  new AutoActionCmd(this, m_drivetrainSubsystem, m_intakeSubsystem)
+    .executeIntakeEnable()
+    .executeDrivePath("4BallAutoFirstStageRight")
+    .executeIntakeDisable()
+    .executeDrivePath("4BallAutoSecondStageRight")
+    .executeIntakeFire()
+    .executePause(1.69)
+    .executeIntakeEnable()
+    .executeDrivePath("4BallAutoThirdStage")
+    .executeIntakeDisable()
+    .executeDrivePath("4BallAutoFourthStage")
+    .executeIntakeFire()
+    .executePause(1.69)
+    .executeDrivePath("4BallAutoFithStage")
+    .executeFeildReset()
+    .complete());
   }
 
   public Optional<AutoActionCmd> getAutoCmd() {
