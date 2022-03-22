@@ -1,5 +1,8 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -8,7 +11,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.utils.SwerveConfig;
 import frc.robot.utils.PidConfig;
 import frc.robot.utils.ProfiledPidConfig;
-import swervelib.config.SdsModuleConfigurations;
+import swervelib.config.Mk3ModuleConfiguration;
 
 public final class Constants {
 
@@ -46,7 +49,7 @@ public final class Constants {
   }
 
   public final static class Controller {
-    public static final double XBOX_DEADBAND = 0.2;
+    public static final double XBOX_DEADBAND = 0.08; // Fixes controller diffrences
   }
 
   public final static class Camera {
@@ -56,10 +59,12 @@ public final class Constants {
 
   // Motor Specific
   public final static class Motor {
+    public static final boolean ENABLE_FF = true;
+    public static final boolean DEFENSIVE = true;
     public static final int MAX_RPM = 6380;
     public static final double MAX_VELOCITY_MPS = MAX_RPM / 60.0 *
-        SdsModuleConfigurations.MK3_STANDARD.getDriveReduction() *
-        SdsModuleConfigurations.MK3_STANDARD.getWheelDiameter() * Math.PI;
+        Mk3ModuleConfiguration.STANDARD.getDriveReduction() *
+        Mk3ModuleConfiguration.STANDARD.getWheelDiameter() * Math.PI;
 
     public static final double MAX_ANGULAR_VELOCITY_RPS = MAX_VELOCITY_MPS /
         Math.hypot(TRACKWIDTH_METERS / 2.0, WHEELBASE_METERS / 2.0);
@@ -83,9 +88,14 @@ public final class Constants {
     public static final TrapezoidProfile.Constraints THETA_CONSTRAINTS = new TrapezoidProfile.Constraints(
         Motor.MAX_ANGULAR_VELOCITY_RPS, Motor.MAX_ANGULAR_VELOCITY_RPS); //  accel * 0.9
 
-    public static final PidConfig PID_XY = new PidConfig(0.5, 0.1, 0.0);
-    public static final ProfiledPidConfig PID_THETA = new ProfiledPidConfig(2.5, 0.0, 0.0, THETA_CONSTRAINTS);
-    public static final PidConfig PID_XY_HDC = new PidConfig(2.5, 0.0, 0.0);
+    // TODO: CONFIG ME
+    // Feed Forward and PID values from SysId
+    public static final PidConfig PID_XY = new PidConfig(2.5, 0.0, 0.02);
+    public static final double STATIC_GAIN = 0.5;
+    public static final double VELOCITY_GAIN = 2.5;
+    public static final double ACCELERATION_GAIN = 0.1;
+
+    public static final ProfiledPidConfig PID_THETA = new ProfiledPidConfig(2.5, 0.0, 0.02, THETA_CONSTRAINTS);
   }
 
   public final static class Arm {
@@ -99,7 +109,12 @@ public final class Constants {
     public static final NetworkTableEntry TRAVEL_DIFFERENCE = m_tab
         .add("Arm travel difference", DEFAULT_TRAVEL_DISTANCE)
         .getEntry();
-    public static final double ABS_UP_POSITION = 60000; // Range from RNG - MAX
+    /*
+    UP: 32340
+    POINT:32018
+    DOWN:0
+    */
+    public static final double ABS_UP_POSITION = 32340; // Range from RNG - MAX
     public static final double UP_POSITION = ABS_UP_POSITION - 1500; // Range from RNG - MAX
     public static final double DOWN_POSITION = 100; // Enough to hold the bot down
   }
@@ -126,5 +141,7 @@ public final class Constants {
     public static final double FIELD_WIDTH = Units.inchesToMeters(27.0 * 12.0);
     public static final double HANGAR_LENGTH = Units.inchesToMeters(128.75);
     public static final double HANGAR_WIDTH = Units.inchesToMeters(116.0);
+    public static final Translation2d HUB_CENTER_TRANSLATION = new Translation2d(8.2296, 4.1148);
+    public static final Pose2d HUB_CENTER_POSE = new Pose2d(HUB_CENTER_TRANSLATION, new Rotation2d(0));
   }
 }

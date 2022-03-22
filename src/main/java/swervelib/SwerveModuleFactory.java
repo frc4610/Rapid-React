@@ -1,5 +1,7 @@
 package swervelib;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 
 public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
@@ -70,6 +72,11 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
             return steerController.getStateAngle();
         }
 
+        @Override
+        public SwerveModuleState getState() {
+            return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getSteerAngle()));
+        }
+
         /**
         * Gets the current angle reading of the encoder in radians.
         *
@@ -92,11 +99,14 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
 
         @Override
         public void set(double driveVoltage, double steerAngle) {
+            if (Constants.CALIBRATION_MODE)
+                return;
             steerAngle %= (2.0 * Math.PI);
             if (steerAngle < 0.0) {
                 steerAngle += 2.0 * Math.PI;
             }
 
+            // FIXME: Deadband this as our encoders are f****d
             double difference = steerAngle - getSteerAngle();
             // Change the target angle so the difference is in the range [-pi, pi) instead of [0, 2pi)
             if (difference >= Math.PI) {

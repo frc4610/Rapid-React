@@ -117,9 +117,6 @@ public final class Falcon500SteerControllerFactoryBuilder {
                     motorConfiguration.slot0.kF = (1023.0 * sensorVelocityCoefficient / nominalVoltage)
                             * velocityConstant;
                 }
-                // TODO: What should be done if no nominal voltage is configured? Use a default voltage?
-
-                // TODO: Make motion magic max voltages configurable or dynamically determine optimal values
                 motorConfiguration.motionCruiseVelocity = 2.0 / velocityConstant / sensorVelocityCoefficient;
                 motorConfiguration.motionAcceleration = (8.0 - 2.0) / accelerationConstant / sensorVelocityCoefficient;
             }
@@ -144,7 +141,7 @@ public final class Falcon500SteerControllerFactoryBuilder {
             motor.setSensorPhase(true);
             motor.setInverted(moduleConfiguration.isSteerInverted() ? TalonFXInvertType.CounterClockwise
                     : TalonFXInvertType.Clockwise);
-            motor.setNeutralMode(NeutralMode.Brake);
+            motor.setNeutralMode(NeutralMode.Coast); // FIXME: Not sure if it's meant to be in break or coast
 
             double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
             if (Double.isNaN(absoluteAngle)) {

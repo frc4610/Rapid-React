@@ -14,6 +14,7 @@ import java.util.Scanner;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotController;
@@ -58,6 +59,9 @@ public class RobotContainer {
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
+  }
+
+  public void onRobotInit() {
     SmartDashboard.putString("Branch:", branch);
     SmartDashboard.putData("Field", dashboardField);
 
@@ -70,10 +74,14 @@ public class RobotContainer {
           reset();
         });
     new Button(m_driverController::getAButton)
-        .whileHeld(() -> { // As class says don't go nathan mode
-          m_drivetrainSubsystem.limitPower();
+        .whenPressed(() -> {
+          m_drivetrainSubsystem.setSpeedModifier(0.5);
           m_driverController.setLeftVibration(0.1);
           m_driverController.setRightVibration(0.1);
+        }).whenReleased(() -> {
+          m_drivetrainSubsystem.setSpeedModifier(1.0);
+          m_driverController.setLeftVibration(0.0);
+          m_driverController.setRightVibration(0.0);
         });
 
     new Button(m_driverController::getLeftBumper)
@@ -109,11 +117,7 @@ public class RobotContainer {
   }
 
   public static void setDefaultTeleopCommand() {
-    m_drivetrainSubsystem.setDefaultCommand(new UserControllerCmd(
-        m_drivetrainSubsystem,
-        () -> getDriveForwardAxis(),
-        () -> getDriveStrafeAxis(),
-        () -> getDriveRotationAxis()));
+    m_drivetrainSubsystem.setDefaultCommand(new UserControllerCmd(m_drivetrainSubsystem));
 
     configureDriveButtons();
   }
@@ -171,5 +175,9 @@ public class RobotContainer {
 
   public static double getDriveRotationAxis() {
     return MathUtils.modifyAxis(m_driverController.getRightX(), Constants.Controller.XBOX_DEADBAND);
+  }
+
+  public static Rotation2d getDrivePOV() {
+    return Rotation2d.fromDegrees(m_driverController.getPOV());
   }
 }

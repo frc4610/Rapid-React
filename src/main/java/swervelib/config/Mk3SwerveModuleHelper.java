@@ -474,11 +474,11 @@ public final class Mk3SwerveModuleHelper {
                 /**
                  * Mk3 swerve in the standard gear configuration.
                  */
-                STANDARD(SdsModuleConfigurations.MK3_STANDARD),
+                STANDARD(Mk3ModuleConfiguration.STANDARD),
                 /**
                  * Mk3 swerve in the fast gear configuration.
                  */
-                FAST(SdsModuleConfigurations.MK3_FAST);
+                FAST(Mk3ModuleConfiguration.FAST);
 
                 private final ModuleConfiguration configuration;
 
