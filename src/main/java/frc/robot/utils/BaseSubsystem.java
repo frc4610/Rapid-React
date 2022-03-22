@@ -25,7 +25,6 @@ public class BaseSubsystem extends SubsystemBase {
     return Robot.isSimulation();
   }
 
-  // TODO: use this to put items on shuffleboard with the ability to add tabs or layouts
   public NetworkTable getNetworkTable() {
     return NetworkTableInstance.getDefault().getTable("SmartDashboard");
   }
