@@ -11,15 +11,16 @@ import frc.robot.RobotContainer;
 public class UserControllerCmd extends CommandBase {
     private final DrivetrainSubsystem m_drivetrainSubsystem;
 
-    private final SlewRateLimiter m_xSpeedLimiter = new SlewRateLimiter(1);
-    private final SlewRateLimiter m_ySpeedLimiter = new SlewRateLimiter(1);
-    private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(3);
+    private final SlewRateLimiter m_xSpeedLimiter = new SlewRateLimiter(2);
+    private final SlewRateLimiter m_ySpeedLimiter = new SlewRateLimiter(2);
+    private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(5);
     private ProfiledPIDController m_rotationController = Auto.PID_THETA.getProfiledPidController();
 
     public UserControllerCmd(DrivetrainSubsystem drivetrainSubsystem) {
         this.m_drivetrainSubsystem = drivetrainSubsystem;
         m_rotationController.enableContinuousInput(-Math.PI, Math.PI);
-        m_rotationController.setTolerance(0.1, 0.1); // about 0.1 radians = 6 degrees, 6 deg/sec
+        double radianTolerance = Math.toRadians(20); // 20 degrees per second
+        m_rotationController.setTolerance(radianTolerance, radianTolerance);
         m_rotationController.reset(drivetrainSubsystem.getGyroRotation().getRadians());
         addRequirements(drivetrainSubsystem);
     }
@@ -48,7 +49,7 @@ public class UserControllerCmd extends CommandBase {
                 rot = rotationOutput;
             }
         } else {
-            m_rotationController.reset(m_drivetrainSubsystem.getGyroRotation().getRadians()); // Might cause issues as setting inital position
+            m_rotationController.reset(m_drivetrainSubsystem.getGyroRotation().getRadians());
         }
         m_drivetrainSubsystem.drive(xSpeed, ySpeed, rot);
     }

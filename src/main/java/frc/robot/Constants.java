@@ -95,7 +95,7 @@ public final class Constants {
     public static final double VELOCITY_GAIN = 2.5;
     public static final double ACCELERATION_GAIN = 0.1;
 
-    public static final ProfiledPidConfig PID_THETA = new ProfiledPidConfig(2.5, 0.0, 0.02, THETA_CONSTRAINTS);
+    public static final ProfiledPidConfig PID_THETA = new ProfiledPidConfig(1.0, 0.0, 0.02, THETA_CONSTRAINTS);
   }
 
   public final static class Arm {
