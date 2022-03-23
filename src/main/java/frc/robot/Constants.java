@@ -18,6 +18,10 @@ public final class Constants {
   public static final String RIO_IP = "http://172.22.11.2:1250";
 
   public final static class Ids {
+    // DIO
+    public static final int DIO_TOP_LIMITSWTICH = 3;
+    public static final int DIO_BOTTOM_LIMITSWTICH = 2;
+
     // PWM
     public static final int PWM_LED_STRIP = 0;
 

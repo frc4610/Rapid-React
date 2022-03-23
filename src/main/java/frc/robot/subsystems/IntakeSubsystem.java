@@ -4,8 +4,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
-import org.ejml.FancyPrint;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -20,8 +18,8 @@ public class IntakeSubsystem extends BaseSubsystem {
   private final WPI_TalonFX m_intake = new WPI_TalonFX(Ids.INTAKE);
   private final WPI_TalonFX m_arm = new WPI_TalonFX(Ids.ARM);
   private final XboxControllerExtended m_controller;
-  DigitalInput m_topLimitSwitch = new DigitalInput(3);
-  DigitalInput m_bottomLimitSwitch = new DigitalInput(2);
+  DigitalInput m_topLimitSwitch = new DigitalInput(Ids.DIO_TOP_LIMITSWTICH);
+  DigitalInput m_bottomLimitSwitch = new DigitalInput(Ids.DIO_BOTTOM_LIMITSWTICH);
 
   private final double m_armTimeUp = 0.83;
   private final double m_armTimeDown = 0.4;
@@ -106,7 +104,7 @@ public class IntakeSubsystem extends BaseSubsystem {
   public void autonomousArmDown() {
     m_autoControl = true;
     m_armState = false;
-    }
+  }
 
   public void autonomousArmUp() {
     m_autoControl = false;
@@ -130,8 +128,7 @@ public class IntakeSubsystem extends BaseSubsystem {
         m_arm.set(-Arm.TRAVEL_DOWN_POWER.getDouble(Arm.DEFAULT_TRAVEL_DOWN_POWER));
       } else if (m_bottomLimitSwitch.get() == true) {
         m_arm.set(-Arm.TRAVEL_DIFFERENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
-      }
-      else if (m_bottomLimitSwitch.get() == false){
+      } else if (m_bottomLimitSwitch.get() == false) {
         m_arm.set(0);
       }
     }

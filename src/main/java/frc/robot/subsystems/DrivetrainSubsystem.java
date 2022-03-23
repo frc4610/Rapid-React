@@ -168,10 +168,6 @@ public class DrivetrainSubsystem extends BaseSubsystem {
     m_navx.reset();
   }
 
-  public void autonomousFeildReset() {
-    m_navx.reset();
-  }
-
   public Rotation2d getGyroRotation() {
     // We have to invert the angle of the NavX so that rotating the robot
     // counter-clockwise makes the angle increase.
