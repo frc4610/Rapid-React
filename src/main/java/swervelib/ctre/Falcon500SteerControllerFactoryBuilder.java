@@ -170,7 +170,7 @@ public final class Falcon500SteerControllerFactoryBuilder {
         }
     }
 
-    private static class ControllerImplementation implements SteerController, AbsoluteEncoder {
+    private static class ControllerImplementation implements SteerController {
         private static final int ENCODER_RESET_ITERATIONS = 500;
         private static final double ENCODER_RESET_MAX_ANGULAR_VELOCITY = Math.toRadians(0.5);
 
@@ -218,18 +218,20 @@ public final class Falcon500SteerControllerFactoryBuilder {
             // Reset the NEO's encoder periodically when the module is not rotating.
             // Sometimes (~5% of the time) when we initialize, the absolute encoder isn't fully set up, and we don't
             // end up getting a good reading. If we reset periodically this won't matter anymore.
-            if (motor.getSelectedSensorVelocity()
-                    * motorEncoderVelocityCoefficient < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
-                if (++resetIteration >= ENCODER_RESET_ITERATIONS) {
-                    resetIteration = 0;
-                    final double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
-                    if (!Double.isNaN(absoluteAngle)) {
-                        motor.setSelectedSensorPosition(absoluteAngle / motorEncoderPositionCoefficient);
-                        currentAngleRadians = absoluteAngle;
+            if (!Constants.BOOT_TO_ABS) {
+                if (Robot.isReal() && motor.getSelectedSensorVelocity()
+                        * motorEncoderVelocityCoefficient < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
+                    if (++resetIteration >= ENCODER_RESET_ITERATIONS) {
+                        resetIteration = 0;
+                        final double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
+                        if (!Double.isNaN(absoluteAngle)) {
+                            motor.setSelectedSensorPosition(absoluteAngle / motorEncoderPositionCoefficient);
+                            currentAngleRadians = absoluteAngle;
+                        }
                     }
+                } else {
+                    resetIteration = 0;
                 }
-            } else {
-                resetIteration = 0;
             }
 
             double currentAngleRadiansMod = currentAngleRadians % (2.0 * Math.PI);
@@ -266,8 +268,15 @@ public final class Falcon500SteerControllerFactoryBuilder {
         }
 
         @Override
-        public double getAbsoluteAngle() {
-            return absoluteEncoder.getAbsoluteAngle();
+        public double getOutputVoltage() {
+            return motor.getMotorOutputVoltage();
+        }
+
+        @Override
+        public void setSteerEncoder(double position, double velocity) {
+            motor.getSimCollection().setIntegratedSensorRawPosition((int) (position * motorEncoderPositionCoefficient));
+            motor.getSimCollection()
+                    .setIntegratedSensorVelocity((int) (velocity / 600 * motorEncoderPositionCoefficient));
         }
     }
 }

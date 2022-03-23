@@ -98,6 +98,5 @@ public final class NeoDriveControllerFactoryBuilder {
         public void configRampRate(double rampRate) {
             this.motor.setOpenLoopRampRate(rampRate);
         }
-
     }
 }

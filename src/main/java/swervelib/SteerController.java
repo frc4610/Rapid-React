@@ -10,4 +10,8 @@ public interface SteerController {
     void setReferenceAngle(double referenceAngleRadians);
 
     double getStateAngle();
+
+    double getOutputVoltage();
+
+    void setSteerEncoder(double position, double velocity);
 }

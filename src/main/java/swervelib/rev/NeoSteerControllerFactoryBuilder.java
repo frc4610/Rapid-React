@@ -195,5 +195,15 @@ public final class NeoSteerControllerFactoryBuilder {
 
             return motorAngleRadians;
         }
+
+        @Override
+        public double getOutputVoltage() {
+            return motor.getBusVoltage() * motor.getAppliedOutput();
+        }
+
+        @Override
+        public void setSteerEncoder(double position, double velocity) {
+            motor.getEncoder().setPosition(position);
+        }
     }
 }
