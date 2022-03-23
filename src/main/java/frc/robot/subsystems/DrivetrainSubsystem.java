@@ -177,6 +177,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
 
   public Rotation2d getGyroRotation() {
     return m_gyro.getGyroRotation();
+    //return new Rotation2d(GYRO_CIRCUMFERENCE_METERS / m_gyro.getGyroRotation().getRadians());
   }
 
   public void drive(double translation_x, double translation_y, double rotation) {
@@ -264,6 +265,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
       m_chassisSpeeds.vyMetersPerSecond *= m_speedModifier;
       m_chassisSpeeds.omegaRadiansPerSecond *= m_speedModifier;
 
+      //SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds, GYRO_LOCATION_FROM_CENTER); // FIXME: Set center of rotation
       SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
       SwerveDriveKinematics.desaturateWheelSpeeds(states, Motor.MAX_VELOCITY_MPS);
 

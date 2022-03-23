@@ -137,6 +137,11 @@ public final class Constants {
   // The front-to-back distance between the drivetrain wheels.
   public static final double WHEELBASE_METERS = 0.76581; // 0.545 // 25.125"
 
+  public static final double GYRO_RADIUS_METERS = 0.3087; // 31" / 2 - 8.5cm
+  public static final double GYRO_CIRCUMFERENCE_METERS = 2 * Math.PI * GYRO_RADIUS_METERS;
+
+  public static final Translation2d GYRO_LOCATION_FROM_CENTER = new Translation2d(GYRO_RADIUS_METERS, 0);
+
   public final static class Field {
     public static final double FIELD_LENGTH = Units.inchesToMeters(54.0 * 12.0);
     public static final double FIELD_WIDTH = Units.inchesToMeters(27.0 * 12.0);
