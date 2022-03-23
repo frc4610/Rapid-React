@@ -34,6 +34,20 @@ public class AutoActionCmd extends SequentialCommandGroup {
     return this;
   }
 
+  public AutoActionCmd executeIntakeEnable() {
+    addCommands(
+        new InstantCommand(() -> m_intakeSubystem.autonomousIntakeEnable())
+            .andThen(new InstantCommand(() -> m_intakeSubystem.autonomousArmDown())));
+    return this;
+  }
+
+  public AutoActionCmd executeIntakeDisable() {
+    addCommands(
+        new InstantCommand(() -> m_intakeSubystem.autonomousIntakeFireDisable())
+            .andThen(new InstantCommand(() -> m_intakeSubystem.autonomousArmUp())));
+    return this;
+  }
+
   public AutoActionCmd executeDrivePath(String pathPlanner) {
     addCommands(new AutoFollowPathCmd(pathPlanner, m_autonomousSubystem, m_drivetrainSubystem));
     return this;
@@ -75,6 +89,7 @@ public class AutoActionCmd extends SequentialCommandGroup {
     addCommands(actionToCommand((drivetrain, intake) -> {
       drivetrain.drive(0, 0, 0);
       intake.autonomousIntakeFireDisable();
+      drivetrain.zeroGyro();
     }));
     return this;
   }

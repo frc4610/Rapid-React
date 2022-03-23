@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants.*;
@@ -16,6 +17,8 @@ public class IntakeSubsystem extends BaseSubsystem {
   private final WPI_TalonFX m_intake = new WPI_TalonFX(Ids.INTAKE);
   private final WPI_TalonFX m_arm = new WPI_TalonFX(Ids.ARM);
   private final XboxControllerExtended m_controller;
+  DigitalInput m_topLimitSwitch = new DigitalInput(Ids.DIO_TOP_LIMITSWTICH);
+  DigitalInput m_bottomLimitSwitch = new DigitalInput(Ids.DIO_BOTTOM_LIMITSWTICH);
 
   private final double m_armTimeUp = 0.83;
   private final double m_armTimeDown = 0.4;
@@ -92,6 +95,21 @@ public class IntakeSubsystem extends BaseSubsystem {
     m_intake.set(ControlMode.PercentOutput, 0);
   }
 
+  public void autonomousIntakeEnable() {
+    m_autoControl = true;
+    m_intake.set(ControlMode.PercentOutput, 0.35);
+  }
+
+  public void autonomousArmDown() {
+    m_autoControl = true;
+    m_armState = false;
+  }
+
+  public void autonomousArmUp() {
+    m_autoControl = false;
+    m_armState = true;
+  }
+
   public void updateArm() {
     final boolean rightBumper = m_controller.getRightBumper();
     final boolean rightTriggerAxis = m_controller.getRightTriggerAxis() > 0 || rightBumper;
@@ -99,7 +117,7 @@ public class IntakeSubsystem extends BaseSubsystem {
     if (m_armState) {
       if (Timer.getFPGATimestamp() - m_lastBurstTime < m_armTimeUp) {
         m_arm.set(Arm.TRAVEL_UP_POWER.getDouble(Arm.DEFAULT_TRAVEL_UP_POWER));
-      } else if (m_arm.getSelectedSensorPosition() < Arm.UP_POSITION) {
+      } else if (m_topLimitSwitch.get() == true) {
         m_arm.set(Arm.TRAVEL_DIFFERENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
       } else {
         m_arm.set(0);
@@ -107,8 +125,10 @@ public class IntakeSubsystem extends BaseSubsystem {
     } else {
       if (Timer.getFPGATimestamp() - m_lastBurstTime < m_armTimeDown) {
         m_arm.set(-Arm.TRAVEL_DOWN_POWER.getDouble(Arm.DEFAULT_TRAVEL_DOWN_POWER));
-      } else if (m_arm.getSelectedSensorPosition() > Arm.DOWN_POSITION) {
+      } else if (m_bottomLimitSwitch.get() == true) {
         m_arm.set(-Arm.TRAVEL_DIFFERENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
+      } else if (m_bottomLimitSwitch.get() == false) {
+        m_arm.set(0);
       }
     }
 
