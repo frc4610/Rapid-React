@@ -9,6 +9,7 @@ import frc.robot.Robot;
 import frc.robot.RobotContainer;
 
 public class BaseSubsystem extends SubsystemBase {
+  // TODO: Bitwise with sim
   public enum RobotMode {
     DISABLED, AUTO, TELEOP
   }
@@ -21,7 +22,7 @@ public class BaseSubsystem extends SubsystemBase {
     return true;
   }
 
-  public boolean IsSim() {
+  public boolean isSim() {
     return Robot.isSimulation();
   }
 

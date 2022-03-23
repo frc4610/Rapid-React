@@ -9,10 +9,6 @@ public class PoseTelemetry {
 
   public static Field2d field = new Field2d();
 
-  // Desired Position says where path planning logic wants the
-  // robot to be at any given time.
-  Pose2d desiredPose = new Pose2d();
-
   // Estimated position says where you think your robot is at
   // Based on encoders, motion, vision, etc.
   Pose2d estimatedPose = new Pose2d();
@@ -35,10 +31,6 @@ public class PoseTelemetry {
     actualPose = act;
   }
 
-  public void setDesiredPose(Pose2d des) {
-    desiredPose = des;
-  }
-
   public void setEstimatedPose(Pose2d est) {
     estimatedPose = est;
   }
@@ -52,8 +44,6 @@ public class PoseTelemetry {
   }
 
   public void update() {
-
-    field.getObject("DesPose").setPose(desiredPose);
     field.setRobotPose(actualPose);
     field.getObject("EstPose").setPose(estimatedPose);
     field.getObject("ModPoses").setPoses(modulePoses);

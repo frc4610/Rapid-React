@@ -6,10 +6,13 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
+import swervelib.Constants;
 import swervelib.DriveController;
 import swervelib.DriveControllerFactory;
 import swervelib.ModuleConfiguration;
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.Robot;
 
 public final class Falcon500DriveControllerFactoryBuilder {
     private static final double TICKS_PER_ROTATION = 2048.0;
@@ -79,7 +82,8 @@ public final class Falcon500DriveControllerFactoryBuilder {
             CtreUtils.checkCtreError(
                     motor.setStatusFramePeriod(
                             StatusFrameEnhanced.Status_1_General,
-                            STATUS_FRAME_GENERAL_PERIOD_MS,
+                            Robot.isSimulation() ? Constants.Sim.STATUS_FRAME_PERIOD_MS
+                                    : STATUS_FRAME_GENERAL_PERIOD_MS,
                             CAN_TIMEOUT_MS),
                     "Failed to configure Falcon status frame period");
 

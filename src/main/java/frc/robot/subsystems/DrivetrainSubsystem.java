@@ -247,7 +247,6 @@ public class DrivetrainSubsystem extends BaseSubsystem {
   @Override
   public void periodic() {
     updateOdometry(getSwerveModuleStates()); // Update odometry based off wheel states, NOT requested chassis speeds
-
     if (Math.abs(m_chassisSpeeds.vxMetersPerSecond) == 0 && Math.abs(m_chassisSpeeds.vyMetersPerSecond) == 0
         && Math.abs(m_chassisSpeeds.omegaRadiansPerSecond) == 0 && Motor.DEFENSIVE) {
       m_frontLeftModule.set(
@@ -282,7 +281,6 @@ public class DrivetrainSubsystem extends BaseSubsystem {
           states[3].angle.getRadians());
       //updateOdometry(states);
     }
-
     Pose2d[] modulePose = { null, null, null, null };
     var swerveModules = getSwerveModuleStates();
     // Update the poses for the swerveModules. Note that the order of rotating the position and then
@@ -296,7 +294,6 @@ public class DrivetrainSubsystem extends BaseSubsystem {
       modulePose[i] = new Pose2d(modulePositionFromChassis,
           swerveModules[i].angle.plus(getPose().getRotation()));
     }
-
     RobotContainer.telemetry.setSwerveModulePoses(modulePose);
     RobotContainer.telemetry.setActualPose(m_odometry.getPoseMeters());
     RobotContainer.telemetry.update();

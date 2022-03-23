@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import swervelib.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
+import frc.robot.Robot;
 
 import static swervelib.ctre.CtreUtils.checkCtreError;
 
@@ -138,10 +139,10 @@ public final class Falcon500SteerControllerFactoryBuilder {
             checkCtreError(
                     motor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, CAN_TIMEOUT_MS),
                     "Failed to set Falcon 500 feedback sensor");
-            motor.setSensorPhase(true);
+            motor.setSensorPhase(!moduleConfiguration.isSteerInverted());
             motor.setInverted(moduleConfiguration.isSteerInverted() ? TalonFXInvertType.CounterClockwise
                     : TalonFXInvertType.Clockwise);
-            motor.setNeutralMode(NeutralMode.Coast); // FIXME: Not sure if it's meant to be in break or coast
+            motor.setNeutralMode(NeutralMode.Brake); // Meant to be in brake
 
             double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
             if (Double.isNaN(absoluteAngle)) {
@@ -156,7 +157,8 @@ public final class Falcon500SteerControllerFactoryBuilder {
             CtreUtils.checkCtreError(
                     motor.setStatusFramePeriod(
                             StatusFrameEnhanced.Status_1_General,
-                            STATUS_FRAME_GENERAL_PERIOD_MS,
+                            Robot.isSimulation() ? Constants.Sim.STATUS_FRAME_PERIOD_MS
+                                    : STATUS_FRAME_GENERAL_PERIOD_MS,
                             CAN_TIMEOUT_MS),
                     "Failed to configure Falcon status frame period");
 
