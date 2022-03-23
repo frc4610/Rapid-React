@@ -88,6 +88,17 @@ public class AutonomousSubsystem extends BaseSubsystem {
     .executeDrivePath("HangarDump4")
     .executeFeildReset()
     .complete());
+
+    m_autoChooser.addOption("2BallLeft", new AutoActionCmd(this, m_drivetrainSubsystem, m_intakeSubsystem)
+    .executeIntakeEnable()
+    .executeDrivePath("2BallLeft1")
+    .executeIntakeDisable()
+    .executeDrivePath("2BallLeft2")
+    .executeIntakeFire()
+    .executePause(1.69)
+    .executeDrivePath("2BallLeft3")
+    .executeFeildReset()
+    .complete());
   }
 
   public Optional<AutoActionCmd> getAutoCmd() {
