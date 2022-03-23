@@ -2,8 +2,6 @@ package swervelib;
 
 import java.util.Objects;
 
-import swervelib.config.SdsModuleConfigurations;
-
 /**
  * A swerve module configuration.
  * <p>

@@ -14,10 +14,10 @@ import java.util.Scanner;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.commands.DriveContinuousCmd;
@@ -32,10 +32,11 @@ import frc.robot.utils.CAN.CANDevice;
 import frc.robot.utils.controller.XboxControllerExtended;
 import frc.robot.utils.json.JsonReader;
 import frc.robot.utils.math.MathUtils;
+import swervelib.sim.PoseTelemetry;
 
 public class RobotContainer {
   public final static File deployDirectory = Filesystem.getDeployDirectory();
-  public final static Field2d dashboardField = new Field2d();
+  public final static PoseTelemetry telemetry = new PoseTelemetry();
   public String branch = "null";
   private final static DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
   private final static XboxControllerExtended m_driverController = new XboxControllerExtended(0);
@@ -58,8 +59,11 @@ public class RobotContainer {
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     }
+  }
+
+  public void onRobotInit() {
     SmartDashboard.putString("Branch:", branch);
-    SmartDashboard.putData("Field", dashboardField);
+    SmartDashboard.putData("Field", PoseTelemetry.field);
 
     DriverStation.silenceJoystickConnectionWarning(true);
   }
@@ -70,10 +74,14 @@ public class RobotContainer {
           reset();
         });
     new Button(m_driverController::getAButton)
-        .whileHeld(() -> { // As class says don't go nathan mode
-          m_drivetrainSubsystem.limitPower();
+        .whenPressed(() -> {
+          m_drivetrainSubsystem.setSpeedModifier(0.5);
           m_driverController.setLeftVibration(0.1);
           m_driverController.setRightVibration(0.1);
+        }).whenReleased(() -> {
+          m_drivetrainSubsystem.setSpeedModifier(1.0);
+          m_driverController.setLeftVibration(0.0);
+          m_driverController.setRightVibration(0.0);
         });
 
     new Button(m_driverController::getLeftBumper)
@@ -109,11 +117,7 @@ public class RobotContainer {
   }
 
   public static void setDefaultTeleopCommand() {
-    m_drivetrainSubsystem.setDefaultCommand(new UserControllerCmd(
-        m_drivetrainSubsystem,
-        () -> getDriveForwardAxis(),
-        () -> getDriveStrafeAxis(),
-        () -> getDriveRotationAxis()));
+    m_drivetrainSubsystem.setDefaultCommand(new UserControllerCmd(m_drivetrainSubsystem));
 
     configureDriveButtons();
   }
@@ -171,5 +175,9 @@ public class RobotContainer {
 
   public static double getDriveRotationAxis() {
     return MathUtils.modifyAxis(m_driverController.getRightX(), Constants.Controller.XBOX_DEADBAND);
+  }
+
+  public static Rotation2d getDrivePOV() {
+    return Rotation2d.fromDegrees(m_driverController.getPOV());
   }
 }

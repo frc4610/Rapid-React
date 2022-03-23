@@ -5,7 +5,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants.*;
 import frc.robot.utils.BaseSubsystem;
@@ -38,7 +37,7 @@ public class IntakeSubsystem extends BaseSubsystem {
     m_arm.setSelectedSensorPosition(Arm.ABS_UP_POSITION);
 
     m_armState = updateArmState();
-    m_intakeTab = Shuffleboard.getTab("IntakeSubsystem");
+    m_intakeTab = addTab("IntakeSubsystem");
     m_intakeTab.addBoolean("Arm State", () -> m_armState);
     m_intakeTab.addBoolean("Verified Arm State", () -> m_verifiedArmState);
     m_intakeTab.addNumber("Arm Selected Position", () -> m_arm.getSelectedSensorPosition());

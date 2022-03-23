@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import swervelib.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
+import frc.robot.Robot;
 
 import static swervelib.ctre.CtreUtils.checkCtreError;
 
@@ -117,9 +118,6 @@ public final class Falcon500SteerControllerFactoryBuilder {
                     motorConfiguration.slot0.kF = (1023.0 * sensorVelocityCoefficient / nominalVoltage)
                             * velocityConstant;
                 }
-                // TODO: What should be done if no nominal voltage is configured? Use a default voltage?
-
-                // TODO: Make motion magic max voltages configurable or dynamically determine optimal values
                 motorConfiguration.motionCruiseVelocity = 2.0 / velocityConstant / sensorVelocityCoefficient;
                 motorConfiguration.motionAcceleration = (8.0 - 2.0) / accelerationConstant / sensorVelocityCoefficient;
             }
@@ -141,10 +139,10 @@ public final class Falcon500SteerControllerFactoryBuilder {
             checkCtreError(
                     motor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, CAN_TIMEOUT_MS),
                     "Failed to set Falcon 500 feedback sensor");
-            motor.setSensorPhase(true);
+            motor.setSensorPhase(!moduleConfiguration.isSteerInverted());
             motor.setInverted(moduleConfiguration.isSteerInverted() ? TalonFXInvertType.CounterClockwise
                     : TalonFXInvertType.Clockwise);
-            motor.setNeutralMode(NeutralMode.Brake);
+            motor.setNeutralMode(NeutralMode.Brake); // Meant to be in brake
 
             double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
             if (Double.isNaN(absoluteAngle)) {
@@ -159,7 +157,8 @@ public final class Falcon500SteerControllerFactoryBuilder {
             CtreUtils.checkCtreError(
                     motor.setStatusFramePeriod(
                             StatusFrameEnhanced.Status_1_General,
-                            STATUS_FRAME_GENERAL_PERIOD_MS,
+                            Robot.isSimulation() ? Constants.Sim.STATUS_FRAME_PERIOD_MS
+                                    : STATUS_FRAME_GENERAL_PERIOD_MS,
                             CAN_TIMEOUT_MS),
                     "Failed to configure Falcon status frame period");
 

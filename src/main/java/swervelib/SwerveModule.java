@@ -1,5 +1,7 @@
 package swervelib;
 
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+
 public interface SwerveModule {
     Object getDriveMotor();
 
@@ -10,6 +12,8 @@ public interface SwerveModule {
     double getDriveVelocity();
 
     double getSteerAngle();
+
+    SwerveModuleState getState();
 
     void configRampRate(double rampRate);
 

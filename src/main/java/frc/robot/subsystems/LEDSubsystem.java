@@ -47,7 +47,7 @@ public class LEDSubsystem extends SubsystemBase {
   public static AlternatingColorPattern m_greenAlternating = new AlternatingColorPattern(greenAlternatingColor);
   public static TimerPattern m_timerPattern = new TimerPattern(Color.kWhite, 15.0);
 
-  public static int LED_STRIP_COUNT = 60;
+  public static int LED_STRIP_COUNT = 58;
 
   public LEDSubsystem() {
     m_ledStrip = new AddressableLED(Ids.PWM_LED_STRIP);

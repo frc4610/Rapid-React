@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants.*;
@@ -19,7 +18,7 @@ public class UltrasonicSubsystem extends BaseSubsystem {
 
   public UltrasonicSubsystem(LEDSubsystem ledsubsystem) {
     m_ledSubsystem = ledsubsystem;
-    m_ultrasonicTab = Shuffleboard.getTab("Ultrasonic");
+    m_ultrasonicTab = addTab("Ultrasonic");
     m_ultrasonicLeft = new UltrasonicMB1013(Ids.LEFT_ULTRASONIC);
     m_ultrasonicRight = new UltrasonicMB1013(Ids.RIGHT_ULTRASONIC);
     EnableSensors();

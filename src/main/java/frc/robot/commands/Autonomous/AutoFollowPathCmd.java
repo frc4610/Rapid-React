@@ -14,13 +14,11 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class AutoFollowPathCmd extends SequentialCommandGroup {
   private final PathPlannerTrajectory m_trajectory;
-  private AutonomousSubsystem m_autonomousSubsystem;
   private DrivetrainSubsystem m_drivetrainSubsystem;
 
   public AutoFollowPathCmd(String trajectoryPath, AutonomousSubsystem auto, DrivetrainSubsystem drive) {
     m_trajectory = PathPlanner.loadPath(trajectoryPath, Motor.MAX_VELOCITY_MPS, Motor.MAX_VELOCITY_MPS);
     auto.showCurrentTrajectory(m_trajectory);
-    m_autonomousSubsystem = auto;
     m_drivetrainSubsystem = drive;
     addCommands(setup(), createTrajectoryFollowerCommand());
   }
