@@ -103,15 +103,19 @@ public final class Constants {
   }
 
   public final static class Arm {
-    public static final double DEFAULT_TRAVEL_UP_POWER = 0.4;
+    public static final double DEFAULT_TRAVEL_UP_POWER = 0.35;
     public static final NetworkTableEntry TRAVEL_UP_POWER = m_tab.add("Arm up power", DEFAULT_TRAVEL_UP_POWER)
         .getEntry(); // .35
     public static final double DEFAULT_TRAVEL_DOWN_POWER = 0.35;
     public static final NetworkTableEntry TRAVEL_DOWN_POWER = m_tab.add("Arm down power", DEFAULT_TRAVEL_DOWN_POWER)
         .getEntry();
-    public static final double DEFAULT_TRAVEL_DISTANCE = 0.2;
+    public static final double DEFAULT_TRAVEL_DISTANCE = 0.3;
     public static final NetworkTableEntry TRAVEL_DIFFERENCE = m_tab
         .add("Arm travel difference", DEFAULT_TRAVEL_DISTANCE)
+        .getEntry();
+    public static final double DEFAULT_HOLD_DOWN_POWER = 0.3;
+    public static final NetworkTableEntry HOLD_DOWN_POWER = m_tab
+        .add("Arm hold down power", DEFAULT_HOLD_DOWN_POWER)
         .getEntry();
     /*
     UP: 32340

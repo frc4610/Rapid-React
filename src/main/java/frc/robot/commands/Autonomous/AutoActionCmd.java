@@ -34,14 +34,26 @@ public class AutoActionCmd extends SequentialCommandGroup {
     return this;
   }
 
-  public AutoActionCmd executeIntakeEnable() {
+  public AutoActionCmd executeArmPosition(boolean state) {
     addCommands(
-        new InstantCommand(() -> m_intakeSubystem.autonomousIntakeEnable())
-            .andThen(new InstantCommand(() -> m_intakeSubystem.autonomousArmDown())));
+        new InstantCommand(() -> {
+          if (state) {
+            m_intakeSubystem.autonomousArmUp();
+          } else {
+            m_intakeSubystem.autonomousArmDown();
+          }
+        })); // TODO: add wait till isAtRequestedPosition
     return this;
   }
 
-  public AutoActionCmd executeIntakeDisable() {
+  public AutoActionCmd executeIntakeArmDown() {
+    addCommands(
+        new InstantCommand(() -> m_intakeSubystem.autonomousIntakeEnable())
+            .andThen(new InstantCommand(() -> m_intakeSubystem.autonomousArmDown()))); // TODO: add wait till isAtRequestedPosition
+    return this;
+  }
+
+  public AutoActionCmd executeIntakeArmUp() {
     addCommands(
         new InstantCommand(() -> m_intakeSubystem.autonomousIntakeFireDisable())
             .andThen(new InstantCommand(() -> m_intakeSubystem.autonomousArmUp())));
