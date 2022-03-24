@@ -17,8 +17,8 @@ public class IntakeSubsystem extends BaseSubsystem {
   private final WPI_TalonFX m_intake = new WPI_TalonFX(Ids.INTAKE);
   private final WPI_TalonFX m_arm = new WPI_TalonFX(Ids.ARM);
   private final XboxControllerExtended m_controller;
-  DigitalInput m_topLimitSwitch = new DigitalInput(Ids.DIO_TOP_LIMITSWTICH);
-  DigitalInput m_bottomLimitSwitch = new DigitalInput(Ids.DIO_BOTTOM_LIMITSWTICH);
+  private final DigitalInput m_topLimitSwitch = new DigitalInput(Ids.DIO_TOP_LIMITSWTICH);
+  private final DigitalInput m_bottomLimitSwitch = new DigitalInput(Ids.DIO_BOTTOM_LIMITSWTICH);
 
   private final double m_armTimeUp = 0.83;
   private final double m_armTimeDown = 0.4;
