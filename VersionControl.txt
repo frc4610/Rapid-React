@@ -5,3 +5,13 @@ Version 0.1.3 - Update GradleRIO to 2022.4.1 + Configure for comp bot
 Version 0.1.4 - Intake, PathPlanner, and ReadMe, Removed Vision
 Version 0.2.0 - Comp Release
 Version 0.2.1 - Drive with Bumpers, Constant control, Fixes for intake, and lgbt leds fixed + working with ultrasonics
+Version 1.0.0:
+  - Made max voltage a constant rather then using it to limit speed
+  - Xbox Controller POV key rotation code
+  - Remove Logger and use BaseSubsystem NT
+  - Change LED count to match the bot
+  - Added Feedforward to swerve to drive accurately
+  - Added calibration mode to swerve for when we need to calc offsets. (Does not need to use physical measurement devices)
+  - Recalibrated Xbox controller deadbands due to 0.05 causing issues
+  - Modified Arm constants + added limitswitch
+  - Autonomous Paths added
