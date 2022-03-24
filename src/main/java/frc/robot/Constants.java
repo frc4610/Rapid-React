@@ -22,6 +22,10 @@ public final class Constants {
   public static final String RIO_IP = "http://172.22.11.2:1250";
 
   public final static class Ids {
+    // DIO
+    public static final int DIO_TOP_LIMITSWTICH = 3;
+    public static final int DIO_BOTTOM_LIMITSWTICH = 2;
+
     // PWM
     public static final int PWM_LED_STRIP = 0;
 
@@ -95,19 +99,23 @@ public final class Constants {
     public static final double VELOCITY_GAIN = 2.5;
     public static final double ACCELERATION_GAIN = 0.1;
 
-    public static final ProfiledPidConfig PID_THETA = new ProfiledPidConfig(2.5, 0.0, 0.02, THETA_CONSTRAINTS);
+    public static final ProfiledPidConfig PID_THETA = new ProfiledPidConfig(1.0, 0.0, 0.02, THETA_CONSTRAINTS);
   }
 
   public final static class Arm {
-    public static final double DEFAULT_TRAVEL_UP_POWER = 0.4;
+    public static final double DEFAULT_TRAVEL_UP_POWER = 0.35;
     public static final NetworkTableEntry TRAVEL_UP_POWER = m_tab.add("Arm up power", DEFAULT_TRAVEL_UP_POWER)
         .getEntry(); // .35
     public static final double DEFAULT_TRAVEL_DOWN_POWER = 0.35;
     public static final NetworkTableEntry TRAVEL_DOWN_POWER = m_tab.add("Arm down power", DEFAULT_TRAVEL_DOWN_POWER)
         .getEntry();
-    public static final double DEFAULT_TRAVEL_DISTANCE = 0.2;
+    public static final double DEFAULT_TRAVEL_DISTANCE = 0.3;
     public static final NetworkTableEntry TRAVEL_DIFFERENCE = m_tab
         .add("Arm travel difference", DEFAULT_TRAVEL_DISTANCE)
+        .getEntry();
+    public static final double DEFAULT_HOLD_DOWN_POWER = 0.3;
+    public static final NetworkTableEntry HOLD_DOWN_POWER = m_tab
+        .add("Arm hold down power", DEFAULT_HOLD_DOWN_POWER)
         .getEntry();
     /*
     UP: 32340
@@ -132,6 +140,11 @@ public final class Constants {
   public static final double TRACKWIDTH_METERS = 0.65532; // 0.56 //21.5"
   // The front-to-back distance between the drivetrain wheels.
   public static final double WHEELBASE_METERS = 0.76581; // 0.545 // 25.125"
+
+  public static final double GYRO_RADIUS_METERS = 0.3087; // 31" / 2 - 8.5cm
+  public static final double GYRO_CIRCUMFERENCE_METERS = 2 * Math.PI * GYRO_RADIUS_METERS;
+
+  public static final Translation2d GYRO_LOCATION_FROM_CENTER = new Translation2d(GYRO_RADIUS_METERS, 0);
 
   public final static class Field {
     public static final double FIELD_LENGTH = Units.inchesToMeters(54.0 * 12.0);

@@ -77,7 +77,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
   private double m_speedModifier = 1.0;
 
   public DrivetrainSubsystem() {
-    m_gyro = GyroscopeHelper.createNavXMXP();
+    m_gyro = GyroscopeHelper.createNavXMXP(); // 8.5cm from front bar // 30cm in the center of the bar
     m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroRotation());
     resetPose(new Pose2d(7, 2, Rotation2d.fromDegrees(-90)));
 
@@ -177,6 +177,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
 
   public Rotation2d getGyroRotation() {
     return m_gyro.getGyroRotation();
+    //return new Rotation2d(GYRO_CIRCUMFERENCE_METERS / m_gyro.getGyroRotation().getRadians());
   }
 
   public void drive(double translation_x, double translation_y, double rotation) {
@@ -264,6 +265,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
       m_chassisSpeeds.vyMetersPerSecond *= m_speedModifier;
       m_chassisSpeeds.omegaRadiansPerSecond *= m_speedModifier;
 
+      //SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds, GYRO_LOCATION_FROM_CENTER); // FIXME: Set center of rotation
       SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
       SwerveDriveKinematics.desaturateWheelSpeeds(states, Motor.MAX_VELOCITY_MPS);
 

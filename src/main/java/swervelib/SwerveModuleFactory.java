@@ -38,7 +38,7 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
         return new ModuleImplementation(driveController, steerContainer);
     }
 
-    private static class ModuleImplementation implements SwerveModule, AbsoluteEncoder {
+    private static class ModuleImplementation implements SwerveModule {
         private final DriveController driveController;
         private final SteerController steerController;
 
@@ -73,28 +73,13 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
         }
 
         @Override
-        public SwerveModuleState getState() {
-            return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getSteerAngle()));
-        }
-
-        /**
-        * Gets the current angle reading of the encoder in radians.
-        *
-        * @return The current angle in radians. Range: [0, 2pi). Returns Double.NaN if the steer controller doesn't
-        *         support returning the absolute encoder position
-        */
-        @Override
-        public double getAbsoluteAngle() {
-            if (steerController instanceof AbsoluteEncoder) {
-                AbsoluteEncoder encoder = (AbsoluteEncoder) steerController;
-                return encoder.getAbsoluteAngle();
-            }
-            return Double.NaN;
-        }
-
-        @Override
         public void configRampRate(double rampRate) {
             this.driveController.configRampRate(rampRate);
+        }
+
+        @Override
+        public SwerveModuleState getState() {
+            return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getSteerAngle()));
         }
 
         @Override

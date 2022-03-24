@@ -34,6 +34,32 @@ public class AutoActionCmd extends SequentialCommandGroup {
     return this;
   }
 
+  public AutoActionCmd executeArmPosition(boolean state) {
+    addCommands(
+        new InstantCommand(() -> {
+          if (state) {
+            m_intakeSubystem.autonomousArmUp();
+          } else {
+            m_intakeSubystem.autonomousArmDown();
+          }
+        })); // TODO: add wait till isAtRequestedPosition
+    return this;
+  }
+
+  public AutoActionCmd executeIntakeArmDown() {
+    addCommands(
+        new InstantCommand(() -> m_intakeSubystem.autonomousIntakeEnable())
+            .andThen(new InstantCommand(() -> m_intakeSubystem.autonomousArmDown()))); // TODO: add wait till isAtRequestedPosition
+    return this;
+  }
+
+  public AutoActionCmd executeIntakeArmUp() {
+    addCommands(
+        new InstantCommand(() -> m_intakeSubystem.autonomousIntakeFireDisable())
+            .andThen(new InstantCommand(() -> m_intakeSubystem.autonomousArmUp())));
+    return this;
+  }
+
   public AutoActionCmd executeDrivePath(String pathPlanner) {
     addCommands(new AutoFollowPathCmd(pathPlanner, m_autonomousSubystem, m_drivetrainSubystem));
     return this;
@@ -75,6 +101,7 @@ public class AutoActionCmd extends SequentialCommandGroup {
     addCommands(actionToCommand((drivetrain, intake) -> {
       drivetrain.drive(0, 0, 0);
       intake.autonomousIntakeFireDisable();
+      drivetrain.zeroGyro();
     }));
     return this;
   }

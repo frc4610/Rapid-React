@@ -25,7 +25,10 @@ public class AutonomousSubsystem extends BaseSubsystem {
 
   public void loadAutoActionCmds() {
 
-    m_autoChooser.setDefaultOption("1 Ball Auto", new AutoActionCmd(this, m_drivetrainSubsystem, m_intakeSubsystem)
+    m_autoChooser.setDefaultOption("1m Forward", new AutoActionCmd(this, m_drivetrainSubsystem, m_intakeSubsystem)
+        .executeDrivePath("1m Forward") // went 87 cm
+        .complete());
+    m_autoChooser.addOption("1 Ball Auto", new AutoActionCmd(this, m_drivetrainSubsystem, m_intakeSubsystem)
         .executeIntakeFire()
         .executeAction((drivetrain, intake) -> drivetrain.drive(-Auto.DRIVE_POWER, 0, 0, false))
         .executePause(1.69)
@@ -34,6 +37,64 @@ public class AutonomousSubsystem extends BaseSubsystem {
         .executeIntakeFire()
         .executeDrivePath("New Path")
         .executePause(1.69)
+        .complete());
+    m_autoChooser.addOption("4BallAutoLeft", new AutoActionCmd(this, m_drivetrainSubsystem, m_intakeSubsystem)
+        .executeIntakeArmDown()
+        .executeDrivePath("4BallAutoFirstStage")
+        .executeIntakeArmUp()
+        .executeDrivePath("4BallAutoSecondStage")
+        .executeIntakeFire()
+        .executePause(1.69)
+        .executeIntakeArmDown()
+        .executeDrivePath("4BallAutoThirdStage")
+        .executeDrivePath("4BallAutoFourthStage")
+        .executeIntakeArmUp()
+        .executeDrivePath("4BallAutoFithStage")
+        .executeIntakeFire()
+        .executePause(1.69)
+        .executeDrivePath("4BallAutoSixthStage")
+        .complete());
+
+    m_autoChooser.addOption("4BallAutoRight", new AutoActionCmd(this, m_drivetrainSubsystem, m_intakeSubsystem)
+        .executeIntakeArmDown()
+        .executeDrivePath("4BallAutoFirstStageRight")
+        .executeIntakeArmUp()
+        .executeDrivePath("4BallAutoSecondStageRight")
+        .executeIntakeFire()
+        .executePause(1.69)
+        .executeIntakeArmDown()
+        .executeDrivePath("4BallAutoThirdStage")
+        .executeIntakeArmUp()
+        .executeDrivePath("4BallAutoFourthStage")
+        .executeIntakeFire()
+        .executePause(1.69)
+        .executeDrivePath("4BallAutoFithStage")
+        .complete());
+
+    m_autoChooser.addOption("HangarDump", new AutoActionCmd(this, m_drivetrainSubsystem, m_intakeSubsystem)
+        .executeIntakeArmDown()
+        .executeDrivePath("HangarDump1")
+        .executeIntakeArmUp()
+        .executeDrivePath("HangarDump2")
+        .executeIntakeFire()
+        .executePause(1.69)
+        .executeIntakeArmDown()
+        .executeDrivePath("HangarDump3")
+        .executeIntakeArmUp()
+        .executePause(1.69)
+        .executeIntakeFire()
+        .executePause(1)
+        .executeDrivePath("HangarDump4")
+        .complete());
+
+    m_autoChooser.addOption("2BallLeft", new AutoActionCmd(this, m_drivetrainSubsystem, m_intakeSubsystem)
+        .executeIntakeArmDown()
+        .executeDrivePath("2BallLeft1")
+        .executeIntakeArmUp()
+        .executeDrivePath("2BallLeft2")
+        .executeIntakeFire()
+        .executePause(1.69)
+        .executeDrivePath("2BallLeft3")
         .complete());
   }
 
