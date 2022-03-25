@@ -139,8 +139,7 @@ public class IntakeSubsystem extends BaseSubsystem {
   public void updateArm() {
     final boolean rightBumper = m_controller.getRightBumper();
     final boolean leftBumper = m_controller.getLeftBumper();
-    final boolean rightTriggerAxis = getRobotMode() == RobotMode.AUTO ? m_requestedArmState
-        : m_controller.getRightTriggerAxis() > 0 || rightBumper; // if we want to control the arm using request then set it
+    final boolean rightTriggerAxis = m_controller.getRightTriggerAxis() > 0 || rightBumper; // if we want to control the arm using request then set it
 
     if (m_armState) {
       if (Timer.getFPGATimestamp() - m_lastBurstTime < m_armTimeUp) {
