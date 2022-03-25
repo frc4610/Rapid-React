@@ -87,6 +87,7 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
         public void set(double driveVoltage, double steerAngle) {
             if (Calibration.CALIBRATION_MODE.getBoolean(false)) {
                 if (Calibration.ZERO_WHEELS.getBoolean(false)) {
+                    driveController.setReferenceVoltage(0);
                     steerController.setReferenceAngle(0);
                 }
                 return;

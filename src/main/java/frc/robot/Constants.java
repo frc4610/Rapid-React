@@ -17,7 +17,6 @@ public final class Constants {
 
   private static final ShuffleboardTab m_tab = Shuffleboard.getTab("Constants");
 
-  public static boolean USE_ONE_CONTROLLER = false;
   public static final String VERSION = "Version 0.2.0";
   public static final String RIO_IP = "http://172.22.11.2:1250";
 
@@ -73,7 +72,7 @@ public final class Constants {
     public static final double MAX_ANGULAR_VELOCITY_RPS = MAX_VELOCITY_MPS /
         Math.hypot(TRACKWIDTH_METERS / 2.0, WHEELBASE_METERS / 2.0);
 
-    public static final double TURN_TOLERANCE = 3; // degrees
+    public static final double TURN_TOLERANCE = 60; // degrees
 
     // SDS Billet Wheels 4"D X 1"W
     // 8.16:1 Gear Ratio
@@ -82,7 +81,7 @@ public final class Constants {
 
     public static final double DRIVE_GEAR_RATIO = 8.16;
     public static final double ANGLE_GEAR_RATIO = 12.8;
-    public static final double DEFAULT_MAX_POWER = 6.0;
+    public static final double DEFAULT_MAX_POWER = 5.5;
     public static final NetworkTableEntry MAX_POWER = m_tab.add("Motor max power", DEFAULT_MAX_POWER).getEntry();
   }
 
@@ -95,15 +94,15 @@ public final class Constants {
     // TODO: CONFIG ME
     // Feed Forward and PID values from SysId
     public static final PidConfig PID_XY = new PidConfig(2.5, 0.0, 0.02);
-    public static final double STATIC_GAIN = 0.5;
-    public static final double VELOCITY_GAIN = 2.5;
-    public static final double ACCELERATION_GAIN = 0.1;
+    public static final double STATIC_GAIN = 0.53;
+    public static final double VELOCITY_GAIN = 2.2;
+    public static final double ACCELERATION_GAIN = 0.13;
 
     public static final ProfiledPidConfig PID_THETA = new ProfiledPidConfig(1.0, 0.0, 0.02, THETA_CONSTRAINTS);
   }
 
   public final static class Arm {
-    public static final double DEFAULT_TRAVEL_UP_POWER = 0.35;
+    public static final double DEFAULT_TRAVEL_UP_POWER = 0.4;
     public static final NetworkTableEntry TRAVEL_UP_POWER = m_tab.add("Arm up power", DEFAULT_TRAVEL_UP_POWER)
         .getEntry(); // .35
     public static final double DEFAULT_TRAVEL_DOWN_POWER = 0.35;
@@ -118,7 +117,7 @@ public final class Constants {
     POINT:32018
     DOWN:0
     */
-    public static final double ABS_UP_POSITION = 32340; // Range from RNG - MAX
+    public static final double ABS_UP_POSITION = 35000; // Range from RNG - MAX
     public static final double UP_POSITION = ABS_UP_POSITION - 1500; // Range from RNG - MAX
     public static final double DOWN_POSITION = 100; // Enough to hold the bot down
   }

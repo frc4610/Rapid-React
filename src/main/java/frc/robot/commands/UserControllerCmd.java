@@ -19,7 +19,7 @@ public class UserControllerCmd extends CommandBase {
     public UserControllerCmd(DrivetrainSubsystem drivetrainSubsystem) {
         this.m_drivetrainSubsystem = drivetrainSubsystem;
         m_rotationController.enableContinuousInput(-Math.PI, Math.PI);
-        double radianTolerance = Math.toRadians(20); // 20 degrees per second
+        double radianTolerance = Math.toRadians(Motor.TURN_TOLERANCE);
         m_rotationController.setTolerance(radianTolerance, radianTolerance);
         m_rotationController.reset(drivetrainSubsystem.getGyroRotation().getRadians());
         addRequirements(drivetrainSubsystem);

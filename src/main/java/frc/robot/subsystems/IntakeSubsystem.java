@@ -17,11 +17,11 @@ public class IntakeSubsystem extends BaseSubsystem {
   private final WPI_TalonFX m_intake = new WPI_TalonFX(Ids.INTAKE);
   private final WPI_TalonFX m_arm = new WPI_TalonFX(Ids.ARM);
   private final XboxControllerExtended m_controller;
-  //private final DigitalInput m_topLimitSwitch = new DigitalInput(Ids.DIO_TOP_LIMITSWTICH); // currently broken
-  //private final DigitalInput m_bottomLimitSwitch = new DigitalInput(Ids.DIO_BOTTOM_LIMITSWTICH);
+  private final DigitalInput m_topLimitSwitch = new DigitalInput(Ids.DIO_TOP_LIMITSWTICH); // currently broken
+  private final DigitalInput m_bottomLimitSwitch = new DigitalInput(Ids.DIO_BOTTOM_LIMITSWTICH);
 
-  private final double m_armTimeUp = 0.83;
-  private final double m_armTimeDown = 0.4;
+  private final double m_armTimeUp = 0.85;
+  private final double m_armTimeDown = 0.45;
   // 38991 when up
   // 1555 when down
 
@@ -41,10 +41,23 @@ public class IntakeSubsystem extends BaseSubsystem {
 
     m_requestedArmState = m_armState = updateArmState();
     m_intakeTab = addTab("IntakeSubsystem");
+
+    // TODO: Group
+    m_intakeTab.addBoolean("Top Limit Switch", () -> getTopLimitSwitch());
+    m_intakeTab.addBoolean("Bottom Limit Switch", () -> getBottomLimitSwitch());
+    // TODO: Group
     m_intakeTab.addBoolean("Requested Arm State", () -> m_requestedArmState);
     m_intakeTab.addBoolean("Arm State", () -> m_armState);
     m_intakeTab.addBoolean("Verified Arm State", () -> m_verifiedArmState);
     m_intakeTab.addNumber("Arm Selected Position", () -> m_arm.getSelectedSensorPosition());
+  }
+
+  public boolean getBottomLimitSwitch() {
+    return !m_bottomLimitSwitch.get();
+  }
+
+  public boolean getTopLimitSwitch() {
+    return !m_topLimitSwitch.get();
   }
 
   @Override
@@ -78,7 +91,7 @@ public class IntakeSubsystem extends BaseSubsystem {
     // the arm has reached the ideal arm position
     if (m_arm.getSelectedSensorPosition() > Arm.UP_POSITION) {
       m_verifiedArmState = true; // is at top
-    } else if (m_arm.getSelectedSensorPosition() < Arm.DOWN_POSITION) { // m_bottomLimitSwitch.get() ||
+    } else if (getBottomLimitSwitch() || m_arm.getSelectedSensorPosition() < Arm.DOWN_POSITION) {
       m_verifiedArmState = false; // is at bottom
     }
     return m_verifiedArmState;
@@ -156,8 +169,10 @@ public class IntakeSubsystem extends BaseSubsystem {
     }
 
     if (rightBumper) {
+      m_arm.set(Arm.TRAVEL_DIFFERENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
       m_armState = false;
     } else if (leftBumper) {
+      m_arm.set(-Arm.TRAVEL_DIFFERENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
       m_armState = true;
     }
   }
