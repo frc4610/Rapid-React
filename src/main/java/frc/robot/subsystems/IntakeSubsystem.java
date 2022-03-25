@@ -17,8 +17,8 @@ public class IntakeSubsystem extends BaseSubsystem {
   private final WPI_TalonFX m_intake = new WPI_TalonFX(Ids.INTAKE);
   private final WPI_TalonFX m_arm = new WPI_TalonFX(Ids.ARM);
   private final XboxControllerExtended m_controller;
-  private final DigitalInput m_topLimitSwitch = new DigitalInput(Ids.DIO_TOP_LIMITSWTICH); // currently broken
-  private final DigitalInput m_bottomLimitSwitch = new DigitalInput(Ids.DIO_BOTTOM_LIMITSWTICH);
+  //private final DigitalInput m_topLimitSwitch = new DigitalInput(Ids.DIO_TOP_LIMITSWTICH); // currently broken
+  //private final DigitalInput m_bottomLimitSwitch = new DigitalInput(Ids.DIO_BOTTOM_LIMITSWTICH);
 
   private final double m_armTimeUp = 0.83;
   private final double m_armTimeDown = 0.4;
@@ -78,7 +78,7 @@ public class IntakeSubsystem extends BaseSubsystem {
     // the arm has reached the ideal arm position
     if (m_arm.getSelectedSensorPosition() > Arm.UP_POSITION) {
       m_verifiedArmState = true; // is at top
-    } else if (m_bottomLimitSwitch.get() || m_arm.getSelectedSensorPosition() < Arm.DOWN_POSITION) {
+    } else if (m_arm.getSelectedSensorPosition() < Arm.DOWN_POSITION) { // m_bottomLimitSwitch.get() ||
       m_verifiedArmState = false; // is at bottom
     }
     return m_verifiedArmState;
@@ -125,13 +125,14 @@ public class IntakeSubsystem extends BaseSubsystem {
 
   public void updateArm() {
     final boolean rightBumper = m_controller.getRightBumper();
+    final boolean leftBumper = m_controller.getLeftBumper();
     final boolean rightTriggerAxis = getRobotMode() == RobotMode.AUTO ? m_requestedArmState
         : m_controller.getRightTriggerAxis() > 0 || rightBumper; // if we want to control the arm using request then set it
 
     if (m_armState) {
       if (Timer.getFPGATimestamp() - m_lastBurstTime < m_armTimeUp) {
         m_arm.set(Arm.TRAVEL_UP_POWER.getDouble(Arm.DEFAULT_TRAVEL_UP_POWER)); // from the bottom up power
-      } else if (!m_verifiedArmState) {
+      } else if (!m_verifiedArmState || leftBumper) {
         m_arm.set(Arm.TRAVEL_DIFFERENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE)); // not in up position apply power till we get there
       } else {
         m_arm.set(0); // stop the power // we don't need to supply power to it as it "locks" itself in a pivot
@@ -139,10 +140,8 @@ public class IntakeSubsystem extends BaseSubsystem {
     } else {
       if (Timer.getFPGATimestamp() - m_lastBurstTime < m_armTimeDown) {
         m_arm.set(-Arm.TRAVEL_DOWN_POWER.getDouble(Arm.DEFAULT_TRAVEL_DOWN_POWER)); // from the top down power
-      } else if (!m_bottomLimitSwitch.get()) { // not hit the limit switch use distance power
+      } else if (m_verifiedArmState || rightBumper) { // not hit the limit switch use distance power
         m_arm.set(-Arm.TRAVEL_DIFFERENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
-      } else if (m_bottomLimitSwitch.get()) { // hit limit switch no longer want to use distance but hold down
-        m_arm.set(-Arm.HOLD_DOWN_POWER.getDouble(Arm.DEFAULT_HOLD_DOWN_POWER));
       }
     }
 
@@ -153,6 +152,12 @@ public class IntakeSubsystem extends BaseSubsystem {
     } else if (!rightTriggerAxis && !m_armState) {
       if (!m_verifiedArmState) // Fixes spamming right trigger causing motor stall
         m_lastBurstTime = Timer.getFPGATimestamp();
+      m_armState = true;
+    }
+
+    if (rightBumper) {
+      m_armState = false;
+    } else if (leftBumper) {
       m_armState = true;
     }
   }

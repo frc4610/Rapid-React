@@ -113,10 +113,6 @@ public final class Constants {
     public static final NetworkTableEntry TRAVEL_DIFFERENCE = m_tab
         .add("Arm travel difference", DEFAULT_TRAVEL_DISTANCE)
         .getEntry();
-    public static final double DEFAULT_HOLD_DOWN_POWER = 0.3;
-    public static final NetworkTableEntry HOLD_DOWN_POWER = m_tab
-        .add("Arm hold down power", DEFAULT_HOLD_DOWN_POWER)
-        .getEntry();
     /*
     UP: 32340
     POINT:32018

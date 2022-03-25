@@ -3,6 +3,7 @@ package swervelib;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import globals.Calibration;
 
 public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
     private final ModuleConfiguration moduleConfiguration;
@@ -84,10 +85,17 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
 
         @Override
         public void set(double driveVoltage, double steerAngle) {
-            if (Constants.CALIBRATION_MODE)
+            if (Calibration.CALIBRATION_MODE.getBoolean(false)) {
+                if (Calibration.ZERO_WHEELS.getBoolean(false)) {
+                    steerController.setReferenceAngle(0);
+                }
                 return;
+            }
+
             steerAngle %= (2.0 * Math.PI);
-            if (steerAngle < 0.0) {
+            if (steerAngle < 0.0)
+
+            {
                 steerAngle += 2.0 * Math.PI;
             }
 
@@ -107,7 +115,9 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
 
             // If the difference is greater than 90 deg or less than -90 deg the drive can be inverted so the total
             // movement of the module is less than 90 deg
-            if (difference > Math.PI / 2.0 || difference < -Math.PI / 2.0) {
+            if (difference > Math.PI / 2.0 || difference < -Math.PI / 2.0)
+
+            {
                 // Only need to add 180 deg here because the target angle will be put back into the range [0, 2pi)
                 steerAngle += Math.PI;
                 driveVoltage *= -1.0;
