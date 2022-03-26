@@ -25,12 +25,10 @@ public class IntakeSubsystem extends BaseSubsystem {
   // 38991 when up
   // 1555 when down
 
-  // true == up false == down
-  private boolean m_requestedArmState = true;
   private boolean m_armState = true;
   private boolean m_verifiedArmState = true;
   private double m_lastBurstTime = 0;
-  private boolean m_autoControl = false;
+  private double m_autoIntakeSpeed = 0;
   private ShuffleboardTab m_intakeTab;
 
   public IntakeSubsystem(XboxControllerExtended controller) {
@@ -39,34 +37,21 @@ public class IntakeSubsystem extends BaseSubsystem {
     m_arm.setNeutralMode(NeutralMode.Brake); // Force Motor in brake mode
     m_arm.setSelectedSensorPosition(Arm.ABS_UP_POSITION);
 
-    m_requestedArmState = m_armState = updateArmState();
+    m_armState = updateArmState();
     m_intakeTab = addTab("IntakeSubsystem");
 
     // TODO: Group
-    m_intakeTab.addBoolean("Top Limit Switch", () -> getTopLimitSwitch());
-    m_intakeTab.addBoolean("Bottom Limit Switch", () -> getBottomLimitSwitch());
+    m_intakeTab.addBoolean("Top Switch", () -> getTopLimitSwitch());
+    m_intakeTab.addBoolean("Bottom Switch", () -> getBottomLimitSwitch());
     // TODO: Group
-    m_intakeTab.addBoolean("Requested Arm State", () -> m_requestedArmState);
     m_intakeTab.addBoolean("Arm State", () -> m_armState);
     m_intakeTab.addBoolean("Verified Arm State", () -> m_verifiedArmState);
     m_intakeTab.addNumber("Arm Selected Position", () -> m_arm.getSelectedSensorPosition());
   }
 
-  public boolean getBottomLimitSwitch() {
-    return !m_bottomLimitSwitch.get();
-  }
-
-  public boolean getTopLimitSwitch() {
-    return !m_topLimitSwitch.get();
-  }
-
   @Override
   public boolean isOkay() {
     return true;
-  }
-
-  public boolean getRequestedArmState() {
-    return m_requestedArmState;
   }
 
   public boolean getArmState() {
@@ -77,8 +62,41 @@ public class IntakeSubsystem extends BaseSubsystem {
     return m_verifiedArmState;
   }
 
-  public boolean isAtRequestedPosition() {
-    return m_requestedArmState == m_verifiedArmState;
+  public boolean hasFinishedTransition() {
+    return m_armState == m_verifiedArmState;
+  }
+
+  public boolean getBottomLimitSwitch() {
+    return !m_bottomLimitSwitch.get();
+  }
+
+  public boolean getTopLimitSwitch() {
+    return !m_topLimitSwitch.get();
+  }
+
+  public boolean shouldGoUp() {
+    return m_controller.getRightTriggerAxis() > 0 || m_controller.getRightBumper();
+  }
+
+  public boolean shouldGoDown() {
+    return !shouldGoUp() || m_controller.getLeftBumper();
+  }
+
+  public double getIntakePower() {
+    if (getRobotMode() == RobotMode.AUTO) {
+      return m_autoIntakeSpeed;
+    } else if (m_controller.getLeftTriggerAxis() > 0) {
+      return -MathUtils.clamp(m_controller.getBackButton() ? 1
+          : m_controller.getLeftTriggerAxis(), 0.0,
+          Intake.POWER_OUT.getDouble(0.8));
+    } else if (!m_verifiedArmState && m_controller.getRightTriggerAxis() > 0) {
+      return MathUtils.clamp(
+          m_controller.getRightTriggerAxis(),
+          0.0,
+          Intake.POWER_IN.getDouble(0.45));
+    } else {
+      return 0.0;
+    }
   }
 
   public boolean updateArmState() {
@@ -89,7 +107,7 @@ public class IntakeSubsystem extends BaseSubsystem {
     }
 
     // the arm has reached the ideal arm position
-    if (m_arm.getSelectedSensorPosition() > Arm.UP_POSITION) {
+    if (getTopLimitSwitch() || m_arm.getSelectedSensorPosition() > Arm.UP_POSITION) {
       m_verifiedArmState = true; // is at top
     } else if (getBottomLimitSwitch() || m_arm.getSelectedSensorPosition() < Arm.DOWN_POSITION) {
       m_verifiedArmState = false; // is at bottom
@@ -98,48 +116,32 @@ public class IntakeSubsystem extends BaseSubsystem {
   }
 
   public void updateIntake() {
-    if (m_controller.getLeftTriggerAxis() > 0) {
-      m_intake.set(ControlMode.PercentOutput,
-          m_controller.getBackButton() ? 1
-              : -MathUtils.clamp(m_controller.getLeftTriggerAxis(), 0.0,
-                  Intake.POWER_OUT.getDouble(0.8)));
-    } else if (!m_verifiedArmState && m_controller.getRightTriggerAxis() > 0) {
-      m_intake.set(ControlMode.PercentOutput, MathUtils.clamp(m_controller.getRightTriggerAxis(), 0.0,
-          Intake.POWER_IN.getDouble(0.45)));
-    } else {
-      m_intake.set(ControlMode.PercentOutput, 0);
-    }
+    m_intake.set(ControlMode.PercentOutput, getIntakePower());
   }
 
   public void autonomousIntakeFireEnable() {
-    m_autoControl = true;
-    m_intake.set(ControlMode.PercentOutput, -0.6);
+    m_autoIntakeSpeed = -0.6;
   }
 
   public void autonomousIntakeFireDisable() {
-    m_autoControl = false;
-    m_intake.set(ControlMode.PercentOutput, 0);
+    m_autoIntakeSpeed = 0;
   }
 
   public void autonomousIntakeEnable() {
-    m_autoControl = true;
-    m_intake.set(ControlMode.PercentOutput, 0.35); // spline based off time and velocity // Mr Gibson said it's how bots are effective
+    m_autoIntakeSpeed = 0.35; // spline based off time and velocity // Mr Gibson said it's how bots are effective
   }
 
   public void autonomousArmDown() {
-    m_autoControl = true;
-    m_requestedArmState = false;
+    m_armState = false;
   }
 
   public void autonomousArmUp() {
-    m_autoControl = false;
-    m_requestedArmState = true;
+    m_armState = true;
   }
 
   public void updateArm() {
     final boolean rightBumper = m_controller.getRightBumper();
     final boolean leftBumper = m_controller.getLeftBumper();
-    final boolean rightTriggerAxis = m_controller.getRightTriggerAxis() > 0 || rightBumper; // if we want to control the arm using request then set it
 
     if (m_armState) {
       if (Timer.getFPGATimestamp() - m_lastBurstTime < m_armTimeUp) {
@@ -157,21 +159,13 @@ public class IntakeSubsystem extends BaseSubsystem {
       }
     }
 
-    if (rightTriggerAxis && m_armState) {
+    if (shouldGoUp() && m_armState) {
       if (m_verifiedArmState)
         m_lastBurstTime = Timer.getFPGATimestamp();
       m_armState = false;
-    } else if (!rightTriggerAxis && !m_armState) {
+    } else if (shouldGoDown() && !m_armState) {
       if (!m_verifiedArmState) // Fixes spamming right trigger causing motor stall
         m_lastBurstTime = Timer.getFPGATimestamp();
-      m_armState = true;
-    }
-
-    if (rightBumper) {
-      m_arm.set(Arm.TRAVEL_DIFFERENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
-      m_armState = false;
-    } else if (leftBumper) {
-      m_arm.set(-Arm.TRAVEL_DIFFERENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
       m_armState = true;
     }
   }
@@ -179,9 +173,7 @@ public class IntakeSubsystem extends BaseSubsystem {
   @Override
   public void periodic() {
     updateArmState();
-    if (!m_autoControl) {
-      updateIntake();
-      updateArm();
-    }
+    updateIntake();
+    updateArm();
   }
 }

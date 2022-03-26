@@ -34,7 +34,12 @@ public class NavXFactory {
     }
 
     @Override
-    public void zeroGyroscope() {
+    public double getGyroRate() {
+      return navX.getRate();
+    }
+
+    @Override
+    public void zeroGyro() {
       navX.zeroYaw();
     }
 

@@ -169,7 +169,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
    * 'forwards' direction.
    */
   public void zeroGyro() {
-    m_gyro.zeroGyroscope();
+    m_gyro.zeroGyro();
     m_odometry.resetPosition(
         new Pose2d(m_odometry.getPoseMeters().getTranslation(), Rotation2d.fromDegrees(0.0)),
         getGyroRotation());

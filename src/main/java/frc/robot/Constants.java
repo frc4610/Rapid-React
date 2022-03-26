@@ -92,11 +92,11 @@ public final class Constants {
         Motor.MAX_ANGULAR_VELOCITY_RPS, Motor.MAX_ANGULAR_VELOCITY_RPS); //  accel * 0.9
 
     // TODO: CONFIG ME
-    // Feed Forward and PID values from SysId
+    // Feed Forward and PID values from SysIdAZs
     public static final PidConfig PID_XY = new PidConfig(2.5, 0.0, 0.02);
-    public static final double STATIC_GAIN = 0.53;
-    public static final double VELOCITY_GAIN = 2.2;
-    public static final double ACCELERATION_GAIN = 0.13;
+    public static final double STATIC_GAIN = 0.6;
+    public static final double VELOCITY_GAIN = 2.8;
+    public static final double ACCELERATION_GAIN = 0.156;
 
     public static final ProfiledPidConfig PID_THETA = new ProfiledPidConfig(1.0, 0.0, 0.02, THETA_CONSTRAINTS);
   }
@@ -123,8 +123,8 @@ public final class Constants {
   }
 
   public final static class Intake {
-    public static final NetworkTableEntry POWER_OUT = m_tab.add("Intake power out", 0.8).getEntry();
-    public static final NetworkTableEntry POWER_IN = m_tab.add("Intake power in", 0.55).getEntry();
+    public static final NetworkTableEntry POWER_OUT = m_tab.add("Intake power out", 0.5).getEntry();
+    public static final NetworkTableEntry POWER_IN = m_tab.add("Intake power in", 0.4).getEntry();
   }
 
   // Not used currently

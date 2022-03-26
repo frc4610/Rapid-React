@@ -6,7 +6,9 @@ public interface Gyroscope {
 
   Rotation2d getGyroRotation();
 
-  void zeroGyroscope();
+  void zeroGyro();
+
+  double getGyroRate();
 
   void setAngle(double angle);
 }
