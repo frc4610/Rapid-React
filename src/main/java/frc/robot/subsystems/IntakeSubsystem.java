@@ -20,6 +20,7 @@ public class IntakeSubsystem extends BaseSubsystem {
   private final DigitalInput m_topLimitSwitch = new DigitalInput(Ids.DIO_TOP_LIMITSWTICH); // currently broken
   private final DigitalInput m_bottomLimitSwitch = new DigitalInput(Ids.DIO_BOTTOM_LIMITSWTICH);
 
+  public static final double INTAKE_OUT_TIME = 1;
   private final double m_armTimeUp = 0.85;
   private final double m_armTimeDown = 0.45;
   // 38991 when up

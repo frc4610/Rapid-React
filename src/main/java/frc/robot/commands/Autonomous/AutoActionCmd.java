@@ -30,7 +30,7 @@ public class AutoActionCmd extends SequentialCommandGroup {
   public AutoActionCmd executeIntakeFire() {
     addCommands(
         new InstantCommand(() -> m_intakeSubystem.autonomousIntakeState(true))
-            .andThen(new WaitCommand(1))
+            .andThen(new WaitCommand(IntakeSubsystem.INTAKE_OUT_TIME))
             .andThen(new InstantCommand(() -> m_intakeSubystem.autonomousIntakeDisable())));
     return this;
   }
