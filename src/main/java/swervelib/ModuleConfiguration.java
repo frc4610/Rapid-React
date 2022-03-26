@@ -17,6 +17,8 @@ public class ModuleConfiguration {
     private final double steerReduction;
     private final boolean steerInverted;
 
+    private final String canivoreName;
+
     /**
      * Creates a new module configuration.
      *
@@ -32,11 +34,31 @@ public class ModuleConfiguration {
      */
     public ModuleConfiguration(double wheelDiameter, double driveReduction, boolean driveInverted,
             double steerReduction, boolean steerInverted) {
+        this(wheelDiameter, driveReduction, driveInverted, steerReduction, steerInverted, "");
+    }
+
+    /**
+     * Creates a new module configuration.
+     *
+     * @param wheelDiameter  The diameter of the module's wheel in meters.
+     * @param driveReduction The overall drive reduction of the module. Multiplying motor rotations by this value
+     *                       should result in wheel rotations.
+     * @param driveInverted  Whether the drive motor should be inverted. If there is an odd number of gea reductions
+     *                       this is typically true.
+     * @param steerReduction The overall steer reduction of the module. Multiplying motor rotations by this value
+     *                       should result in rotations of the steering pulley.
+     * @param steerInverted  Whether the steer motor should be inverted. If there is an odd number of gear reductions
+     *                       this is typically true.
+     * @param canivoreName   The name of the CANivore to use for this module.
+     */
+    public ModuleConfiguration(double wheelDiameter, double driveReduction, boolean driveInverted,
+            double steerReduction, boolean steerInverted, String canivoreName) {
         this.wheelDiameter = wheelDiameter;
         this.driveReduction = driveReduction;
         this.driveInverted = driveInverted;
         this.steerReduction = steerReduction;
         this.steerInverted = steerInverted;
+        this.canivoreName = canivoreName;
     }
 
     /**
@@ -78,6 +100,18 @@ public class ModuleConfiguration {
         return steerInverted;
     }
 
+    /**
+    * Gets name of CANivore to use for this module.
+    */
+    public String getCanivoreName() {
+        return canivoreName;
+    }
+
+    public boolean useCanivore() {
+        // null or empty canivore name means don't use canivore
+        return !(canivoreName == null || canivoreName.isEmpty());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -110,6 +144,7 @@ public class ModuleConfiguration {
                 ", driveInverted=" + driveInverted +
                 ", steerReduction=" + steerReduction +
                 ", steerInverted=" + steerInverted +
+                ", canivoreName='" + canivoreName +
                 '}';
     }
 }

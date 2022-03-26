@@ -18,6 +18,8 @@ public class AutoFollowPathCmd extends SequentialCommandGroup {
 
   public AutoFollowPathCmd(String trajectoryPath, AutonomousSubsystem auto, DrivetrainSubsystem drive) {
     m_trajectory = PathPlanner.loadPath(trajectoryPath, Motor.MAX_VELOCITY_MPS, Motor.MAX_VELOCITY_MPS);
+    if (m_trajectory == null)
+      return;
     auto.showCurrentTrajectory(m_trajectory);
     m_drivetrainSubsystem = drive;
     addCommands(setup(), createTrajectoryFollowerCommand());

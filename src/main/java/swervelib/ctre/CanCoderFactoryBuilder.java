@@ -12,6 +12,7 @@ import swervelib.Constants;
 public class CanCoderFactoryBuilder {
     private Direction direction = Direction.COUNTER_CLOCKWISE;
     private int periodMilliseconds = 10;
+    private String canivoreName = "";
 
     public CanCoderFactoryBuilder withReadingUpdatePeriod(int periodMilliseconds) {
         this.periodMilliseconds = periodMilliseconds;
@@ -21,6 +22,16 @@ public class CanCoderFactoryBuilder {
     public CanCoderFactoryBuilder withDirection(Direction direction) {
         this.direction = direction;
         return this;
+    }
+
+    public CanCoderFactoryBuilder withCanivoreName(String canivoreName) {
+        this.canivoreName = canivoreName;
+        return this;
+    }
+
+    public boolean useCanivore() {
+        // null or empty canivore name means don't use canivore
+        return !(canivoreName == null || canivoreName.isEmpty());
     }
 
     public AbsoluteEncoderFactory<CanCoderAbsoluteConfiguration> build() {
@@ -33,11 +44,11 @@ public class CanCoderFactoryBuilder {
 
             final var encoderId = configuration.getId();
             if (encoderId != -1) {
-                CANCoder encoder = new CANCoder(configuration.getId());
-                CtreUtils.checkCtreError(encoder.configAllSettings(config, 250), "Failed to configure CANCoder");
+                CANCoder encoder = new CANCoder(configuration.getId(), canivoreName);
+                CtreUtils.checkCtreError(encoder.configAllSettings(config, 30), "Failed to configure CANCoder");
 
                 CtreUtils.checkCtreError(
-                        encoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, periodMilliseconds, 250),
+                        encoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, periodMilliseconds, 30),
                         "Failed to configure CANCoder update rate");
                 return new EncoderImplementation(encoder);
             } else {
