@@ -95,6 +95,21 @@ public final class NeoDriveControllerFactoryBuilder {
         }
 
         @Override
+        public double getOutputVoltage() {
+            return motor.getBusVoltage() * motor.getAppliedOutput();
+        }
+
+        @Override
+        public void resetEncoder() {
+            encoder.setPosition(0);
+        }
+
+        @Override
+        public void setDriveEncoder(double position, double velocity) {
+            motor.getEncoder().setPosition(position);
+        }
+
+        @Override
         public void configRampRate(double rampRate) {
             this.motor.setOpenLoopRampRate(rampRate);
         }

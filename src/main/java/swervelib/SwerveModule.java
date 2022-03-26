@@ -13,7 +13,13 @@ public interface SwerveModule {
 
     double getSteerAngle();
 
+    DriveController getDriveController();
+
+    SteerController getSteerController();
+
     SwerveModuleState getState();
+
+    void resetDriveEncoder();
 
     void configRampRate(double rampRate);
 

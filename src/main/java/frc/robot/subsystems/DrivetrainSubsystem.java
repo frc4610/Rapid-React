@@ -18,9 +18,9 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.RobotContainer;
-import frc.robot.utils.*;
-import frc.robot.utils.math.InterpolatingTreeMap;
-import frc.robot.utils.math.MathUtils;
+import globals.utils.*;
+import globals.utils.math.InterpolatingTreeMap;
+import globals.utils.math.MathUtils;
 import edu.wpi.first.wpilibj.Timer;
 
 import static frc.robot.Constants.*;

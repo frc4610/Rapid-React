@@ -5,9 +5,7 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.*;
-import frc.robot.utils.LED.AddressableLEDPattern;
-import frc.robot.utils.LED.SolidColorPattern;
-import frc.robot.utils.LED.*;
+import globals.utils.LED.*;
 import edu.wpi.first.wpilibj.util.Color;
 
 //https://docs.wpilib.org/en/stable/docs/software/hardware-apis/misc/addressable-leds.html

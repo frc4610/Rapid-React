@@ -8,9 +8,9 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants.*;
-import frc.robot.utils.BaseSubsystem;
-import frc.robot.utils.controller.XboxControllerExtended;
-import frc.robot.utils.math.MathUtils;
+import globals.utils.BaseSubsystem;
+import globals.utils.controller.XboxControllerExtended;
+import globals.utils.math.MathUtils;
 
 public class IntakeSubsystem extends BaseSubsystem {
 
@@ -119,16 +119,17 @@ public class IntakeSubsystem extends BaseSubsystem {
     m_intake.set(ControlMode.PercentOutput, getIntakePower());
   }
 
-  public void autonomousIntakeFireEnable() {
-    m_autoIntakeSpeed = -0.6;
+  // [true == fire] [false == intake]
+  public void autonomousIntakeState(boolean state) {
+    if (state) {
+      m_autoIntakeSpeed = -0.6;
+    } else if (!state) {
+      m_autoIntakeSpeed = 0.35;
+    }
   }
 
-  public void autonomousIntakeFireDisable() {
+  public void autonomousIntakeDisable() {
     m_autoIntakeSpeed = 0;
-  }
-
-  public void autonomousIntakeEnable() {
-    m_autoIntakeSpeed = 0.35; // spline based off time and velocity // Mr Gibson said it's how bots are effective
   }
 
   public void autonomousArmDown() {

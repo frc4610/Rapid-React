@@ -8,9 +8,9 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import frc.robot.utils.SwerveConfig;
-import frc.robot.utils.PidConfig;
-import frc.robot.utils.ProfiledPidConfig;
+import globals.utils.PidConfig;
+import globals.utils.ProfiledPidConfig;
+import globals.utils.SwerveConfig;
 import swervelib.config.Mk3ModuleConfiguration;
 
 public final class Constants {

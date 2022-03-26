@@ -5,9 +5,9 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants.*;
-import frc.robot.utils.BaseSubsystem;
-import frc.robot.utils.UltrasonicMB1013;
-import frc.robot.utils.math.MathUtils;
+import globals.utils.BaseSubsystem;
+import globals.utils.UltrasonicMB1013;
+import globals.utils.math.MathUtils;
 
 public class UltrasonicSubsystem extends BaseSubsystem {
   private final ShuffleboardTab m_ultrasonicTab;

@@ -46,6 +46,7 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
         private ModuleImplementation(DriveController driveController, SteerController steerController) {
             this.driveController = driveController;
             this.steerController = steerController;
+
         }
 
         @Override
@@ -74,13 +75,28 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
         }
 
         @Override
-        public void configRampRate(double rampRate) {
-            this.driveController.configRampRate(rampRate);
+        public DriveController getDriveController() {
+            return driveController;
+        }
+
+        @Override
+        public SteerController getSteerController() {
+            return steerController;
         }
 
         @Override
         public SwerveModuleState getState() {
             return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getSteerAngle()));
+        }
+
+        @Override
+        public void resetDriveEncoder() {
+            driveController.resetEncoder();
+        }
+
+        @Override
+        public void configRampRate(double rampRate) {
+            this.driveController.configRampRate(rampRate);
         }
 
         @Override

@@ -7,5 +7,11 @@ public interface DriveController {
 
     double getStateVelocity();
 
+    double getOutputVoltage();
+
+    void resetEncoder();
+
+    void setDriveEncoder(double position, double velocity);
+
     void configRampRate(double rampRate);
 }

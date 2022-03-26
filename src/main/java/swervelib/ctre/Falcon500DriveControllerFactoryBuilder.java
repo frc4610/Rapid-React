@@ -134,6 +134,25 @@ public final class Falcon500DriveControllerFactoryBuilder {
         }
 
         @Override
+        public double getOutputVoltage() {
+            return motor.getMotorOutputVoltage();
+        }
+
+        @Override
+        public void setDriveEncoder(double position, double velocity) {
+            // Position is in revolutions.  Velocity is in RPM
+            // CANCoder wants steps for postion.  Steps per 100ms for velocity
+            motor.getSimCollection().setIntegratedSensorRawPosition((int) (position * sensorVelocityCoefficient));
+            // Divide by 600 to go from RPM to Rotations per 100ms.  Multiply by encoder ticks per revolution.
+            motor.getSimCollection().setIntegratedSensorVelocity((int) (velocity / 600 * sensorVelocityCoefficient));
+        }
+
+        @Override
+        public void resetEncoder() {
+            motor.setSelectedSensorPosition(0);
+        }
+
+        @Override
         public void configRampRate(double rampRate) {
             this.motor.configOpenloopRamp(rampRate);
         }

@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.*;
 import frc.robot.commands.Autonomous.AutoActionCmd;
-import frc.robot.utils.BaseSubsystem;
+import globals.utils.BaseSubsystem;
 
 public class AutonomousSubsystem extends BaseSubsystem {
   private final DrivetrainSubsystem m_drivetrainSubsystem;
@@ -39,16 +39,16 @@ public class AutonomousSubsystem extends BaseSubsystem {
         .executePause(1.69)
         .complete());
     m_autoChooser.addOption("4BallAutoLeft", new AutoActionCmd(this, m_drivetrainSubsystem, m_intakeSubsystem)
-        .executeIntakeArmDown()
+        .executeArmPosition(false)
         .executeDrivePath("4BallAutoFirstStage")
-        .executeIntakeArmUp()
+        .executeArmPosition(true)
         .executeDrivePath("4BallAutoSecondStage")
         .executeIntakeFire()
         .executePause(1.69)
-        .executeIntakeArmDown()
+        .executeArmPosition(false)
         .executeDrivePath("4BallAutoThirdStage")
         .executeDrivePath("4BallAutoFourthStage")
-        .executeIntakeArmUp()
+        .executeArmPosition(true)
         .executeDrivePath("4BallAutoFithStage")
         .executeIntakeFire()
         .executePause(1.69)
@@ -56,15 +56,15 @@ public class AutonomousSubsystem extends BaseSubsystem {
         .complete());
 
     m_autoChooser.addOption("4BallAutoRight", new AutoActionCmd(this, m_drivetrainSubsystem, m_intakeSubsystem)
-        .executeIntakeArmDown()
+        .executeArmPosition(false)
         .executeDrivePath("4BallAutoFirstStageRight")
-        .executeIntakeArmUp()
+        .executeArmPosition(true)
         .executeDrivePath("4BallAutoSecondStageRight")
         .executeIntakeFire()
         .executePause(1.69)
-        .executeIntakeArmDown()
+        .executeArmPosition(false)
         .executeDrivePath("4BallAutoThirdStage")
-        .executeIntakeArmUp()
+        .executeArmPosition(true)
         .executeDrivePath("4BallAutoFourthStage")
         .executeIntakeFire()
         .executePause(1.69)
@@ -72,15 +72,15 @@ public class AutonomousSubsystem extends BaseSubsystem {
         .complete());
 
     m_autoChooser.addOption("HangarDump", new AutoActionCmd(this, m_drivetrainSubsystem, m_intakeSubsystem)
-        .executeIntakeArmDown()
+        .executeArmPosition(false)
         .executeDrivePath("HangarDump1")
-        .executeIntakeArmUp()
+        .executeArmPosition(true)
         .executeDrivePath("HangarDump2")
         .executeIntakeFire()
         .executePause(1.69)
-        .executeIntakeArmDown()
+        .executeArmPosition(false)
         .executeDrivePath("HangarDump3")
-        .executeIntakeArmUp()
+        .executeArmPosition(true)
         .executePause(1.69)
         .executeIntakeFire()
         .executePause(1)
@@ -88,9 +88,9 @@ public class AutonomousSubsystem extends BaseSubsystem {
         .complete());
 
     m_autoChooser.addOption("2BallLeft", new AutoActionCmd(this, m_drivetrainSubsystem, m_intakeSubsystem)
-        .executeIntakeArmDown()
+        .executeArmPosition(false)
         .executeDrivePath("2BallLeft1")
-        .executeIntakeArmUp()
+        .executeArmPosition(true)
         .executeDrivePath("2BallLeft2")
         .executeIntakeFire()
         .executePause(1.69)

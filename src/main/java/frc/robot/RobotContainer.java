@@ -28,10 +28,10 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.UltrasonicSubsystem;
-import frc.robot.utils.CAN.CANDevice;
-import frc.robot.utils.controller.XboxControllerExtended;
-import frc.robot.utils.json.JsonReader;
-import frc.robot.utils.math.MathUtils;
+import globals.utils.CAN.CANDevice;
+import globals.utils.controller.XboxControllerExtended;
+import globals.utils.json.JsonReader;
+import globals.utils.math.MathUtils;
 import swervelib.sim.PoseTelemetry;
 
 public class RobotContainer {

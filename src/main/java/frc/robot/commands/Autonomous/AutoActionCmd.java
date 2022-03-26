@@ -3,6 +3,7 @@ package frc.robot.commands.Autonomous;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.AutonomousSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -28,9 +29,9 @@ public class AutoActionCmd extends SequentialCommandGroup {
 
   public AutoActionCmd executeIntakeFire() {
     addCommands(
-        new InstantCommand(() -> m_intakeSubystem.autonomousIntakeFireEnable())
+        new InstantCommand(() -> m_intakeSubystem.autonomousIntakeState(true))
             .andThen(new WaitCommand(1))
-            .andThen(new InstantCommand(() -> m_intakeSubystem.autonomousIntakeFireDisable())));
+            .andThen(new InstantCommand(() -> m_intakeSubystem.autonomousIntakeDisable())));
     return this;
   }
 
@@ -38,24 +39,19 @@ public class AutoActionCmd extends SequentialCommandGroup {
     addCommands(
         new InstantCommand(() -> {
           if (state) {
+            m_intakeSubystem.autonomousIntakeDisable();
             m_intakeSubystem.autonomousArmUp();
           } else {
+            m_intakeSubystem.autonomousIntakeState(false);
             m_intakeSubystem.autonomousArmDown();
           }
-        })); // TODO: add wait till isAtRequestedPosition
-    return this;
-  }
-
-  public AutoActionCmd executeIntakeArmDown() {
-    addCommands(
-        new InstantCommand(() -> m_intakeSubystem.autonomousIntakeEnable())
-            .andThen(new InstantCommand(() -> m_intakeSubystem.autonomousArmDown()))); // TODO: add wait till isAtRequestedPosition
+        }).andThen(new WaitUntilCommand(m_intakeSubystem::hasFinishedTransition)));
     return this;
   }
 
   public AutoActionCmd executeIntakeArmUp() {
     addCommands(
-        new InstantCommand(() -> m_intakeSubystem.autonomousIntakeFireDisable())
+        new InstantCommand(() -> m_intakeSubystem.autonomousIntakeDisable())
             .andThen(new InstantCommand(() -> m_intakeSubystem.autonomousArmUp())));
     return this;
   }
@@ -100,7 +96,7 @@ public class AutoActionCmd extends SequentialCommandGroup {
   public AutoActionCmd complete() {
     addCommands(actionToCommand((drivetrain, intake) -> {
       drivetrain.drive(0, 0, 0);
-      intake.autonomousIntakeFireDisable();
+      intake.autonomousIntakeDisable();
       drivetrain.zeroGyro();
     }));
     return this;
