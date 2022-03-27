@@ -2,13 +2,13 @@ package frc.robot.subsystems;
 
 import java.util.Optional;
 
+import beartecs.BaseSubsystem;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.*;
 import frc.robot.commands.Autonomous.AutoActionCmd;
-import globals.utils.BaseSubsystem;
 
 public class AutonomousSubsystem extends BaseSubsystem {
   private final DrivetrainSubsystem m_drivetrainSubsystem;

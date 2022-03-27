@@ -4,10 +4,6 @@
 
 package frc.robot.subsystems;
 
-import swervelib.Gyroscope;
-import swervelib.GyroscopeHelper;
-import swervelib.SwerveModule;
-import swervelib.config.Mk3SwerveModuleHelper;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,9 +14,6 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.RobotContainer;
-import globals.utils.*;
-import globals.utils.math.InterpolatingTreeMap;
-import globals.utils.math.MathUtils;
 import edu.wpi.first.wpilibj.Timer;
 
 import static frc.robot.Constants.*;
@@ -28,6 +21,14 @@ import static frc.robot.Constants.*;
 // This can help when dealing with pathfinding
 https://github.com/acmerobotics/road-runner-quickstart
 */
+
+import beartecs.BaseSubsystem;
+import beartecs.math.InterpolatingTreeMap;
+import beartecs.math.MathUtils;
+import beartecs.swerve.Gyroscope;
+import beartecs.swerve.GyroscopeHelper;
+import beartecs.swerve.SwerveModule;
+import beartecs.swerve.config.Mk3SwerveModuleHelper;
 
 public class DrivetrainSubsystem extends BaseSubsystem {
 

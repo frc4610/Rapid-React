@@ -1,5 +1,9 @@
 package frc.robot;
 
+import beartecs.PidConfig;
+import beartecs.ProfiledPidConfig;
+import beartecs.SwerveConfig;
+import beartecs.swerve.config.Mk3ModuleConfiguration;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -8,10 +12,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import globals.utils.PidConfig;
-import globals.utils.ProfiledPidConfig;
-import globals.utils.SwerveConfig;
-import swervelib.config.Mk3ModuleConfiguration;
 
 public final class Constants {
 

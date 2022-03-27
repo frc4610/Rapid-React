@@ -5,13 +5,13 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import beartecs.BaseSubsystem;
+import beartecs.controller.XboxControllerExtended;
+import beartecs.math.MathUtils;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants.*;
-import globals.utils.BaseSubsystem;
-import globals.utils.controller.XboxControllerExtended;
-import globals.utils.math.MathUtils;
 
 public class IntakeSubsystem extends BaseSubsystem {
 
