@@ -17,7 +17,7 @@ public final class Constants {
 
   private static final ShuffleboardTab m_tab = Shuffleboard.getTab("Constants");
 
-  public static final String VERSION = "Version 0.2.0";
+  public static final String VERSION = "Version 1.0.1";
   public static final String RIO_IP = "http://172.22.11.2:1250";
 
   public final static class Ids {
