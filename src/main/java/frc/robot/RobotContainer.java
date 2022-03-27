@@ -72,7 +72,7 @@ public class RobotContainer {
         .whenPressed(() -> {
           reset();
         });
-    new Button(m_driverController::getAButton)
+    new Button(m_driverController::getRightBumper)
         .whenPressed(() -> {
           m_drivetrainSubsystem.setSpeedModifier(0.5);
           m_driverController.setLeftVibration(0.1);
@@ -82,11 +82,6 @@ public class RobotContainer {
           m_driverController.setLeftVibration(0.0);
           m_driverController.setRightVibration(0.0);
         });
-
-    new Button(m_driverController::getLeftBumper)
-        .whileHeld(new DriveContinuousCmd(m_drivetrainSubsystem, true));
-    new Button(m_driverController::getRightBumper)
-        .whileHeld(new DriveContinuousCmd(m_drivetrainSubsystem, false));
   }
 
   public static void updateSubsystemStatus() {

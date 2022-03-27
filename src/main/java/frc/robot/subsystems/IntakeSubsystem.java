@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -28,15 +29,30 @@ public class IntakeSubsystem extends BaseSubsystem {
 
   private boolean m_armState = true;
   private boolean m_verifiedArmState = true;
+  private boolean m_armPositionChanged = false;
+  private double m_lastArmPosition = 0;
   private double m_lastBurstTime = 0;
   private double m_autoIntakeSpeed = 0;
   private ShuffleboardTab m_intakeTab;
 
   public IntakeSubsystem(XboxControllerExtended controller) {
     m_controller = controller;
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    config.slot0.kP = Arm.ARM_PID.P;
+    config.slot0.kI = Arm.ARM_PID.I;
+    config.slot0.kD = Arm.ARM_PID.D;
+    config.slot0.kF = Arm.ARM_PID.F;
+    m_arm.configAllSettings(config, 250);
+
     m_arm.setInverted(false);
     m_arm.setNeutralMode(NeutralMode.Brake); // Force Motor in brake mode
+    m_arm.enableVoltageCompensation(true);
     m_arm.setSelectedSensorPosition(Arm.ABS_UP_POSITION);
+    /* Config the peak and nominal outputs, 12V means full */
+    m_arm.configNominalOutputForward(0, 250);
+    m_arm.configNominalOutputReverse(0, 250);
+    m_arm.configPeakOutputForward(1, 250);
+    m_arm.configPeakOutputReverse(-1, 250);
 
     m_armState = updateArmState();
     m_intakeTab = addTab("IntakeSubsystem");
@@ -48,6 +64,7 @@ public class IntakeSubsystem extends BaseSubsystem {
     m_intakeTab.addBoolean("Arm State", () -> m_armState);
     m_intakeTab.addBoolean("Verified Arm State", () -> m_verifiedArmState);
     m_intakeTab.addNumber("Arm Selected Position", () -> m_arm.getSelectedSensorPosition());
+    m_intakeTab.addBoolean("Arm Changed", () -> m_armPositionChanged);
   }
 
   @Override
@@ -107,6 +124,13 @@ public class IntakeSubsystem extends BaseSubsystem {
       m_arm.setSelectedSensorPosition(0); // stop from going negative
     }
 
+    // Arm encoder position
+    if (m_lastArmPosition != m_arm.getSelectedSensorPosition()) {
+      m_armPositionChanged = true;
+      m_lastArmPosition = m_arm.getSelectedSensorPosition();
+    } else {
+      m_armPositionChanged = false;
+    }
     // the arm has reached the ideal arm position
     if (getTopLimitSwitch() || m_arm.getSelectedSensorPosition() > Arm.UP_POSITION) {
       m_verifiedArmState = true; // is at top

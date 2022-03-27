@@ -120,6 +120,7 @@ public final class Constants {
     public static final double ABS_UP_POSITION = 35000; // Range from RNG - MAX
     public static final double UP_POSITION = ABS_UP_POSITION - 1500; // Range from RNG - MAX
     public static final double DOWN_POSITION = 100; // Enough to hold the bot down
+    public static final PidConfig ARM_PID = new PidConfig(1, 0, 0, 1);
   }
 
   public final static class Intake {
