@@ -41,7 +41,7 @@ public class IntakeSubsystem extends BaseSubsystem {
     config.slot0.kP = Arm.ARM_PID.P;
     config.slot0.kI = Arm.ARM_PID.I;
     config.slot0.kD = Arm.ARM_PID.D;
-    config.slot0.kF = Arm.ARM_PID.F;
+    //config.slot0.kF = Arm.ARM_PID.F; Diffrent for arb ff
     m_arm.configAllSettings(config, 250);
 
     m_arm.setInverted(false);

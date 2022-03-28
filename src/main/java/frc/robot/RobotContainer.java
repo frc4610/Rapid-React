@@ -110,6 +110,7 @@ public class RobotContainer {
   }
 
   public static void setDefaultTeleopCommand() {
+    m_drivetrainSubsystem.zeroGyro();
     m_drivetrainSubsystem.setDefaultCommand(new UserControllerCmd(m_drivetrainSubsystem));
 
     configureDriveButtons();

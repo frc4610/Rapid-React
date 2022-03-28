@@ -89,7 +89,7 @@ public final class Constants {
     public static final double DRIVE_POWER = 4;
     // Constraint for the motion profilied robot angle controller
     public static final TrapezoidProfile.Constraints THETA_CONSTRAINTS = new TrapezoidProfile.Constraints(
-        Motor.MAX_ANGULAR_VELOCITY_RPS, Motor.MAX_ANGULAR_VELOCITY_RPS); //  accel * 0.9
+        Motor.MAX_ANGULAR_VELOCITY_RPS, Motor.MAX_ANGULAR_VELOCITY_RPS * 0.9);
 
     // TODO: CONFIG ME
     // Feed Forward and PID values from SysIdAZs
@@ -98,7 +98,7 @@ public final class Constants {
     public static final double VELOCITY_GAIN = 2.8;
     public static final double ACCELERATION_GAIN = 0.156;
 
-    public static final ProfiledPidConfig PID_THETA = new ProfiledPidConfig(1.0, 0.0, 0.02, THETA_CONSTRAINTS);
+    public static final ProfiledPidConfig PID_THETA = new ProfiledPidConfig(2.0, 0.0, 0.02, THETA_CONSTRAINTS);
   }
 
   public final static class Arm {
