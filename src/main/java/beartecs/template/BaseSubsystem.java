@@ -1,4 +1,4 @@
-package beartecs;
+package beartecs.template;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -9,7 +9,6 @@ import frc.robot.Robot;
 import frc.robot.RobotContainer;
 
 public class BaseSubsystem extends SubsystemBase {
-  // TODO: Bitwise with sim
   public enum RobotMode {
     DISABLED, AUTO, TELEOP
   }

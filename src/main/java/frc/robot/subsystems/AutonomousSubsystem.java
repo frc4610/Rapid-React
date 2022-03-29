@@ -2,12 +2,11 @@ package frc.robot.subsystems;
 
 import java.util.Optional;
 
-import beartecs.BaseSubsystem;
+import beartecs.template.BaseSubsystem;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotContainer;
-import frc.robot.Constants.*;
 import frc.robot.commands.Autonomous.AutoActionCmd;
 
 public class AutonomousSubsystem extends BaseSubsystem {
@@ -30,7 +29,7 @@ public class AutonomousSubsystem extends BaseSubsystem {
         .complete());
     m_autoChooser.setDefaultOption("1 Ball Auto", new AutoActionCmd(this, m_drivetrainSubsystem, m_intakeSubsystem)
         .executeIntakeFire()
-        .executeAction((drivetrain, intake) -> drivetrain.drive(-Auto.DRIVE_POWER, 0, 0, false))
+        .executeAction((drivetrain, intake) -> drivetrain.drive(-1, 0, 0, false))
         .executePause(1.4)
         .complete());
     m_autoChooser.addOption("4BallAutoLeft", new AutoActionCmd(this, m_drivetrainSubsystem, m_intakeSubsystem)

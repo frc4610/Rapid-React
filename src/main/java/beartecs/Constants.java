@@ -1,8 +1,5 @@
-package frc.robot;
+package beartecs;
 
-import beartecs.PidConfig;
-import beartecs.ProfiledPidConfig;
-import beartecs.SwerveConfig;
 import beartecs.swerve.config.Mk3ModuleConfiguration;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -36,6 +33,7 @@ public final class Constants {
     public static final int ARM = 13;
     public static final int INTAKE = 14;
     public static final int LED_CANDLE = 15;
+    public static final int PIGEON = 15;
 
     public static final SwerveConfig FRONT_LEFT = new SwerveConfig(8, 4, 11, -Math.toRadians(149.85));
     public static final SwerveConfig FRONT_RIGHT = new SwerveConfig(1, 5, 9, -Math.toRadians(181.40));
@@ -81,22 +79,23 @@ public final class Constants {
 
     public static final double DRIVE_GEAR_RATIO = 8.16;
     public static final double ANGLE_GEAR_RATIO = 12.8;
-    public static final double DEFAULT_MAX_POWER = 5.5;
-    public static final NetworkTableEntry MAX_POWER = m_tab.add("Motor max power", DEFAULT_MAX_POWER).getEntry();
+    public static final double MAX_POWER = 12;
+    public static final double DRIVE_POWER = 5.5;
   }
 
   public final static class Auto {
-    public static final double DRIVE_POWER = 4;
+    public static final double DRIVE_POWER = 12;
     // Constraint for the motion profilied robot angle controller
     public static final TrapezoidProfile.Constraints THETA_CONSTRAINTS = new TrapezoidProfile.Constraints(
         Motor.MAX_ANGULAR_VELOCITY_RPS, Motor.MAX_ANGULAR_VELOCITY_RPS * 0.9);
 
     // TODO: CONFIG ME
-    // Feed Forward and PID values from SysIdAZs
+    // Feed Forward and PID values from SysIds
     public static final PidConfig PID_XY = new PidConfig(2.5, 0.0, 0.02);
-    public static final double STATIC_GAIN = 0.6;
-    public static final double VELOCITY_GAIN = 2.8;
-    public static final double ACCELERATION_GAIN = 0.156;
+
+    public static final double STATIC_GAIN = 0.6 / Motor.MAX_POWER;// (0.667 / Voltage); //divide by 12 to convert from volts to percent output for CTRE
+    public static final double VELOCITY_GAIN = 2.8 / Motor.MAX_POWER;//(2.8  / Voltage);
+    public static final double ACCELERATION_GAIN = 0.27 / Motor.MAX_POWER; //(0.27  / Voltage);
 
     public static final ProfiledPidConfig PID_THETA = new ProfiledPidConfig(2.0, 0.0, 0.02, THETA_CONSTRAINTS);
   }
@@ -154,5 +153,18 @@ public final class Constants {
     public static final double HANGAR_WIDTH = Units.inchesToMeters(116.0);
     public static final Translation2d HUB_CENTER_TRANSLATION = new Translation2d(8.2296, 4.1148);
     public static final Pose2d HUB_CENTER_POSE = new Pose2d(HUB_CENTER_TRANSLATION, new Rotation2d(0));
+  }
+
+  // Will fix some issues with abs positions when abs pos fails
+  public final static boolean ENABLE_ABS_ENCODER_POS_ERROR_CHECKS = true;
+  public final static int ABS_ENCODER_ERROR_RETRY_COUNT = 3;
+
+  public final static boolean ALIGN_RANGE_ENABLE = true;
+  public final static boolean BOOT_TO_ABS = true;
+  public final static boolean ENABLE_ABS_SET_MOTOR = true;
+
+  public final class Sim {
+    static public final int STATUS_FRAME_PERIOD_MS = 20; // Falcons update every 250 ms but in sim we want it to update faster
+    static public final double SAMPLE_RATE_SEC = 0.02;
   }
 }

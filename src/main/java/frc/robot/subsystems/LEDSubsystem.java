@@ -1,11 +1,11 @@
 package frc.robot.subsystems;
 
+import beartecs.Constants.*;
 import beartecs.LED.*;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.*;
 import edu.wpi.first.wpilibj.util.Color;
 
 //https://docs.wpilib.org/en/stable/docs/software/hardware-apis/misc/addressable-leds.html

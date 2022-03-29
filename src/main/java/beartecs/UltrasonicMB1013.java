@@ -1,10 +1,10 @@
 package beartecs;
 
+import beartecs.Constants.*;
 import beartecs.math.MathUtils;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
 import frc.robot.RobotContainer;
-import frc.robot.Constants.*;
 
 // https://www.maxbotix.com/firstrobotics
 

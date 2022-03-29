@@ -93,6 +93,10 @@ public class ModuleConfiguration {
         return steerReduction;
     }
 
+    public double getWheelCircumference() {
+        return (2 * Math.PI) * (getWheelDiameter() / 2);
+    }
+
     /**
      * Gets if the steering motor should be inverted.
      */

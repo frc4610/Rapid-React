@@ -1,10 +1,10 @@
 package frc.robot.commands.Teleop;
 
+import beartecs.Constants.*;
 import beartecs.math.MathUtils;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants.*;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.RobotContainer;
 

@@ -2,13 +2,13 @@ package beartecs.swerve.ctre;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
-import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.ctre.phoenix.sensors.CANCoderStatusFrame;
+import com.ctre.phoenix.sensors.WPI_CANCoder;
 
 import beartecs.swerve.AbsoluteEncoder;
 import beartecs.swerve.AbsoluteEncoderFactory;
-import beartecs.swerve.Constants;
+import beartecs.Constants;
 
 public class CanCoderFactoryBuilder {
     private Direction direction = Direction.COUNTER_CLOCKWISE;
@@ -45,7 +45,7 @@ public class CanCoderFactoryBuilder {
 
             final var encoderId = configuration.getId();
             if (encoderId != -1) {
-                CANCoder encoder = new CANCoder(configuration.getId(), canivoreName);
+                WPI_CANCoder encoder = new WPI_CANCoder(configuration.getId(), canivoreName);
                 CtreUtils.checkCtreError(encoder.configAllSettings(config, 30), "Failed to configure CANCoder");
 
                 CtreUtils.checkCtreError(
@@ -60,9 +60,9 @@ public class CanCoderFactoryBuilder {
     }
 
     private static class EncoderImplementation implements AbsoluteEncoder {
-        private final CANCoder encoder;
+        private final WPI_CANCoder encoder;
 
-        private EncoderImplementation(CANCoder encoder) {
+        private EncoderImplementation(WPI_CANCoder encoder) {
             this.encoder = encoder;
         }
 

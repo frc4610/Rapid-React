@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -39,6 +40,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     m_robotContainer.onRobotInit();
     CameraServer.startAutomaticCapture();
+    onModeInit();
   }
 
   /**
@@ -63,6 +65,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     RobotContainer.reset();
+    onModeInit();
   }
 
   @Override
@@ -93,6 +96,7 @@ public class Robot extends TimedRobot {
     } else {
       LEDSubsystem.m_timerPattern = new TimerPattern(Color.kRed, autoTime);
     }
+    onModeInit();
   }
 
   /** This function is called periodically during autonomous. */
@@ -113,6 +117,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     RobotContainer.setDefaultTeleopCommand();
+    onModeInit();
   }
 
   /** This function is called periodically during operator control. */
@@ -129,5 +134,10 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
+  }
+
+  public void onModeInit() {
+    LiveWindow.setEnabled(false); // Disable Live Window we don't need that data being sent
+    LiveWindow.disableAllTelemetry();
   }
 }

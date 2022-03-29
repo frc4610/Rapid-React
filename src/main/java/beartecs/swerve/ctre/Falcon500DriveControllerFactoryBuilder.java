@@ -7,7 +7,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
-import beartecs.swerve.Constants;
+import beartecs.Constants;
 import beartecs.swerve.DriveController;
 import beartecs.swerve.DriveControllerFactory;
 import beartecs.swerve.ModuleConfiguration;
@@ -123,6 +123,8 @@ public final class Falcon500DriveControllerFactoryBuilder {
         public void setReferenceVoltage(double voltage) {
             double percentOutput = voltage / nominalVoltage;
             motor.set(TalonFXControlMode.PercentOutput, percentOutput);
+            // motor.set(TalonFXControlMode.Velocity, desiredSpeed/kDriveDistMetersPerPulse * 0.1, DemandType.ArbitraryFeedForward, m_driveFeedforward.calculate(desiredSpeed) / Constants.kNominalVoltage); 
+
             if (RobotBase.isSimulation()) {
                 if (motor.getInverted()) {
                     percentOutput *= -1.0;

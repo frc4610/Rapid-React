@@ -1,13 +1,13 @@
 package frc.robot.subsystems;
 
-import beartecs.BaseSubsystem;
 import beartecs.UltrasonicMB1013;
+import beartecs.Constants.*;
 import beartecs.math.MathUtils;
+import beartecs.template.BaseSubsystem;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import frc.robot.Constants.*;
 
 public class UltrasonicSubsystem extends BaseSubsystem {
   private final ShuffleboardTab m_ultrasonicTab;

@@ -14,6 +14,7 @@ import java.util.Scanner;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import beartecs.Constants;
 import beartecs.CAN.CANDevice;
 import beartecs.controller.XboxControllerExtended;
 import beartecs.json.JsonReader;

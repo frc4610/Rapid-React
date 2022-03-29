@@ -16,19 +16,16 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.RobotContainer;
 import edu.wpi.first.wpilibj.Timer;
 
-import static frc.robot.Constants.*;
-/*
-// This can help when dealing with pathfinding
-https://github.com/acmerobotics/road-runner-quickstart
-*/
+import static beartecs.Constants.*;
 
-import beartecs.BaseSubsystem;
 import beartecs.math.InterpolatingTreeMap;
 import beartecs.math.MathUtils;
 import beartecs.swerve.Gyroscope;
 import beartecs.swerve.GyroscopeHelper;
 import beartecs.swerve.SwerveModule;
+import beartecs.swerve.config.Mk3ModuleConfiguration;
 import beartecs.swerve.config.Mk3SwerveModuleHelper;
+import beartecs.template.BaseSubsystem;
 
 public class DrivetrainSubsystem extends BaseSubsystem {
 
@@ -78,19 +75,21 @@ public class DrivetrainSubsystem extends BaseSubsystem {
   private double m_speedModifier = 1.0;
 
   public DrivetrainSubsystem() {
-    m_gyro = GyroscopeHelper.createNavXMXP(); // 8.5cm from front bar // 30cm in the center of the bar
+    m_gyro = GyroscopeHelper.createPigeonCAN(Ids.PIGEON); // 8.5cm from front bar // 30cm in the center of the bar
     m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroRotation());
     resetPose(new Pose2d(7, 2, Rotation2d.fromDegrees(-90)));
 
     m_DrivetrainTab = addTab("Drivetrain");
     m_DriveDataTab = addTab("Drive Data");
+    Mk3ModuleConfiguration configuration = new Mk3ModuleConfiguration();
+    configuration.setCanivoreName("CANivore_Swerve");
     m_frontLeftModule = Mk3SwerveModuleHelper.createFalcon500(
         // This parameter is optional, but will allow you to see the current state of
         // the module on the dashboard.
         m_DrivetrainTab.getLayout("Front Left Module", BuiltInLayouts.kList)
             .withSize(2, 2)
             .withPosition(0, 0),
-        // This can either be STANDARD or FAST depending on your gear configuration
+        configuration,
         Mk3SwerveModuleHelper.GearRatio.STANDARD,
         Ids.FRONT_LEFT.DRIVE_MOTOR,
         Ids.FRONT_LEFT.STEER_MOTOR,
@@ -102,6 +101,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
         m_DrivetrainTab.getLayout("Front Right Module", BuiltInLayouts.kList)
             .withSize(2, 2)
             .withPosition(2, 0),
+        configuration,
         Mk3SwerveModuleHelper.GearRatio.STANDARD,
         Ids.FRONT_RIGHT.DRIVE_MOTOR,
         Ids.FRONT_RIGHT.STEER_MOTOR,
@@ -112,6 +112,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
         m_DrivetrainTab.getLayout("Back Left Module", BuiltInLayouts.kList)
             .withSize(2, 2)
             .withPosition(4, 0),
+        configuration,
         Mk3SwerveModuleHelper.GearRatio.STANDARD,
         Ids.BACK_LEFT.DRIVE_MOTOR,
         Ids.BACK_LEFT.STEER_MOTOR,
@@ -122,6 +123,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
         m_DrivetrainTab.getLayout("Back Right Module", BuiltInLayouts.kList)
             .withSize(2, 2)
             .withPosition(6, 0),
+        configuration,
         Mk3SwerveModuleHelper.GearRatio.STANDARD,
         Ids.BACK_RIGHT.DRIVE_MOTOR,
         Ids.BACK_RIGHT.STEER_MOTOR,
@@ -178,7 +180,6 @@ public class DrivetrainSubsystem extends BaseSubsystem {
 
   public Rotation2d getGyroRotation() {
     return m_gyro.getGyroRotation();
-    //return new Rotation2d(GYRO_CIRCUMFERENCE_METERS / m_gyro.getGyroRotation().getRadians());
   }
 
   public void drive(double translation_x, double translation_y, double rotation) {
@@ -196,10 +197,10 @@ public class DrivetrainSubsystem extends BaseSubsystem {
   // Calcs from gains to drive accuratly
   // Ex: Drive 1 meter with drive fails where this would not
   private double getVelocityToVoltage(double speedMetersPerSecond) {
-    double wheel_voltage = Motor.MAX_POWER.getDouble(Motor.DEFAULT_MAX_POWER);
-    if (Motor.ENABLE_FF)
-      return speedMetersPerSecond / Motor.MAX_VELOCITY_MPS * wheel_voltage;
-    return MathUtils.clamp(m_feedForward.calculate(speedMetersPerSecond), -wheel_voltage, wheel_voltage);
+    double voltage = getRobotMode() == RobotMode.AUTO ? Auto.DRIVE_POWER : Motor.DRIVE_POWER;
+    if (!Motor.ENABLE_FF)
+      return speedMetersPerSecond / Motor.MAX_VELOCITY_MPS * voltage;
+    return MathUtils.clamp(m_feedForward.calculate(speedMetersPerSecond), -voltage, voltage);
   }
 
   public SwerveDriveKinematics getKinematics() {
@@ -266,7 +267,6 @@ public class DrivetrainSubsystem extends BaseSubsystem {
       m_chassisSpeeds.vyMetersPerSecond *= m_speedModifier;
       m_chassisSpeeds.omegaRadiansPerSecond *= m_speedModifier;
 
-      //SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds, GYRO_LOCATION_FROM_CENTER); // FIXME: Set center of rotation
       SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
       SwerveDriveKinematics.desaturateWheelSpeeds(states, Motor.MAX_VELOCITY_MPS);
 
@@ -282,7 +282,6 @@ public class DrivetrainSubsystem extends BaseSubsystem {
       m_backRightModule.set(getVelocityToVoltage(
           states[3].speedMetersPerSecond),
           states[3].angle.getRadians());
-      //updateOdometry(states);
     }
     Pose2d[] modulePose = { null, null, null, null };
     var swerveModules = getSwerveModuleStates();

@@ -2,7 +2,7 @@ package beartecs.swerve.ctre;
 
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
-import beartecs.swerve.Constants;
+import beartecs.Constants;
 
 public class CanCoderAbsoluteConfiguration {
     private final int id;

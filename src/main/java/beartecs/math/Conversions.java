@@ -1,5 +1,6 @@
 package beartecs.math;
 
+//Code from Team 364
 public class Conversions {
   public final static double FALCON_ENCODER = 2048.0;
 
@@ -35,4 +36,11 @@ public class Conversions {
     double wheelVelocity = RPMToFalcon(wheelRPM, gearRatio);
     return wheelVelocity;
   }
+
+  public static double falconToMeters(double falconTiks, double circumerence, double gearRatio) {
+    double wheelRevs = (falconTiks / FALCON_ENCODER) / gearRatio;
+    double meters = wheelRevs * circumerence;
+    return meters;
+  }
+
 }
