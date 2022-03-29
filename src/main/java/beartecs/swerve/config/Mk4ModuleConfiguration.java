@@ -40,13 +40,19 @@ public class Mk4ModuleConfiguration {
     private double driveCurrentLimit = 80.0;
     private double steerCurrentLimit = 20.0;
     private String canivoreName = "";
+    private boolean CANCoderCanivoreOnly = false;
+
+    public void setCanivoreName(String canivoreName, boolean CANCoderOnly) {
+        this.canivoreName = canivoreName;
+        this.CANCoderCanivoreOnly = CANCoderOnly;
+    }
 
     public void setCanivoreName(String canivoreName) {
         this.canivoreName = canivoreName;
     }
 
-    public String getCanivoreName() {
-        return canivoreName;
+    public String getCanivoreName(boolean isCanCoder) {
+        return CANCoderCanivoreOnly ? "rio" : canivoreName;
     }
 
     public boolean useCanivore() {
