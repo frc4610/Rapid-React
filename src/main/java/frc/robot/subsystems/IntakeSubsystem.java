@@ -1,18 +1,21 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
-import beartecs.Constants.*;
+import beartecs.template.*;
 import beartecs.controller.XboxControllerExtended;
 import beartecs.math.MathUtils;
-import beartecs.template.PositionSubsystem;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import beartecs.Constants.*;
 
-public class IntakeSubsystem extends PositionSubsystem {
+public class IntakeSubsystem extends BaseSubsystem {
+
   private final WPI_TalonFX m_intake = new WPI_TalonFX(Ids.INTAKE.deviceNumber, Ids.INTAKE.canBus);
+  private final WPI_TalonFX m_arm = new WPI_TalonFX(Ids.ARM.deviceNumber, Ids.ARM.canBus);
   private final XboxControllerExtended m_controller;
   private final DigitalInput m_topLimitSwitch = new DigitalInput(Ids.DIO_TOP_LIMITSWTICH); // currently broken
   private final DigitalInput m_bottomLimitSwitch = new DigitalInput(Ids.DIO_BOTTOM_LIMITSWTICH);
@@ -20,6 +23,8 @@ public class IntakeSubsystem extends PositionSubsystem {
   public static final double INTAKE_OUT_TIME = 1;
   private final double m_armTimeUp = 0.85;
   private final double m_armTimeDown = 0.45;
+  // 38991 when up
+  // 1555 when down
 
   private boolean m_armState = true;
   private boolean m_verifiedArmState = true;
@@ -30,8 +35,13 @@ public class IntakeSubsystem extends PositionSubsystem {
   private ShuffleboardTab m_intakeTab;
 
   public IntakeSubsystem(XboxControllerExtended controller) {
-    super(Ids.ARM);
     m_controller = controller;
+
+    m_arm.setInverted(false);
+    m_arm.setNeutralMode(NeutralMode.Brake); // Force Motor in brake mode
+    m_arm.enableVoltageCompensation(true);
+    m_arm.setSelectedSensorPosition(Arm.ABS_UP_POSITION);
+
     m_armState = updateArmState();
     m_intakeTab = addTab("IntakeSubsystem");
 
@@ -41,7 +51,7 @@ public class IntakeSubsystem extends PositionSubsystem {
     // TODO: Group
     m_intakeTab.addBoolean("Arm State", () -> m_armState);
     m_intakeTab.addBoolean("Verified Arm State", () -> m_verifiedArmState);
-    m_intakeTab.addNumber("Arm Selected Position", () -> this.getEncoderPosition());
+    m_intakeTab.addNumber("Arm Selected Position", () -> m_arm.getSelectedSensorPosition());
     m_intakeTab.addBoolean("Arm Changed", () -> m_armPositionChanged);
   }
 
@@ -97,22 +107,22 @@ public class IntakeSubsystem extends PositionSubsystem {
 
   public boolean updateArmState() {
     if (m_controller.getStartButton()) {
-      this.setEncoder(Arm.ABS_UP_POSITION);
-    } else if (this.getEncoderPosition() < -1) {
-      this.resetEncoder(); // stop from going negative
+      m_arm.setSelectedSensorPosition(Arm.ABS_UP_POSITION);
+    } else if (m_arm.getSelectedSensorPosition() < -1) {
+      m_arm.setSelectedSensorPosition(0); // stop from going negative
     }
 
     // Arm encoder position
-    if (m_lastArmPosition != this.getEncoderPosition()) {
+    if (m_lastArmPosition != m_arm.getSelectedSensorPosition()) {
       m_armPositionChanged = true;
-      m_lastArmPosition = this.getEncoderPosition();
+      m_lastArmPosition = m_arm.getSelectedSensorPosition();
     } else {
       m_armPositionChanged = false;
     }
     // the arm has reached the ideal arm position
-    if (getTopLimitSwitch() || this.getEncoderPosition() > Arm.UP_POSITION) {
+    if (getTopLimitSwitch() || m_arm.getSelectedSensorPosition() > Arm.UP_POSITION) {
       m_verifiedArmState = true; // is at top
-    } else if (getBottomLimitSwitch() || this.getEncoderPosition() < Arm.DOWN_POSITION) {
+    } else if (getBottomLimitSwitch() || m_arm.getSelectedSensorPosition() < Arm.DOWN_POSITION) {
       m_verifiedArmState = false; // is at bottom
     }
     return m_verifiedArmState;
@@ -149,17 +159,17 @@ public class IntakeSubsystem extends PositionSubsystem {
 
     if (m_armState) {
       if (Timer.getFPGATimestamp() - m_lastBurstTime < m_armTimeUp) {
-        this.setManualOutput(Arm.TRAVEL_UP_POWER.getDouble(Arm.DEFAULT_TRAVEL_UP_POWER)); // from the bottom up power
+        m_arm.set(Arm.TRAVEL_UP_POWER.getDouble(Arm.DEFAULT_TRAVEL_UP_POWER)); // from the bottom up power
       } else if (!m_verifiedArmState || leftBumper) {
-        this.setManualOutput(Arm.TRAVEL_DIFFERENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE)); // not in up position apply power till we get there
+        m_arm.set(Arm.TRAVEL_DIFFERENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE)); // not in up position apply power till we get there
       } else {
-        this.stop(); // stop the power // we don't need to supply power to it as it "locks" itself in a pivot
+        m_arm.set(0); // stop the power // we don't need to supply power to it as it "locks" itself in a pivot
       }
     } else {
       if (Timer.getFPGATimestamp() - m_lastBurstTime < m_armTimeDown) {
-        this.setManualOutput(-Arm.TRAVEL_DOWN_POWER.getDouble(Arm.DEFAULT_TRAVEL_DOWN_POWER)); // from the top down power
+        m_arm.set(-Arm.TRAVEL_DOWN_POWER.getDouble(Arm.DEFAULT_TRAVEL_DOWN_POWER)); // from the top down power
       } else if (m_verifiedArmState || rightBumper) { // not hit the limit switch use distance power
-        this.setManualOutput(-Arm.TRAVEL_DIFFERENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
+        m_arm.set(-Arm.TRAVEL_DIFFERENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
       }
     }
 

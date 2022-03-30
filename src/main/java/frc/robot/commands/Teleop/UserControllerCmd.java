@@ -36,12 +36,12 @@ public class UserControllerCmd extends CommandBase {
         double rot = -m_rotLimiter.calculate(RobotContainer.getDriveRotationAxis())
                 * Motor.MAX_ANGULAR_VELOCITY_RPS;
 
-        double drivePOV = -MathUtils.angleWrap(RobotContainer.getDrivePOV().getDegrees());
+        double drivePOV = MathUtils.angleWrap(RobotContainer.getDrivePOV().getDegrees());
         if (drivePOV != -1) { // Pressing one of the POV keys
             double rotationOutput = m_rotationController
                     .calculate(
                             m_drivetrainSubsystem.getGyroRotation().getRadians(),
-                            Math.toRadians(drivePOV));
+                            Math.toRadians(-drivePOV));
 
             if (Math.abs(rotationOutput) < Controller.XBOX_DEADBAND) {
                 rotationOutput = 0.0;

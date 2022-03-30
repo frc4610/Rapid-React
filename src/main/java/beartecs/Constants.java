@@ -31,11 +31,11 @@ public final class Constants {
     public static final int RIGHT_ULTRASONIC = 1;
 
     // CAN bus
-    public static final CANConfig ARM = new CANConfig(13);
-    public static final CANConfig INTAKE = new CANConfig(14);
-    public static final CANConfig LED_CANDLE = new CANConfig(15);
-    public static final CANConfig PIGEON = new CANConfig(16);
     public static final String CANIVORE_NAME = "CANivore_Swerve";
+    public static final CANConfig ARM = new CANConfig(13, CANIVORE_NAME);
+    public static final CANConfig INTAKE = new CANConfig(14, CANIVORE_NAME);
+    public static final CANConfig LED_CANDLE = new CANConfig(15, CANIVORE_NAME);
+    public static final CANConfig PIGEON = new CANConfig(16);
 
     public static final SwerveConfig FRONT_LEFT = new SwerveConfig(8, 4, 11, -Math.toRadians(149.85));
     public static final SwerveConfig FRONT_RIGHT = new SwerveConfig(1, 5, 9, -Math.toRadians(181.40));
@@ -72,7 +72,7 @@ public final class Constants {
     public static final double MAX_ANGULAR_VELOCITY_RPS = MAX_VELOCITY_MPS /
         Math.hypot(TRACKWIDTH_METERS / 2.0, WHEELBASE_METERS / 2.0);
 
-    public static final double TURN_TOLERANCE = 60; // degrees
+    public static final double TURN_TOLERANCE = 15; // degrees
 
     // SDS Billet Wheels 4"D X 1"W
     // 8.16:1 Gear Ratio

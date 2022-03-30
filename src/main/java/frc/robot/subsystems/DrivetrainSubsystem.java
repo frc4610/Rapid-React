@@ -75,7 +75,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
   private double m_speedModifier = 1.0;
 
   public DrivetrainSubsystem() {
-    m_gyro = GyroscopeHelper.createNavXMXP(); // 8.5cm from front bar // 30cm in the center of the bar
+    m_gyro = GyroscopeHelper.createPigeon2CAN(Ids.PIGEON.deviceNumber, Ids.PIGEON.canBus); // 8.5cm from front bar // 30cm in the center of the bar
     m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroRotation());
     resetPose(new Pose2d(7, 2, Rotation2d.fromDegrees(-90)));
 
