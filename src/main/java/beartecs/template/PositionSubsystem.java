@@ -5,14 +5,15 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import beartecs.CAN.CANConfig;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 
 public abstract class PositionSubsystem extends BaseSubsystem {
 
   public WPI_TalonFX m_motor;
 
-  public PositionSubsystem(int talonCanId) {
-    m_motor = new WPI_TalonFX(talonCanId);
+  public PositionSubsystem(CANConfig talon) {
+    m_motor = new WPI_TalonFX(talon.deviceNumber, talon.canBus);
     setDefaultCommand(new RunCommand(() -> this.stop(), this));
   }
 

@@ -1,10 +1,12 @@
 package beartecs.swerve;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import com.kauailabs.navx.frc.AHRS;
 import com.kauailabs.navx.frc.AHRS.SerialDataType;
 
+import beartecs.swerve.ctre.Pigeon2Factory;
 import beartecs.swerve.ctre.PigeonFactory;
 import beartecs.swerve.kauailabs.NavXFactory;
 import edu.wpi.first.wpilibj.I2C;
@@ -33,5 +35,13 @@ public final class GyroscopeHelper {
 
   public static Gyroscope createPigeonCAN(Integer canId) {
     return new PigeonFactory().build(new WPI_PigeonIMU(canId));
+  }
+
+  public static Gyroscope createPigeon2CAN(Integer canId) {
+    return new Pigeon2Factory().build(new WPI_Pigeon2(canId));
+  }
+
+  public static Gyroscope createPigeon2CAN(Integer canId, String canBus) {
+    return new Pigeon2Factory().build(new WPI_Pigeon2(canId, canBus));
   }
 }

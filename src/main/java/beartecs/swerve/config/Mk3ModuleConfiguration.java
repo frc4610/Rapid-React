@@ -28,25 +28,23 @@ public class Mk3ModuleConfiguration {
     private double nominalVoltage = 12.0;
     private double driveCurrentLimit = 80.0;
     private double steerCurrentLimit = 20.0;
-    private String canivoreName = "";
-    private boolean CANCoderCanivoreOnly = false;
+    private String motorCanBus = "rio";
+    private String encoderCanBus = "rio";
 
-    public void setCanivoreName(String canivoreName, boolean CANCoderOnly) {
-        this.canivoreName = canivoreName;
-        this.CANCoderCanivoreOnly = CANCoderOnly;
+    public void setMotorCanBusName(String canBusName) {
+        this.motorCanBus = canBusName;
     }
 
-    public void setCanivoreName(String canivoreName) {
-        this.canivoreName = canivoreName;
+    public void setEncoderCanBusName(String canBusName) {
+        this.encoderCanBus = canBusName;
     }
 
-    public String getCanivoreName(boolean isCanCoder) {
-        return CANCoderCanivoreOnly ? "rio" : canivoreName;
+    public String getMotorCanBus() {
+        return motorCanBus;
     }
 
-    public boolean useCanivore() {
-        // null or empty canivore name means don't use canivore
-        return !(canivoreName == null || canivoreName.isEmpty());
+    public String getEncoderCanBus() {
+        return encoderCanBus;
     }
 
     public double getNominalVoltage() {
@@ -96,7 +94,8 @@ public class Mk3ModuleConfiguration {
                 "nominalVoltage=" + nominalVoltage +
                 ", driveCurrentLimit=" + driveCurrentLimit +
                 ", steerCurrentLimit=" + steerCurrentLimit +
-                ", canivoreName='" + canivoreName +
+                ", motorCanBus='" + motorCanBus +
+                ", encoderCanBus='" + encoderCanBus +
                 '}';
     }
 }

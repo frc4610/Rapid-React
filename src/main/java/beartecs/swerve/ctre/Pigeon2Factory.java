@@ -5,22 +5,21 @@ import com.ctre.phoenix.sensors.*;
 import beartecs.swerve.Gyroscope;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-public class PigeonFactory {
-
-  public Gyroscope build(WPI_PigeonIMU pigeon) {
+public class Pigeon2Factory {
+  public Gyroscope build(WPI_Pigeon2 pigeon) {
     return new GyroscopeImplementation(pigeon);
   }
 
   private static class GyroscopeImplementation implements Gyroscope {
-    private final WPI_PigeonIMU pigeon;
+    private final WPI_Pigeon2 pigeon;
 
-    private GyroscopeImplementation(WPI_PigeonIMU pigeon) {
+    private GyroscopeImplementation(WPI_Pigeon2 pigeon) {
       this.pigeon = pigeon;
     }
 
     @Override
     public Rotation2d getGyroRotation() {
-      return Rotation2d.fromDegrees(pigeon.getFusedHeading());
+      return Rotation2d.fromDegrees(pigeon.getYaw());
     }
 
     @Override
@@ -30,7 +29,7 @@ public class PigeonFactory {
 
     @Override
     public void zeroGyro() {
-      pigeon.setFusedHeading(0.0);
+      pigeon.setYaw(0.0);
     }
 
     @Override

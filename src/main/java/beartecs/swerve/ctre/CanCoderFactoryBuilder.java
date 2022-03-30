@@ -13,7 +13,7 @@ import beartecs.Constants;
 public class CanCoderFactoryBuilder {
     private Direction direction = Direction.COUNTER_CLOCKWISE;
     private int periodMilliseconds = 10;
-    private String canivoreName = "";
+    private String canBusName = "";
 
     public CanCoderFactoryBuilder withReadingUpdatePeriod(int periodMilliseconds) {
         this.periodMilliseconds = periodMilliseconds;
@@ -25,14 +25,9 @@ public class CanCoderFactoryBuilder {
         return this;
     }
 
-    public CanCoderFactoryBuilder withCanivoreName(String canivoreName) {
-        this.canivoreName = canivoreName;
+    public CanCoderFactoryBuilder withCanBusName(String canivoreName) {
+        this.canBusName = canivoreName;
         return this;
-    }
-
-    public boolean useCanivore() {
-        // null or empty canivore name means don't use canivore
-        return !(canivoreName == null || canivoreName.isEmpty());
     }
 
     public AbsoluteEncoderFactory<CanCoderAbsoluteConfiguration> build() {
@@ -45,7 +40,7 @@ public class CanCoderFactoryBuilder {
 
             final var encoderId = configuration.getId();
             if (encoderId != -1) {
-                WPI_CANCoder encoder = new WPI_CANCoder(configuration.getId(), canivoreName);
+                WPI_CANCoder encoder = new WPI_CANCoder(configuration.getId(), canBusName);
                 CtreUtils.checkCtreError(encoder.configAllSettings(config, 30), "Failed to configure CANCoder");
 
                 CtreUtils.checkCtreError(

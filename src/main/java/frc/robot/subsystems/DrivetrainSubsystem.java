@@ -75,14 +75,17 @@ public class DrivetrainSubsystem extends BaseSubsystem {
   private double m_speedModifier = 1.0;
 
   public DrivetrainSubsystem() {
-    m_gyro = GyroscopeHelper.createPigeonCAN(Ids.PIGEON); // 8.5cm from front bar // 30cm in the center of the bar
+    m_gyro = GyroscopeHelper.createNavXMXP(); // 8.5cm from front bar // 30cm in the center of the bar
     m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroRotation());
     resetPose(new Pose2d(7, 2, Rotation2d.fromDegrees(-90)));
 
     m_DrivetrainTab = addTab("Drivetrain");
     m_DriveDataTab = addTab("Drive Data");
     Mk3ModuleConfiguration configuration = new Mk3ModuleConfiguration();
-    configuration.setCanivoreName("CANivore_Swerve");
+
+    configuration.setMotorCanBusName(Ids.CANIVORE_NAME);
+    configuration.setEncoderCanBusName(Ids.CANIVORE_NAME);
+
     m_frontLeftModule = Mk3SwerveModuleHelper.createFalcon500(
         // This parameter is optional, but will allow you to see the current state of
         // the module on the dashboard.
@@ -91,10 +94,10 @@ public class DrivetrainSubsystem extends BaseSubsystem {
             .withPosition(0, 0),
         configuration,
         Mk3SwerveModuleHelper.GearRatio.STANDARD,
-        Ids.FRONT_LEFT.DRIVE_MOTOR,
-        Ids.FRONT_LEFT.STEER_MOTOR,
-        Ids.FRONT_LEFT.STEER_ENCODER,
-        Ids.FRONT_LEFT.STEER_OFFSET);
+        Ids.FRONT_LEFT.DRIVE_MOTOR_DEVICE_NUMBER,
+        Ids.FRONT_LEFT.STEER_MOTOR_DEVICE_NUMBER,
+        Ids.FRONT_LEFT.CAN_CODER_DEVICE_NUMBER,
+        Ids.FRONT_LEFT.CAN_CODER_OFFSET);
 
     // We will do the same for the other modules
     m_frontRightModule = Mk3SwerveModuleHelper.createFalcon500(
@@ -103,10 +106,10 @@ public class DrivetrainSubsystem extends BaseSubsystem {
             .withPosition(2, 0),
         configuration,
         Mk3SwerveModuleHelper.GearRatio.STANDARD,
-        Ids.FRONT_RIGHT.DRIVE_MOTOR,
-        Ids.FRONT_RIGHT.STEER_MOTOR,
-        Ids.FRONT_RIGHT.STEER_ENCODER,
-        Ids.FRONT_RIGHT.STEER_OFFSET);
+        Ids.FRONT_RIGHT.DRIVE_MOTOR_DEVICE_NUMBER,
+        Ids.FRONT_RIGHT.STEER_MOTOR_DEVICE_NUMBER,
+        Ids.FRONT_RIGHT.CAN_CODER_DEVICE_NUMBER,
+        Ids.FRONT_RIGHT.CAN_CODER_OFFSET);
 
     m_backLeftModule = Mk3SwerveModuleHelper.createFalcon500(
         m_DrivetrainTab.getLayout("Back Left Module", BuiltInLayouts.kList)
@@ -114,10 +117,10 @@ public class DrivetrainSubsystem extends BaseSubsystem {
             .withPosition(4, 0),
         configuration,
         Mk3SwerveModuleHelper.GearRatio.STANDARD,
-        Ids.BACK_LEFT.DRIVE_MOTOR,
-        Ids.BACK_LEFT.STEER_MOTOR,
-        Ids.BACK_LEFT.STEER_ENCODER,
-        Ids.BACK_LEFT.STEER_OFFSET);
+        Ids.BACK_LEFT.DRIVE_MOTOR_DEVICE_NUMBER,
+        Ids.BACK_LEFT.STEER_MOTOR_DEVICE_NUMBER,
+        Ids.BACK_LEFT.CAN_CODER_DEVICE_NUMBER,
+        Ids.BACK_LEFT.CAN_CODER_OFFSET);
 
     m_backRightModule = Mk3SwerveModuleHelper.createFalcon500(
         m_DrivetrainTab.getLayout("Back Right Module", BuiltInLayouts.kList)
@@ -125,10 +128,10 @@ public class DrivetrainSubsystem extends BaseSubsystem {
             .withPosition(6, 0),
         configuration,
         Mk3SwerveModuleHelper.GearRatio.STANDARD,
-        Ids.BACK_RIGHT.DRIVE_MOTOR,
-        Ids.BACK_RIGHT.STEER_MOTOR,
-        Ids.BACK_RIGHT.STEER_ENCODER,
-        Ids.BACK_RIGHT.STEER_OFFSET);
+        Ids.BACK_RIGHT.DRIVE_MOTOR_DEVICE_NUMBER,
+        Ids.BACK_RIGHT.STEER_MOTOR_DEVICE_NUMBER,
+        Ids.BACK_RIGHT.CAN_CODER_DEVICE_NUMBER,
+        Ids.BACK_RIGHT.CAN_CODER_OFFSET);
 
     zeroGyro();
     m_OdometryData = m_DriveDataTab.getLayout("Odometry Data", BuiltInLayouts.kList)

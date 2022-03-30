@@ -30,8 +30,7 @@ public final class Falcon500SteerControllerFactoryBuilder {
 
     private double nominalVoltage = Double.NaN;
     private double currentLimit = Double.NaN;
-
-    private String canivoreName = "";
+    private String canBusName = "rio";
 
     public Falcon500SteerControllerFactoryBuilder withPidConstants(double proportional, double integral,
             double derivative) {
@@ -64,6 +63,11 @@ public final class Falcon500SteerControllerFactoryBuilder {
         return this;
     }
 
+    public Falcon500SteerControllerFactoryBuilder withCanBusName(String canBusName) {
+        this.canBusName = canBusName;
+        return this;
+    }
+
     public boolean hasVoltageCompensation() {
         return Double.isFinite(nominalVoltage);
     }
@@ -75,16 +79,6 @@ public final class Falcon500SteerControllerFactoryBuilder {
 
     public boolean hasCurrentLimit() {
         return Double.isFinite(currentLimit);
-    }
-
-    public Falcon500SteerControllerFactoryBuilder withCanivoreName(String canivoreName) {
-        this.canivoreName = canivoreName;
-        return this;
-    }
-
-    public boolean useCanivore() {
-        // null or empty canivore name means don't use canivore
-        return !(canivoreName == null || canivoreName.isEmpty());
     }
 
     public <T> SteerControllerFactory<ControllerImplementation, Falcon500SteerConfiguration<T>> build(
@@ -143,8 +137,7 @@ public final class Falcon500SteerControllerFactoryBuilder {
                 motorConfiguration.supplyCurrLimit.enable = true;
             }
 
-            WPI_TalonFX motor = new WPI_TalonFX(steerConfiguration.getMotorPort(),
-                    steerConfiguration.getCanivoreName());
+            WPI_TalonFX motor = new WPI_TalonFX(steerConfiguration.getMotorPort(), canBusName);
             checkCtreError(motor.configAllSettings(motorConfiguration, CAN_TIMEOUT_MS),
                     "Failed to configure Falcon 500 settings");
 

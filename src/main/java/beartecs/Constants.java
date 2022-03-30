@@ -1,5 +1,6 @@
 package beartecs;
 
+import beartecs.CAN.CANConfig;
 import beartecs.swerve.config.Mk3ModuleConfiguration;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -30,10 +31,11 @@ public final class Constants {
     public static final int RIGHT_ULTRASONIC = 1;
 
     // CAN bus
-    public static final int ARM = 13;
-    public static final int INTAKE = 14;
-    public static final int LED_CANDLE = 15;
-    public static final int PIGEON = 15;
+    public static final CANConfig ARM = new CANConfig(13);
+    public static final CANConfig INTAKE = new CANConfig(14);
+    public static final CANConfig LED_CANDLE = new CANConfig(15);
+    public static final CANConfig PIGEON = new CANConfig(16);
+    public static final String CANIVORE_NAME = "CANivore_Swerve";
 
     public static final SwerveConfig FRONT_LEFT = new SwerveConfig(8, 4, 11, -Math.toRadians(149.85));
     public static final SwerveConfig FRONT_RIGHT = new SwerveConfig(1, 5, 9, -Math.toRadians(181.40));
@@ -60,7 +62,7 @@ public final class Constants {
 
   // Motor Specific
   public final static class Motor {
-    public static final boolean ENABLE_FF = true;
+    public static final boolean ENABLE_FF = false;
     public static final boolean DEFENSIVE = true;
     public static final int MAX_RPM = 6380;
     public static final double MAX_VELOCITY_MPS = MAX_RPM / 60.0 *

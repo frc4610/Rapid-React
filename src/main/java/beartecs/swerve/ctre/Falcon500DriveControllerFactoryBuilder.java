@@ -22,7 +22,7 @@ public final class Falcon500DriveControllerFactoryBuilder {
 
     private double nominalVoltage = Double.NaN;
     private double currentLimit = Double.NaN;
-    private String canivoreName = "";
+    private String canBusName = "rio";
 
     public Falcon500DriveControllerFactoryBuilder withVoltageCompensation(double nominalVoltage) {
         this.nominalVoltage = nominalVoltage;
@@ -42,14 +42,9 @@ public final class Falcon500DriveControllerFactoryBuilder {
         return this;
     }
 
-    public Falcon500DriveControllerFactoryBuilder withCanivoreName(String canivoreName) {
-        this.canivoreName = canivoreName;
+    public Falcon500DriveControllerFactoryBuilder withCanBusName(String canBusName) {
+        this.canBusName = canBusName;
         return this;
-    }
-
-    public boolean useCanivore() {
-        // null or empty canivore name means don't use canivore
-        return !(canivoreName == null || canivoreName.isEmpty());
     }
 
     public boolean hasCurrentLimit() {
@@ -74,7 +69,7 @@ public final class Falcon500DriveControllerFactoryBuilder {
                 motorConfiguration.supplyCurrLimit.enable = true;
             }
 
-            WPI_TalonFX motor = new WPI_TalonFX(driveConfiguration, moduleConfiguration.getCanivoreName());
+            WPI_TalonFX motor = new WPI_TalonFX(driveConfiguration, canBusName);
             motor.configAllSettings(motorConfiguration);
             CtreUtils.checkCtreError(motor.configAllSettings(motorConfiguration), "Failed to configure Falcon 500");
 

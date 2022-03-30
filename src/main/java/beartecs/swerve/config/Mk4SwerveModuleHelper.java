@@ -18,7 +18,6 @@ public final class Mk4SwerveModuleHelper {
                 return new Falcon500DriveControllerFactoryBuilder()
                                 .withVoltageCompensation(configuration.getNominalVoltage())
                                 .withCurrentLimit(configuration.getDriveCurrentLimit())
-                                .withCanivoreName(configuration.getCanivoreName(false))
                                 .build();
         }
 
@@ -28,10 +27,9 @@ public final class Mk4SwerveModuleHelper {
                                 .withVoltageCompensation(configuration.getNominalVoltage())
                                 .withPidConstants(0.2, 0.0, 0.1)
                                 .withCurrentLimit(configuration.getSteerCurrentLimit())
-                                .withCanivoreName(configuration.getCanivoreName(false))
                                 .build(new CanCoderFactoryBuilder()
                                                 .withReadingUpdatePeriod(100)
-                                                .withCanivoreName(configuration.getCanivoreName(true))
+                                                .withCanBusName(configuration.getEncoderCanBus())
                                                 .build());
         }
 
@@ -83,8 +81,7 @@ public final class Mk4SwerveModuleHelper {
                                                 new Falcon500SteerConfiguration<>(
                                                                 steerMotorPort,
                                                                 new CanCoderAbsoluteConfiguration(steerEncoderPort,
-                                                                                steerOffset),
-                                                                configuration.getCanivoreName(true)));
+                                                                                steerOffset)));
         }
 
         /**
@@ -136,8 +133,7 @@ public final class Mk4SwerveModuleHelper {
                                                 new Falcon500SteerConfiguration<>(
                                                                 steerMotorPort,
                                                                 new CanCoderAbsoluteConfiguration(steerEncoderPort,
-                                                                                steerOffset),
-                                                                configuration.getCanivoreName(true)));
+                                                                                steerOffset)));
         }
 
         /**
@@ -400,8 +396,7 @@ public final class Mk4SwerveModuleHelper {
                                                 new Falcon500SteerConfiguration<>(
                                                                 steerMotorPort,
                                                                 new CanCoderAbsoluteConfiguration(steerEncoderPort,
-                                                                                steerOffset),
-                                                                configuration.getCanivoreName(true)));
+                                                                                steerOffset)));
         }
 
         /**
@@ -453,8 +448,7 @@ public final class Mk4SwerveModuleHelper {
                                                 new Falcon500SteerConfiguration<>(
                                                                 steerMotorPort,
                                                                 new CanCoderAbsoluteConfiguration(steerEncoderPort,
-                                                                                steerOffset),
-                                                                configuration.getCanivoreName(true)));
+                                                                                steerOffset)));
         }
 
         /**
