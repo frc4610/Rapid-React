@@ -2,6 +2,7 @@ package beartecs.swerve.ctre;
 
 import com.ctre.phoenix.sensors.*;
 
+import beartecs.math.MathUtils;
 import beartecs.swerve.Gyroscope;
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -20,7 +21,7 @@ public class PigeonFactory {
 
     @Override
     public Rotation2d getGyroRotation() {
-      return Rotation2d.fromDegrees(pigeon.getFusedHeading());
+      return Rotation2d.fromDegrees(MathUtils.angleWrap(-pigeon.getFusedHeading()));
     }
 
     @Override

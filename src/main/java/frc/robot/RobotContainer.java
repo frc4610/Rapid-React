@@ -70,7 +70,7 @@ public class RobotContainer {
   private static void configureDriveButtons() {
     new Button(m_driverController::getBackButton)
         .whenPressed(() -> {
-          reset();
+          m_drivetrainSubsystem.zeroGyro();
         });
     new Button(m_driverController::getRightBumper)
         .whenPressed(() -> {
@@ -123,13 +123,6 @@ public class RobotContainer {
 
   public static LEDSubsystem getLEDSubsystem() {
     return m_ledSubsystem;
-  }
-
-  /**
-   * Resets Gyro
-   */
-  public static void reset() {
-    m_drivetrainSubsystem.zeroGyro();
   }
 
   /**

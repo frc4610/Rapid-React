@@ -72,7 +72,7 @@ public final class Constants {
     public static final double MAX_ANGULAR_VELOCITY_RPS = MAX_VELOCITY_MPS /
         Math.hypot(TRACKWIDTH_METERS / 2.0, WHEELBASE_METERS / 2.0);
 
-    public static final double TURN_TOLERANCE = 15; // degrees
+    public static final double TURN_TOLERANCE = 12; // degrees
 
     // SDS Billet Wheels 4"D X 1"W
     // 8.16:1 Gear Ratio
@@ -86,10 +86,12 @@ public final class Constants {
   }
 
   public final static class Auto {
-    public static final double DRIVE_POWER = 12;
+    public static final double DRIVE_POWER = 8;
     // Constraint for the motion profilied robot angle controller
+    private static final double THETA_CONSTRAINT_SCALAR = 0.8;
     public static final TrapezoidProfile.Constraints THETA_CONSTRAINTS = new TrapezoidProfile.Constraints(
-        Motor.MAX_ANGULAR_VELOCITY_RPS, Motor.MAX_ANGULAR_VELOCITY_RPS * 0.9);
+        Motor.MAX_ANGULAR_VELOCITY_RPS,
+        Motor.MAX_ANGULAR_VELOCITY_RPS * THETA_CONSTRAINT_SCALAR);
 
     // TODO: CONFIG ME
     // Feed Forward and PID values from SysIds

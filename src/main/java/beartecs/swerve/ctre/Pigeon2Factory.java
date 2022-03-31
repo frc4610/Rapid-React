@@ -20,7 +20,7 @@ public class Pigeon2Factory {
 
     @Override
     public Rotation2d getGyroRotation() {
-      return Rotation2d.fromDegrees(MathUtils.angleWrap(pigeon.getAbsoluteCompassHeading()));
+      return Rotation2d.fromDegrees(MathUtils.angleWrap(-pigeon.getYaw()));
     }
 
     @Override
@@ -30,7 +30,7 @@ public class Pigeon2Factory {
 
     @Override
     public void zeroGyro() {
-      pigeon.setYaw(0.0);
+      pigeon.setYaw(0);
     }
 
     @Override
