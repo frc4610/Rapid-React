@@ -18,6 +18,7 @@ public final class Mk4SwerveModuleHelper {
                 return new Falcon500DriveControllerFactoryBuilder()
                                 .withVoltageCompensation(configuration.getNominalVoltage())
                                 .withCurrentLimit(configuration.getDriveCurrentLimit())
+                                .withCanBusName(configuration.getMotorCanBus())
                                 .build();
         }
 
@@ -27,6 +28,7 @@ public final class Mk4SwerveModuleHelper {
                                 .withVoltageCompensation(configuration.getNominalVoltage())
                                 .withPidConstants(0.2, 0.0, 0.1)
                                 .withCurrentLimit(configuration.getSteerCurrentLimit())
+                                .withCanBusName(configuration.getMotorCanBus())
                                 .build(new CanCoderFactoryBuilder()
                                                 .withReadingUpdatePeriod(100)
                                                 .withCanBusName(configuration.getEncoderCanBus())

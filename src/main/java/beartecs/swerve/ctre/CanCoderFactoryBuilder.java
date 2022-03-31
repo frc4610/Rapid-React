@@ -13,7 +13,7 @@ import beartecs.Constants;
 public class CanCoderFactoryBuilder {
     private Direction direction = Direction.COUNTER_CLOCKWISE;
     private int periodMilliseconds = 10;
-    private String canBusName = "";
+    private String canBusName = "rio";
 
     public CanCoderFactoryBuilder withReadingUpdatePeriod(int periodMilliseconds) {
         this.periodMilliseconds = periodMilliseconds;
