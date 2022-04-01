@@ -175,6 +175,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
    * 'forwards' direction.
    */
   public void zeroGyro() {
+    m_logger.logInfo("Gyro Zero'ed");
     m_gyro.zeroGyro();
     m_odometry.resetPosition(
         new Pose2d(m_odometry.getPoseMeters().getTranslation(), Rotation2d.fromDegrees(0.0)),
@@ -201,7 +202,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
   // Ex: Drive 1 meter with drive fails where this would not
   private double getVelocityToVoltage(double speedMetersPerSecond) {
     double voltage = getRobotMode() == RobotMode.AUTO ? Auto.DRIVE_POWER : Motor.DRIVE_POWER;
-    if (!Motor.ENABLE_FF)
+    if (Motor.OPEN_LOOP)
       return speedMetersPerSecond / Motor.MAX_VELOCITY_MPS * voltage;
     return MathUtils.clamp(m_feedForward.calculate(speedMetersPerSecond), -voltage, voltage);
   }

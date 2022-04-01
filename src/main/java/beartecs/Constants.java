@@ -62,7 +62,7 @@ public final class Constants {
 
   // Motor Specific
   public final static class Motor {
-    public static final boolean ENABLE_FF = false;
+    public static final boolean OPEN_LOOP = false;
     public static final boolean DEFENSIVE = true;
     public static final int MAX_RPM = 6380;
     public static final double MAX_VELOCITY_MPS = MAX_RPM / 60.0 *
@@ -93,15 +93,17 @@ public final class Constants {
         Motor.MAX_ANGULAR_VELOCITY_RPS,
         Motor.MAX_ANGULAR_VELOCITY_RPS * THETA_CONSTRAINT_SCALAR);
 
-    // TODO: CONFIG ME
-    // Feed Forward and PID values from SysIds
     public static final PidConfig PID_XY = new PidConfig(2.5, 0.0, 0.02);
 
-    public static final double STATIC_GAIN = 0.6 / Motor.MAX_POWER;// (0.667 / Voltage); //divide by 12 to convert from volts to percent output for CTRE
-    public static final double VELOCITY_GAIN = 2.8 / Motor.MAX_POWER;//(2.8  / Voltage);
-    public static final double ACCELERATION_GAIN = 0.27 / Motor.MAX_POWER; //(0.27  / Voltage);
+    // TODO: Config Gains using sysid and our custom SysId class
+    // kp: 0.05
+    // Motor Feedback is using onboard sensor which is velocity corrected per 100ms(normal full rotation is 2048) yet the output's max is 1023
+    // divide by 12 to convert from volts to percent output for CTRE // If we were using .set for arb ff
+    public static final double STATIC_GAIN = 0.49;
+    public static final double VELOCITY_GAIN = 2.1;
+    public static final double ACCELERATION_GAIN = 0.27;
 
-    public static final ProfiledPidConfig PID_THETA = new ProfiledPidConfig(2.0, 0.0, 0.02, THETA_CONSTRAINTS);
+    public static final ProfiledPidConfig PID_THETA = new ProfiledPidConfig(2.0, 0.0, 0.0, THETA_CONSTRAINTS);
   }
 
   public final static class Arm {
@@ -123,7 +125,9 @@ public final class Constants {
     public static final double ABS_UP_POSITION = 35000; // Range from RNG - MAX
     public static final double UP_POSITION = ABS_UP_POSITION - 1500; // Range from RNG - MAX
     public static final double DOWN_POSITION = 100; // Enough to hold the bot down
-    public static final PidConfig ARM_PID = new PidConfig(1, 0, 0, 1);
+    // TODO: Configure arm pid values
+    public static final ProfiledPidConfig ARM_PID = new ProfiledPidConfig(0.006, 0, 0.001,
+        new TrapezoidProfile.Constraints(5, 5));
   }
 
   public final static class Intake {
@@ -145,10 +149,9 @@ public final class Constants {
   // The front-to-back distance between the drivetrain wheels.
   public static final double WHEELBASE_METERS = 0.76581; // 0.545 // 25.125"
 
-  public static final double GYRO_RADIUS_METERS = 0.3087; // 31" / 2 - 8.5cm
-  public static final double GYRO_CIRCUMFERENCE_METERS = 2 * Math.PI * GYRO_RADIUS_METERS;
-
-  public static final Translation2d GYRO_LOCATION_FROM_CENTER = new Translation2d(GYRO_RADIUS_METERS, 0);
+  // Can be used to calculate special limits 
+  public static final double MASS = Units.lbsToKilograms(140);
+  public static final double INTERTIA = 1.0 / 12.0 * MASS * Math.pow((TRACKWIDTH_METERS * 1.1), 2) * 2;
 
   public final static class Field {
     public static final double FIELD_LENGTH = Units.inchesToMeters(54.0 * 12.0);
@@ -171,4 +174,6 @@ public final class Constants {
     static public final int STATUS_FRAME_PERIOD_MS = 20; // Falcons update every 250 ms but in sim we want it to update faster
     static public final double SAMPLE_RATE_SEC = 0.02;
   }
+
+  public final static int LOG_EXPIRATION_IN_HRS = 24 * 2;
 }

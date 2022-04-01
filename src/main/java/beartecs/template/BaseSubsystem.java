@@ -1,5 +1,6 @@
 package beartecs.template;
 
+import beartecs.Logging.RobotLogger;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -13,13 +14,7 @@ public class BaseSubsystem extends SubsystemBase {
     DISABLED, AUTO, TELEOP
   }
 
-  public void onLEDCallback(int reservedStatus) {
-    RobotContainer.getLEDSubsystem().setStatus(isOkay(), reservedStatus);
-  }
-
-  public boolean isOkay() {
-    return true;
-  }
+  protected final RobotLogger m_logger = RobotContainer.getLogger();
 
   public boolean isSim() {
     return Robot.isSimulation();

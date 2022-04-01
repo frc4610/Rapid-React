@@ -92,8 +92,4 @@ public class LEDSubsystem extends SubsystemBase {
   public void periodic() {
     m_ledStrip.setData(m_ledBuffer);
   }
-
-  public void setStatus(boolean status, int reservedSlot) {
-
-  }
 }

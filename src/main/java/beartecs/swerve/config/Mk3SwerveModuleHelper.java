@@ -30,6 +30,8 @@ public final class Mk3SwerveModuleHelper {
                                 .withCurrentLimit(configuration.getSteerCurrentLimit())
                                 .withCanBusName(configuration.getMotorCanBus())
                                 .build(new CanCoderFactoryBuilder()
+                                                // 10ms is fastest update period
+                                                // 200ms is not the max but above causes noticable drift
                                                 .withReadingUpdatePeriod(100)
                                                 .withCanBusName(configuration.getEncoderCanBus())
                                                 .build());

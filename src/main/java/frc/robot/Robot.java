@@ -5,7 +5,9 @@
 package frc.robot;
 
 import beartecs.LED.TimerPattern;
+import beartecs.Logging.RobotLogger;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.hal.can.CANStatus;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -30,6 +32,7 @@ import frc.robot.subsystems.LEDSubsystem;
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer = new RobotContainer();
+  private final RobotLogger m_logger = RobotContainer.getLogger();
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -38,6 +41,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    m_logger.logInfo("robotInit()");
     m_robotContainer.onRobotInit();
     CameraServer.startAutomaticCapture();
     onModeInit();
@@ -56,16 +60,27 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    RobotContainer.updateSubsystemStatus();
     CommandScheduler.getInstance().run();
 
+    final CANStatus canBus = RobotController.getCANStatus();
+    if (canBus.percentBusUtilization > 80.0) {
+      m_logger.logWarning("CANBus{" +
+          "percentBusUtilization=" + canBus.percentBusUtilization +
+          ", busOffCount=" + canBus.busOffCount +
+          ", txFullCount=" + canBus.txFullCount +
+          ", receiveErrorCount=" + canBus.receiveErrorCount +
+          ", transmitErrorCount=" + canBus.transmitErrorCount +
+          '}');
+    }
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
+    m_logger.logInfo("disabledInit()");
     RobotContainer.getDrivetrain().zeroGyro();
     onModeInit();
+    m_logger.flush();
   }
 
   @Override
@@ -76,6 +91,7 @@ public class Robot extends TimedRobot {
       //RobotContainer.getLEDSubsystem().setPattern(LEDSubsystem.m_scannerRedPattern);
       RobotContainer.getLEDSubsystem().setPattern(LEDSubsystem.m_rainbowPattern);
     }
+    RobotContainer.getDrivetrain().drive(0, 0, 0); // Allows Seeding Talon Encoders with CANCoders
   }
 
   /**
@@ -84,6 +100,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    m_logger.logInfo("autonomousInit()");
     m_autonomousCommand = RobotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -113,6 +130,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    m_logger.logInfo("teleopInit()");
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
@@ -127,6 +145,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
+    m_logger.logInfo("testInit()");
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
   }

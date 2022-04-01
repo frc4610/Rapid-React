@@ -7,17 +7,13 @@ package frc.robot;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 import java.util.Scanner;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import java.util.logging.Level;
 
 import beartecs.Constants;
-import beartecs.CAN.CANDevice;
+import beartecs.Logging.RobotLogger;
 import beartecs.controller.XboxControllerExtended;
-import beartecs.json.JsonReader;
 import beartecs.math.MathUtils;
 import beartecs.swerve.sim.PoseTelemetry;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -46,7 +42,7 @@ public class RobotContainer {
   private final static UltrasonicSubsystem m_ultrasonicSubsystem = new UltrasonicSubsystem(m_ledSubsystem);
   private final static AutonomousSubsystem m_autonomousSubsystem = new AutonomousSubsystem(m_drivetrainSubsystem,
       m_intakeSubsystem);
-  private static List<CANDevice> m_canDevices = new ArrayList<CANDevice>();
+  private static RobotLogger m_logger;
 
   public RobotContainer() {
     try {
@@ -63,16 +59,17 @@ public class RobotContainer {
   public void onRobotInit() {
     SmartDashboard.putString("Branch:", branch);
     SmartDashboard.putData("Field", PoseTelemetry.field);
+    m_ultrasonicSubsystem.EnableSensors();
 
     DriverStation.silenceJoystickConnectionWarning(true);
   }
 
   private static void configureDriveButtons() {
-    new Button(m_driverController::getBackButton)
+    new Button(m_driverController::getBackButtonPressed)
         .whenPressed(() -> {
           m_drivetrainSubsystem.zeroGyro();
         });
-    new Button(m_driverController::getRightBumper)
+    new Button(m_driverController::getRightBumperPressed)
         .whenPressed(() -> {
           m_drivetrainSubsystem.setSpeedModifier(0.5);
           m_driverController.setLeftVibration(0.1);
@@ -82,28 +79,6 @@ public class RobotContainer {
           m_driverController.setLeftVibration(0.0);
           m_driverController.setRightVibration(0.0);
         });
-  }
-
-  public static void updateSubsystemStatus() {
-    m_ledSubsystem.setStatus(checkRoboRIO(), 0);
-    m_ledSubsystem.setStatus(!m_canDevices.isEmpty(), 1);
-    m_ultrasonicSubsystem.onLEDCallback(2);
-    m_intakeSubsystem.onLEDCallback(3);
-    m_ledSubsystem.setStatus(m_intakeSubsystem.getArmState() == m_intakeSubsystem.getVerifiedArmState(), 4);
-    m_ledSubsystem.setStatus(DriverStation.isAutonomousEnabled(), 5);
-  }
-
-  public static void requestCANBusData() {
-    JSONObject canBusData = JsonReader.getJsonDataFromURL(Constants.RIO_IP + "/?action=getdevices");
-    if (canBusData.isEmpty())
-      return;
-    JSONArray deviceArray = (JSONArray) canBusData.get("DeviceArray");
-    if (deviceArray.isEmpty())
-      return;
-
-    for (Object elem : deviceArray) {
-      m_canDevices.add(new CANDevice((JSONObject) elem));
-    }
   }
 
   public final static DrivetrainSubsystem getDrivetrain() {
@@ -151,6 +126,27 @@ public class RobotContainer {
     if (!RobotController.getEnabled6V())
       return false;
     return true;
+  }
+
+  private static void initLogger(RobotLogger log) {
+    try {
+      log.init(RobotContainer.class);
+      log.setLevel(Level.INFO);
+
+      log.cleanLogs(Constants.LOG_EXPIRATION_IN_HRS);
+      log.logInfo("Logger initialized");
+    } catch (IOException error) {
+      log.logError("Failed to init logger!");
+      throw new RuntimeException(error);
+    }
+  }
+
+  public static RobotLogger getLogger() {
+    if (m_logger == null) {
+      m_logger = new RobotLogger();
+      initLogger(m_logger);
+    }
+    return m_logger;
   }
 
   public static double getDriveForwardAxis() {

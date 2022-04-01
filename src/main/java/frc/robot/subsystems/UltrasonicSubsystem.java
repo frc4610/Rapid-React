@@ -34,11 +34,6 @@ public class UltrasonicSubsystem extends BaseSubsystem {
         .withSize(1, 1);
   }
 
-  @Override
-  public boolean isOkay() {
-    return true;
-  }
-
   public void EnableSensors() {
     m_isEnabled = true;
     m_ultrasonicLeft.setStatus(true);

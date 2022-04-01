@@ -9,6 +9,7 @@ import com.ctre.phoenix.sensors.WPI_CANCoder;
 import beartecs.swerve.AbsoluteEncoder;
 import beartecs.swerve.AbsoluteEncoderFactory;
 import beartecs.Constants;
+import beartecs.math.MathUtils;
 
 public class CanCoderFactoryBuilder {
     private Direction direction = Direction.COUNTER_CLOCKWISE;
@@ -16,7 +17,7 @@ public class CanCoderFactoryBuilder {
     private String canBusName = "rio";
 
     public CanCoderFactoryBuilder withReadingUpdatePeriod(int periodMilliseconds) {
-        this.periodMilliseconds = periodMilliseconds;
+        this.periodMilliseconds = MathUtils.clamp(periodMilliseconds, 10, 200);
         return this;
     }
 
