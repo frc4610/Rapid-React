@@ -136,7 +136,7 @@ public final class Constants {
 
     public static final double DEFAULT_POWER_OUT = 0.5;
     public static final NetworkTableEntry POWER_OUT = m_tab.add("Intake power out", DEFAULT_POWER_OUT).getEntry();
-    public static final double DEFAULT_POWER_IN = 0.4;
+    public static final double DEFAULT_POWER_IN = 0.5;
     public static final NetworkTableEntry POWER_IN = m_tab.add("Intake power in", DEFAULT_POWER_IN).getEntry();
   }
 

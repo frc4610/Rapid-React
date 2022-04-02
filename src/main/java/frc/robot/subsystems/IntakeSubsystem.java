@@ -1,18 +1,14 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import beartecs.template.*;
 import beartecs.controller.XboxControllerExtended;
 import beartecs.math.MathUtils;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import beartecs.Constants.*;
 
@@ -36,10 +32,7 @@ public class IntakeSubsystem extends BaseSubsystem {
   private double m_lastArmPosition = 0;
   private double m_lastBurstTime = 0;
   private double m_autoIntakeSpeed = 0;
-  private double m_encoderHoldPosition = 0;
-  private boolean m_lastTopLimitSwitch = false;
-  private boolean m_lastBottomLimitSwitch = false;
-  private ProfiledPIDController m_armPidController = Arm.ARM_PID.getProfiledPidController();
+  private ShuffleboardTab m_intakeTab;
 
   public IntakeSubsystem(XboxControllerExtended controller) {
     m_controller = controller;
@@ -48,28 +41,18 @@ public class IntakeSubsystem extends BaseSubsystem {
     m_arm.setNeutralMode(NeutralMode.Brake); // Force Motor in brake mode
     m_arm.enableVoltageCompensation(true);
     m_arm.setSelectedSensorPosition(Arm.ABS_UP_POSITION);
-    m_arm.configPeakOutputReverse(-1);
-    m_arm.configClosedloopRamp(.2, 0);
-    m_arm.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-    m_arm.config_kF(0, 0.15, 10);
-    m_arm.config_kP(0, 1, 10);
-    m_arm.config_kI(0, 0.00005, 10);
-    m_arm.config_kD(0, 0.25, 10);
-
-    m_arm.configMotionCruiseVelocity(700, 0);
-    m_arm.configMotionAcceleration(5000, 0);
 
     m_armState = updateArmState();
-    ShuffleboardTab tab = addTab("IntakeSubsystem");
-    ShuffleboardLayout layout = tab.getLayout("Intake ", BuiltInLayouts.kGrid)
-        .withSize(2, 1)
-        .withPosition(1, 1);
-    layout.addBoolean("Top Switch", () -> getTopLimitSwitch());
-    layout.addBoolean("Bottom Switch", () -> getBottomLimitSwitch());
-    layout.addBoolean("Arm State", () -> m_armState);
-    layout.addBoolean("Verified Arm State", () -> m_verifiedArmState);
-    layout.addNumber("Arm Selected Position", () -> m_arm.getSelectedSensorPosition());
-    layout.addBoolean("Arm Changed", () -> m_armPositionChanged);
+    m_intakeTab = addTab("IntakeSubsystem");
+
+    // TODO: Group
+    m_intakeTab.addBoolean("Top Switch", () -> getTopLimitSwitch());
+    m_intakeTab.addBoolean("Bottom Switch", () -> getBottomLimitSwitch());
+    // TODO: Group
+    m_intakeTab.addBoolean("Arm State", () -> m_armState);
+    m_intakeTab.addBoolean("Verified Arm State", () -> m_verifiedArmState);
+    m_intakeTab.addNumber("Arm Selected Position", () -> m_arm.getSelectedSensorPosition());
+    m_intakeTab.addBoolean("Arm Changed", () -> m_armPositionChanged);
   }
 
   public boolean getArmState() {
@@ -131,17 +114,6 @@ public class IntakeSubsystem extends BaseSubsystem {
     } else {
       m_armPositionChanged = false;
     }
-    if (getTopLimitSwitch() != m_lastTopLimitSwitch) {
-      if (getTopLimitSwitch())
-        m_encoderHoldPosition = m_arm.getSelectedSensorPosition();
-      m_lastTopLimitSwitch = getTopLimitSwitch();
-
-    } else if (getBottomLimitSwitch() != m_lastBottomLimitSwitch) {
-      if (getBottomLimitSwitch())
-        m_encoderHoldPosition = m_arm.getSelectedSensorPosition();
-      m_lastBottomLimitSwitch = getBottomLimitSwitch();
-    }
-
     // the arm has reached the ideal arm position
     if (getTopLimitSwitch() || m_arm.getSelectedSensorPosition() > Arm.UP_POSITION) {
       m_verifiedArmState = true; // is at top
@@ -193,13 +165,6 @@ public class IntakeSubsystem extends BaseSubsystem {
         m_arm.set(-Arm.TRAVEL_DOWN_POWER.getDouble(Arm.DEFAULT_TRAVEL_DOWN_POWER)); // from the top down power
       } else if (m_verifiedArmState || rightBumper) { // not hit the limit switch use distance power
         m_arm.set(-Arm.TRAVEL_DIFFERENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
-      } else if (getBottomLimitSwitch()) { // Hold while on limit switch
-        m_arm.set(m_armPidController.calculate(m_arm.getSelectedSensorPosition(), m_encoderHoldPosition)); // Configure offset from inital switch
-        /*if (m_arm.getSelectedSensorPosition() > m_encoderHoldPosition) {
-          m_arm.set(-Arm.TRAVEL_DIFFERENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
-        } else {
-          m_arm.set(0);
-        }*/
       }
     }
 
