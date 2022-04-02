@@ -50,7 +50,7 @@ public class IntakeSubsystem extends BaseSubsystem {
     m_arm.setSelectedSensorPosition(Arm.ABS_UP_POSITION);
     m_arm.configPeakOutputReverse(-1);
     m_arm.configClosedloopRamp(.2, 0);
-    m_arm.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+    m_arm.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
     m_arm.config_kF(0, 0.15, 10);
     m_arm.config_kP(0, 1, 10);
     m_arm.config_kI(0, 0.00005, 10);

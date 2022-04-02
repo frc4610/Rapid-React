@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.Robot;
 
 /**
  * A class with static methods for logging to files or other places on the
@@ -208,11 +209,13 @@ public class RobotLogger {
     logger = Logger.getLogger(robotClass.getName());
     logger.setUseParentHandlers(false);
 
-    // Starts recording to data log
-    DataLogManager.start();
+    if (Robot.isSimulation()) {
+      // Starts recording to data log
+      DataLogManager.start();
 
-    // (alternatively) Record only DS control data
-    DriverStation.startDataLog(DataLogManager.getLog(), false);
+      // (alternatively) Record only DS control data
+      DriverStation.startDataLog(DataLogManager.getLog(), false);
+    }
 
     this.logDir = logDir;
 
