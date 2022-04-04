@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import beartecs.Constants;
 import beartecs.LED.TimerPattern;
 import beartecs.Logging.RobotLogger;
 import edu.wpi.first.cameraserver.CameraServer;
@@ -33,6 +34,7 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer = new RobotContainer();
   private final RobotLogger m_logger = RobotContainer.getLogger();
+  private boolean m_hadLowBattery = false;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -72,6 +74,9 @@ public class Robot extends TimedRobot {
           ", transmitErrorCount=" + canBus.transmitErrorCount +
           '}');
     }
+    if (RobotController.getInputVoltage() < Constants.CHECK_VOLTAGE) {
+      m_logger.logWarning("Low Voltage=" + RobotController.getInputVoltage());
+    }
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -85,9 +90,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    if (RobotController.getInputVoltage() < 12.0) {
+    if (RobotController.getInputVoltage() < Constants.CHECK_VOLTAGE) {
       RobotContainer.getLEDSubsystem().setPattern(LEDSubsystem.m_blinkingYellow);
-    } else {
+      m_hadLowBattery = true;
+    } else if (!m_hadLowBattery) {
       //RobotContainer.getLEDSubsystem().setPattern(LEDSubsystem.m_scannerRedPattern);
       RobotContainer.getLEDSubsystem().setPattern(LEDSubsystem.m_rainbowPattern);
     }

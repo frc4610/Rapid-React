@@ -5,6 +5,8 @@ import static beartecs.swerve.rev.RevUtils.checkNeoError;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
 
 import beartecs.swerve.DriveController;
 import beartecs.swerve.DriveControllerFactory;
@@ -13,6 +15,9 @@ import beartecs.swerve.ModuleConfiguration;
 public final class NeoDriveControllerFactoryBuilder {
     private double nominalVoltage = Double.NaN;
     private double currentLimit = Double.NaN;
+    private double pidProportional = Double.NaN;
+    private double pidIntegral = Double.NaN;
+    private double pidDerivative = Double.NaN;
 
     public NeoDriveControllerFactoryBuilder withVoltageCompensation(double nominalVoltage) {
         this.nominalVoltage = nominalVoltage;
@@ -30,6 +35,17 @@ public final class NeoDriveControllerFactoryBuilder {
 
     public boolean hasCurrentLimit() {
         return Double.isFinite(currentLimit);
+    }
+
+    public NeoDriveControllerFactoryBuilder withPidConstants(double proportional, double integral, double derivative) {
+        this.pidProportional = proportional;
+        this.pidIntegral = integral;
+        this.pidDerivative = derivative;
+        return this;
+    }
+
+    public boolean hasPidConstants() {
+        return Double.isFinite(pidProportional) && Double.isFinite(pidIntegral) && Double.isFinite(pidDerivative);
     }
 
     public DriveControllerFactory<ControllerImplementation, Integer> build() {
@@ -67,6 +83,14 @@ public final class NeoDriveControllerFactoryBuilder {
             encoder.setPositionConversionFactor(positionConversionFactor);
             encoder.setVelocityConversionFactor(positionConversionFactor / 60.0);
 
+            SparkMaxPIDController controller = motor.getPIDController();
+            if (hasPidConstants()) {
+                controller.setP(pidProportional);
+                controller.setI(pidIntegral);
+                controller.setD(pidDerivative);
+            }
+            controller.setFeedbackDevice(encoder);
+
             return new ControllerImplementation(motor, encoder);
         }
     }
@@ -74,15 +98,22 @@ public final class NeoDriveControllerFactoryBuilder {
     private static class ControllerImplementation implements DriveController {
         private final CANSparkMax motor;
         private final RelativeEncoder encoder;
+        private final SparkMaxPIDController controller;
 
         private ControllerImplementation(CANSparkMax motor, RelativeEncoder encoder) {
             this.motor = motor;
             this.encoder = encoder;
+            this.controller = motor.getPIDController();
         }
 
         @Override
         public Object getDriveMotor() {
             return this.motor;
+        }
+
+        @Override
+        public void setVelocity(double velocity) {
+            controller.setReference(velocity, ControlType.kVelocity);
         }
 
         @Override

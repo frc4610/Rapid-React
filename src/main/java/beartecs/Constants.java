@@ -17,6 +17,7 @@ public final class Constants {
 
   public static final String VERSION = "Version 1.0.1";
   public static final String RIO_IP = "http://172.22.11.2:1250";
+  public static final double CHECK_VOLTAGE = 12.0;
 
   public final static class Ids {
     // DIO
@@ -93,7 +94,7 @@ public final class Constants {
         Motor.MAX_ANGULAR_VELOCITY_RPS,
         Motor.MAX_ANGULAR_VELOCITY_RPS * THETA_CONSTRAINT_SCALAR);
 
-    public static final PidConfig PID_XY = new PidConfig(2.5, 0.0, 0.02);
+    public static final PidConfig PID_XY = new PidConfig(3.0, 0.0, 0.02);
 
     // TODO: Config Gains using sysid and our custom SysId class
     // kp: 0.05
@@ -103,7 +104,7 @@ public final class Constants {
     public static final double VELOCITY_GAIN = 2.1;
     public static final double ACCELERATION_GAIN = 0.27;
 
-    public static final ProfiledPidConfig PID_THETA = new ProfiledPidConfig(2.0, 0.0, 0.0, THETA_CONSTRAINTS);
+    public static final ProfiledPidConfig PID_THETA = new ProfiledPidConfig(1.269, 0.0, 0.02, THETA_CONSTRAINTS);
   }
 
   public final static class Arm {
@@ -125,8 +126,11 @@ public final class Constants {
     public static final double ABS_UP_POSITION = 35000; // Range from RNG - MAX
     public static final double UP_POSITION = ABS_UP_POSITION - 1500; // Range from RNG - MAX
     public static final double DOWN_POSITION = 100; // Enough to hold the bot down
+
+    // 9 to 84 connected to 30 which leads to 76
+    public static final double GEAR_RATIO = 1.0 / 9.0; // Custom gearbox -> 9:84->30:76
     // TODO: Configure arm pid values
-    public static final ProfiledPidConfig ARM_PID = new ProfiledPidConfig(0.006, 0, 0.001,
+    public static final ProfiledPidConfig ARM_PID = new ProfiledPidConfig(0.5, 0, 0.02,
         new TrapezoidProfile.Constraints(5, 5));
   }
 

@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import java.util.Optional;
 
+import beartecs.sysid.SysIdSwerveDrivetrainCmd;
 import beartecs.template.BaseSubsystem;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -24,6 +25,9 @@ public class AutonomousSubsystem extends BaseSubsystem {
 
   public void loadAutoActionCmds() {
 
+    m_autoChooser.addOption("SysId Config", new AutoActionCmd(this, m_drivetrainSubsystem, m_intakeSubsystem)
+        .executeCommand(new SysIdSwerveDrivetrainCmd(m_drivetrainSubsystem))
+        .complete());
     m_autoChooser.addOption("1m Forward", new AutoActionCmd(this, m_drivetrainSubsystem, m_intakeSubsystem)
         .executeDrivePath("1m Forward") // went 87 cm
         .complete());

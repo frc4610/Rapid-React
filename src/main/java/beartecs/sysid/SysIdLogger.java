@@ -2,12 +2,14 @@ package beartecs.sysid;
 
 import java.util.ArrayList;
 
+import beartecs.Logging.RobotLogger;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.RobotContainer;
 
 public class SysIdLogger {
   String m_mechanism;
@@ -18,6 +20,7 @@ public class SysIdLogger {
   double m_timestamp;
   ArrayList<Double> m_data = new ArrayList<Double>(kDataVectorSize);
   double m_motorVoltage;
+  private RobotLogger m_logger = RobotContainer.getLogger();
 
   static final int kThreadPriority = 15;
   static final int kHALThreadPriority = 40;
@@ -45,7 +48,7 @@ public class SysIdLogger {
   }
 
   public void sendData() {
-    System.out.format("Collected: {} data points.\n", m_data.size());
+    m_logger.logInfo(String.format("Collected: {} data points.\n", m_data.size()));
 
     SmartDashboard.putBoolean("SysIdOverflow", false); // can't overflow a java ArrayList
     String ss = m_data.toString();
@@ -59,13 +62,13 @@ public class SysIdLogger {
     if (!RobotBase.isSimulation()) {
       if (!Notifier.setHALThreadPriority(true, kHALThreadPriority) ||
           !Threads.setCurrentThreadPriority(true, kThreadPriority)) {
-        System.out.println("Setting the RT Priority failed\n");
+        m_logger.logInfo("Setting the RT Priority failed\n");
       }
     }
   }
 
   public SysIdLogger() {
-    System.out.println("Initializing logger\n");
+    m_logger.logInfo("Initializing logger\n");
     m_data.ensureCapacity(kDataVectorSize);
     LiveWindow.disableAllTelemetry();
   }

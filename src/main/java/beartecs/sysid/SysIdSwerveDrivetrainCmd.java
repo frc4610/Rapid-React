@@ -1,18 +1,18 @@
 package beartecs.sysid;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-
+import beartecs.Logging.RobotLogger;
 import beartecs.swerve.SwerveModule;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class SysIdSwerveDrivetrainCmd extends CommandBase {
   private final DrivetrainSubsystem m_drivetrainSubsystem;
-  private SysIdSwerveDrivetrainLogger m_logger;
+  private SysIdSwerveDrivetrainLogger m_sysIdLogger;
+  private RobotLogger m_logger = RobotContainer.getLogger();
   private Double m_prevAngle = 0.0;
   private Double m_prevTime = 0.0;
-  private boolean m_resetComplete;
 
   public SysIdSwerveDrivetrainCmd(DrivetrainSubsystem drivetrainSubsystem) {
 
@@ -28,11 +28,12 @@ public class SysIdSwerveDrivetrainCmd extends CommandBase {
     //m_drivetrainSubsystem.setDeadband(0.0);
     // The following is called for the side-effect of resetting the 
     // drivebase odometers.
+    m_drivetrainSubsystem.zeroGyro();
     m_drivetrainSubsystem.resetPose(m_drivetrainSubsystem.getPose());
-    m_logger = new SysIdSwerveDrivetrainLogger();
-    m_logger.updateThreadPriority();
-    m_logger.initLogging();
-    m_resetComplete = false;
+
+    m_sysIdLogger = new SysIdSwerveDrivetrainLogger();
+    m_sysIdLogger.updateThreadPriority();
+    m_sysIdLogger.initLogging();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -46,28 +47,19 @@ public class SysIdSwerveDrivetrainCmd extends CommandBase {
     m_prevAngle = angularPosition;
     m_prevTime = now;
     SwerveModule[] modules = m_drivetrainSubsystem.getSwerveModules();
-    // Resetting encoders takes non-zero time on CAN-based encoders
-    // Wait for the reset to complete
-    if (!m_resetComplete) {
-      for (SwerveModule mod : modules) {
-        if (SysIdSwerveDrivetrainLogger.getDrivePositionMeters((WPI_TalonFX) mod.getDriveMotor()) > 0.01)
-          return;
-      }
-      m_resetComplete = true;
-    }
 
-    m_logger.log(modules, angularPosition, angularRate);
+    m_sysIdLogger.log(modules, angularPosition, angularRate);
     for (int index = 0; index < modules.length; index++) {
-      modules[index].set(m_logger.getVoltage(index), 0.0);
+      modules[index].set(m_sysIdLogger.m_motorVoltage, 0.0);
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    System.out.println("Characterization done; disabled");
+    m_logger.logInfo("Characterization done; disabled");
     m_drivetrainSubsystem.drive(0, 0, 0);
-    m_logger.sendData();
+    m_sysIdLogger.sendData();
   }
 
   // Returns true when the command should end.

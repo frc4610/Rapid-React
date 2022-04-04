@@ -1,5 +1,6 @@
 package frc.robot.commands.Autonomous;
 
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -20,6 +21,11 @@ public class AutoActionCmd extends SequentialCommandGroup {
     m_drivetrainSubystem = drivetrainSubsystem;
     m_intakeSubystem = intakeSubystem;
     addRequirements(drivetrainSubsystem);
+  }
+
+  public AutoActionCmd executeCommand(CommandBase cmd) {
+    addCommands(cmd);
+    return this;
   }
 
   public AutoActionCmd executePause(double delayBeforeStart) {

@@ -187,9 +187,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
   }
 
   public void drive(double translation_x, double translation_y, double rotation) {
-    m_chassisSpeeds = m_isFieldOriented.getBoolean(true)
-        ? ChassisSpeeds.fromFieldRelativeSpeeds(translation_x, translation_y, rotation, getGyroRotation())
-        : new ChassisSpeeds(translation_x, translation_y, rotation);
+    drive(translation_x, translation_y, rotation, m_isFieldOriented.getBoolean(true));
   }
 
   public void drive(double translation_x, double translation_y, double rotation, boolean fieldOriented) {

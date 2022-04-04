@@ -151,5 +151,38 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
             steerController.setReferenceAngle(steerAngle);
         }
 
+        @Override
+        public void setVelocity(double driveVelocity, double steerAngle) {
+            steerAngle %= (2.0 * Math.PI);
+            if (steerAngle < 0.0) {
+                steerAngle += 2.0 * Math.PI;
+            }
+
+            double difference = steerAngle - getSteerAngle();
+            // Change the target angle so the difference is in the range [-pi, pi) instead of [0, 2pi)
+            if (difference >= Math.PI) {
+                steerAngle -= 2.0 * Math.PI;
+            } else if (difference < -Math.PI) {
+                steerAngle += 2.0 * Math.PI;
+            }
+            difference = steerAngle - getSteerAngle(); // Recalculate difference
+
+            // If the difference is greater than 90 deg or less than -90 deg the drive can be inverted so the total
+            // movement of the module is less than 90 deg
+            if (difference > Math.PI / 2.0 || difference < -Math.PI / 2.0) {
+                // Only need to add 180 deg here because the target angle will be put back into the range [0, 2pi)
+                steerAngle += Math.PI;
+                driveVelocity *= -1.0;
+            }
+
+            // Put the target angle back into the range [0, 2pi)
+            steerAngle %= (2.0 * Math.PI);
+            if (steerAngle < 0.0) {
+                steerAngle += 2.0 * Math.PI;
+            }
+
+            driveController.setVelocity(driveVelocity);
+            steerController.setReferenceAngle(steerAngle);
+        }
     }
 }
