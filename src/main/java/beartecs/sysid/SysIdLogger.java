@@ -2,7 +2,7 @@ package beartecs.sysid;
 
 import java.util.ArrayList;
 
-import beartecs.Logging.RobotLogger;
+import beartecs.logger.RobotLogger;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Threads;

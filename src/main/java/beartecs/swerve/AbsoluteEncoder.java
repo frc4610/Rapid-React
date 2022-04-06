@@ -8,5 +8,7 @@ public interface AbsoluteEncoder {
      */
     double getAbsoluteAngle();
 
-    void setAbsoluteEncoder(double position, double velocity, double motorEncoderPositionCoefficient);
+    // raw position * coefficient
+    // raw velocity / 600 * coefficient
+    void setAbsoluteEncoder(double rawPosition, double rawVelocity);
 }

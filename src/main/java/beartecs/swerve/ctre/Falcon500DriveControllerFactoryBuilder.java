@@ -15,8 +15,6 @@ import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.Robot;
 
 public final class Falcon500DriveControllerFactoryBuilder {
-    private static final double TICKS_PER_ROTATION = 2048.0;
-
     private static final int CAN_TIMEOUT_MS = 250;
     private static final int STATUS_FRAME_GENERAL_PERIOD_MS = 250;
 
@@ -73,7 +71,7 @@ public final class Falcon500DriveControllerFactoryBuilder {
             TalonFXConfiguration motorConfiguration = new TalonFXConfiguration();
 
             double sensorPositionCoefficient = Math.PI * moduleConfiguration.getWheelDiameter()
-                    * moduleConfiguration.getDriveReduction() / TICKS_PER_ROTATION;
+                    * moduleConfiguration.getDriveReduction() / Constants.Motor.TALON_TPR;
             double sensorVelocityCoefficient = sensorPositionCoefficient * 10.0;
 
             if (hasPidConstants()) {

@@ -14,38 +14,36 @@ public class LEDSubsystem extends SubsystemBase {
   private final AddressableLED m_ledStrip;
   private final AddressableLEDBuffer m_ledBuffer;
 
-  public static SolidColorPattern m_bluePattern = new SolidColorPattern(Color.kBlue);
-  public static SolidColorPattern m_redPattern = new SolidColorPattern(Color.kRed);
-  public static SolidColorPattern m_greenPattern = new SolidColorPattern(Color.kGreen);
-  public static SolidColorPattern m_yellowPattern = new SolidColorPattern(Color.kLightYellow);
+  public static final SolidColorPattern m_bluePattern = new SolidColorPattern(Color.kBlue);
+  public static final SolidColorPattern m_redPattern = new SolidColorPattern(Color.kRed);
+  public static final SolidColorPattern m_greenPattern = new SolidColorPattern(Color.kGreen);
+  public static final SolidColorPattern m_yellowPattern = new SolidColorPattern(Color.kYellow);
 
-  public static BlinkingPattern m_blinkingRed = new BlinkingPattern(Color.kRed, 0.1);
-  public static BlinkingPattern m_blinkingYellow = new BlinkingPattern(Color.kLightYellow, 0.1);
-  public static BlinkingPattern m_blinkingGreen = new BlinkingPattern(Color.kGreen, 0.1);
-  public static RainbowPattern m_rainbowPattern = new RainbowPattern();
-  public static IntensityPattern m_blueIntensityPattern = new IntensityPattern(Color.kBlue, 0.5);
-  public static IntensityPattern m_redIntensityPattern = new IntensityPattern(Color.kRed, 0.5);
-  public static ScannerPattern m_scannerRedPattern = new ScannerPattern(Color.kRed, Color.kBlack, 30);
-  public static ScannerPattern m_scannerBluePattern = new ScannerPattern(Color.kBlue, Color.kBlack, 30);
-  private static Color[] chaseBlueColor = {
+  public static final BlinkingPattern m_blinkingYellow = new BlinkingPattern(Color.kYellow, 0.4);
+  public static final RainbowPattern m_rainbowPattern = new RainbowPattern();
+  public static final IntensityPattern m_blueIntensityPattern = new IntensityPattern(Color.kBlue, 0.5);
+  public static final IntensityPattern m_redIntensityPattern = new IntensityPattern(Color.kRed, 0.5);
+  public static final ScannerPattern m_scannerRedPattern = new ScannerPattern(Color.kRed, Color.kBlack, 30);
+  public static final ScannerPattern m_scannerBluePattern = new ScannerPattern(Color.kBlue, Color.kBlack, 30);
+  private static final Color[] chaseBlueColor = {
       Color.kBlue, Color.kBlue, Color.kBlue, Color.kBlue, Color.kBlue, Color.kBlue,
       Color.kBlue, Color.kBlue, Color.kBlue, Color.kBlue, Color.kBlue, Color.kBlue,
       Color.kBlue, Color.kBlue, Color.kBlue, Color.kBlue, Color.kBlue, Color.kBlue,
       Color.kBlue, Color.kBlue, Color.kBlue, Color.kBlue, Color.kBlue, Color.kBlue,
       Color.kWhite };
-  public static ChasePattern m_chaseBluePattern = new ChasePattern(chaseBlueColor, 1);
-  private static Color[] chaseRedColor = {
+  public static final ChasePattern m_chaseBluePattern = new ChasePattern(chaseBlueColor, 1);
+  private static final Color[] chaseRedColor = {
       Color.kRed, Color.kRed, Color.kRed, Color.kRed, Color.kRed, Color.kRed,
       Color.kRed, Color.kRed, Color.kRed, Color.kRed, Color.kRed, Color.kRed,
       Color.kRed, Color.kRed, Color.kRed, Color.kRed, Color.kRed, Color.kRed,
       Color.kRed, Color.kRed, Color.kRed, Color.kRed, Color.kRed, Color.kRed,
       Color.kWhite };
-  public static ChasePattern m_chaseRedPattern = new ChasePattern(chaseRedColor, 1);
-  private static Color[] greenAlternatingColor = { Color.kGreen, Color.kLime };
-  public static AlternatingColorPattern m_greenAlternating = new AlternatingColorPattern(greenAlternatingColor);
+  public static final ChasePattern m_chaseRedPattern = new ChasePattern(chaseRedColor, 1);
+  private static final Color[] greenAlternatingColor = { Color.kGreen, Color.kLime };
+  public static final AlternatingColorPattern m_greenAlternating = new AlternatingColorPattern(greenAlternatingColor);
   public static TimerPattern m_timerPattern = new TimerPattern(Color.kWhite, 15.0);
 
-  public static int LED_STRIP_COUNT = 58;
+  public static final int LED_STRIP_COUNT = 58;
 
   public LEDSubsystem() {
     m_ledStrip = new AddressableLED(Ids.PWM_LED_STRIP);

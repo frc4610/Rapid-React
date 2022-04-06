@@ -12,8 +12,8 @@ import java.util.Scanner;
 import java.util.logging.Level;
 
 import beartecs.Constants;
-import beartecs.Logging.RobotLogger;
 import beartecs.controller.XboxControllerExtended;
+import beartecs.logger.RobotLogger;
 import beartecs.math.MathUtils;
 import beartecs.swerve.sim.PoseTelemetry;
 import edu.wpi.first.math.geometry.Rotation2d;

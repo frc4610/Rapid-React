@@ -1,6 +1,9 @@
 package beartecs;
 
 import beartecs.CAN.CANConfig;
+import beartecs.configs.PidConfig;
+import beartecs.configs.ProfiledPidConfig;
+import beartecs.configs.SwerveConfig;
 import beartecs.swerve.config.Mk3ModuleConfiguration;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,10 +17,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 public final class Constants {
 
   private static final ShuffleboardTab m_tab = Shuffleboard.getTab("Constants");
-
-  public static final String VERSION = "Version 1.0.1";
   public static final String RIO_IP = "http://172.22.11.2:1250";
-  public static final double CHECK_VOLTAGE = 12.0;
+  public static final double CHECK_VOLTAGE = 12.2;
 
   public final static class Ids {
     // DIO
@@ -73,7 +74,8 @@ public final class Constants {
     public static final double MAX_ANGULAR_VELOCITY_RPS = MAX_VELOCITY_MPS /
         Math.hypot(TRACKWIDTH_METERS / 2.0, WHEELBASE_METERS / 2.0);
 
-    public static final double TURN_TOLERANCE = 12; // degrees
+    public static final double TURN_TOLERANCE = 12.0; // degrees
+    public static final double TALON_TPR = 2048.0; // Ticks per Rotation
 
     // SDS Billet Wheels 4"D X 1"W
     // 8.16:1 Gear Ratio
@@ -108,30 +110,31 @@ public final class Constants {
   }
 
   public final static class Arm {
-    public static final double DEFAULT_TRAVEL_UP_POWER = 0.4;
+    public static final double DEFAULT_TRAVEL_UP_POWER = 0.369;
     public static final NetworkTableEntry TRAVEL_UP_POWER = m_tab.add("Arm up power", DEFAULT_TRAVEL_UP_POWER)
         .getEntry(); // .35
     public static final double DEFAULT_TRAVEL_DOWN_POWER = 0.35;
     public static final NetworkTableEntry TRAVEL_DOWN_POWER = m_tab.add("Arm down power", DEFAULT_TRAVEL_DOWN_POWER)
         .getEntry();
-    public static final double DEFAULT_TRAVEL_DISTANCE = 0.3;
+    public static final double DEFAULT_TRAVEL_DISTANCE = 0.25;
     public static final NetworkTableEntry TRAVEL_DIFFERENCE = m_tab
         .add("Arm travel difference", DEFAULT_TRAVEL_DISTANCE)
         .getEntry();
     /*
     UP: 32340
-    POINT:32018
-    DOWN:0
+    POINT:32018 //134.167236328125*
+    DOWN:0 //12.697265624999998*
     */
     public static final double ABS_UP_POSITION = 35000; // Range from RNG - MAX
     public static final double UP_POSITION = ABS_UP_POSITION - 1500; // Range from RNG - MAX
     public static final double DOWN_POSITION = 100; // Enough to hold the bot down
 
+    // Right angle might be 1:14
     // 9 to 84 connected to 30 which leads to 76
-    public static final double GEAR_RATIO = 1.0 / 9.0; // Custom gearbox -> 9:84->30:76
-    // TODO: Configure arm pid values
-    public static final ProfiledPidConfig ARM_PID = new ProfiledPidConfig(0.5, 0, 0.02,
-        new TrapezoidProfile.Constraints(5, 5));
+    public static final double GEAR_RATIO = (22.0 / 64.0) * (1.0 / 15.0); // Custom gearbox -> 9:84->30:76
+    // Might need more tuning but works
+    public static final ProfiledPidConfig ARM_PID = new ProfiledPidConfig(0.55, 0.0, 0.5,
+        new TrapezoidProfile.Constraints(3.5, 1.5));
   }
 
   public final static class Intake {
@@ -179,5 +182,6 @@ public final class Constants {
     static public final double SAMPLE_RATE_SEC = 0.02;
   }
 
+  public final static boolean ENABLE_DS_LOG_SAVE = false;
   public final static int LOG_EXPIRATION_IN_HRS = 24 * 2;
 }

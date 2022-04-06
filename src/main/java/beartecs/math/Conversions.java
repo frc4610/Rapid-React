@@ -43,4 +43,7 @@ public class Conversions {
     return meters;
   }
 
+  public static double gToMPSsqrt(double gUnit) {
+    return gUnit * 9.80665;
+  }
 }

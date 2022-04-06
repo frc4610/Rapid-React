@@ -1,4 +1,4 @@
-package beartecs;
+package beartecs.configs;
 
 import edu.wpi.first.math.controller.PIDController;
 

@@ -14,10 +14,14 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.RobotContainer;
+import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.interfaces.Accelerometer.Range;
 
 import static beartecs.Constants.*;
 
+import beartecs.Vector2d;
+import beartecs.math.Conversions;
 import beartecs.math.InterpolatingTreeMap;
 import beartecs.math.MathUtils;
 import beartecs.swerve.Gyroscope;
@@ -56,7 +60,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
   private static final int MAX_LATENCY_COMPENSATION_MAP_ENTRIES = 25;
 
   private final Gyroscope m_gyro;
-
+  private final BuiltInAccelerometer m_accelerometer;
   private final InterpolatingTreeMap<Pose2d> m_lagCompensationMap = InterpolatingTreeMap
       .createBuffer(MAX_LATENCY_COMPENSATION_MAP_ENTRIES);
 
@@ -77,6 +81,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
   public DrivetrainSubsystem() {
     m_gyro = GyroscopeHelper.createPigeon2CAN(Ids.PIGEON.deviceNumber, Ids.PIGEON.canBus); // 8.5cm from front bar // 30cm in the center of the bar
     m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroRotation());
+    m_accelerometer = new BuiltInAccelerometer(Range.k8G);
     resetPose(new Pose2d(7, 2, Rotation2d.fromDegrees(-90)));
 
     m_DrivetrainTab = addTab("Drivetrain");
@@ -314,5 +319,15 @@ public class DrivetrainSubsystem extends BaseSubsystem {
         m_backLeftModule.getState(),
         m_backRightModule.getState()
     };
+  }
+
+  public Vector2d getAccelerometer() {
+    return new Vector2d(m_accelerometer.getY(), m_accelerometer.getX());
+  }
+
+  public double getAcceleration() {
+    return Conversions.gToMPSsqrt(Math.sqrt(
+        (m_accelerometer.getY() * m_accelerometer.getY()) +
+            (m_accelerometer.getX() * m_accelerometer.getX())));
   }
 }

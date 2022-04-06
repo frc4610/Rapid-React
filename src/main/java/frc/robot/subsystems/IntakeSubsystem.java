@@ -9,11 +9,13 @@ import beartecs.template.*;
 import beartecs.controller.XboxControllerExtended;
 import beartecs.math.MathUtils;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import frc.robot.RobotContainer;
 import beartecs.Constants.*;
 
 public class IntakeSubsystem extends BaseSubsystem {
@@ -32,14 +34,11 @@ public class IntakeSubsystem extends BaseSubsystem {
 
   private boolean m_armState = true;
   private boolean m_verifiedArmState = true;
-  private boolean m_armPositionChanged = false;
-  private double m_lastArmPosition = 0;
   private double m_lastBurstTime = 0;
   private double m_autoIntakeSpeed = 0;
-  private double m_encoderHoldPosition = 0;
-  private boolean m_lastTopLimitSwitch = false;
-  private boolean m_lastBottomLimitSwitch = false;
+  private boolean m_velocityIntake = false;
   private ProfiledPIDController m_armPidController = Arm.ARM_PID.getProfiledPidController();
+  public static final double INTAKE_ENCODER_COEFFICIENT = 2.0 * Math.PI / Motor.TALON_TPR * Arm.GEAR_RATIO;
 
   public IntakeSubsystem(XboxControllerExtended controller) {
     m_controller = controller;
@@ -55,7 +54,7 @@ public class IntakeSubsystem extends BaseSubsystem {
 
     m_armState = updateArmState();
     ShuffleboardTab tab = addTab("IntakeSubsystem");
-    ShuffleboardLayout layout = tab.getLayout("Intake ", BuiltInLayouts.kGrid)
+    ShuffleboardLayout layout = tab.getLayout("Intake", BuiltInLayouts.kGrid)
         .withSize(2, 1)
         .withPosition(1, 1);
     layout.addBoolean("Top Switch", () -> getTopLimitSwitch());
@@ -63,12 +62,11 @@ public class IntakeSubsystem extends BaseSubsystem {
     layout.addBoolean("Arm State", () -> m_armState);
     layout.addBoolean("Verified Arm State", () -> m_verifiedArmState);
     layout.addNumber("Arm Position", () -> m_arm.getSelectedSensorPosition());
-    layout.addNumber("Relative Position", () -> getRelativeJointPosition());
-    layout.addBoolean("Arm Changed", () -> m_armPositionChanged);
+    layout.addNumber("Joint Rotation", () -> getJointRotation().getDegrees());
   }
 
-  public double getRelativeJointPosition() {
-    return m_arm.getSelectedSensorPosition() * Arm.GEAR_RATIO;
+  public Rotation2d getJointRotation() {
+    return new Rotation2d(m_arm.getSelectedSensorPosition() * INTAKE_ENCODER_COEFFICIENT);
   }
 
   public boolean getArmState() {
@@ -99,61 +97,6 @@ public class IntakeSubsystem extends BaseSubsystem {
     return !shouldGoUp() || m_controller.getLeftBumper();
   }
 
-  public double getIntakePower() {
-    if (getRobotMode() == RobotMode.AUTO) {
-      return m_autoIntakeSpeed;
-    } else if (m_controller.getLeftTriggerAxis() > 0) {
-      return -MathUtils.clamp(m_controller.getBackButton() ? 1
-          : m_controller.getLeftTriggerAxis(), 0.0,
-          Intake.POWER_OUT.getDouble(0.8));
-    } else if (!m_verifiedArmState && m_controller.getRightTriggerAxis() > 0) {
-      return MathUtils.clamp(
-          m_controller.getRightTriggerAxis(),
-          0.0,
-          Intake.POWER_IN.getDouble(0.45));
-    } else {
-      return 0.0;
-    }
-  }
-
-  public boolean updateArmState() {
-    if (m_controller.getStartButton()) {
-      m_arm.setSelectedSensorPosition(Arm.ABS_UP_POSITION);
-    } else if (m_arm.getSelectedSensorPosition() < -1) {
-      m_arm.setSelectedSensorPosition(0); // stop from going negative
-    }
-
-    // Arm encoder position
-    if (m_lastArmPosition != m_arm.getSelectedSensorPosition()) {
-      m_armPositionChanged = true;
-      m_lastArmPosition = m_arm.getSelectedSensorPosition();
-    } else {
-      m_armPositionChanged = false;
-    }
-    if (getTopLimitSwitch() != m_lastTopLimitSwitch) {
-      if (getTopLimitSwitch())
-        m_encoderHoldPosition = m_arm.getSelectedSensorPosition();
-      m_lastTopLimitSwitch = getTopLimitSwitch();
-
-    } else if (getBottomLimitSwitch() != m_lastBottomLimitSwitch) {
-      if (getBottomLimitSwitch())
-        m_encoderHoldPosition = m_arm.getSelectedSensorPosition();
-      m_lastBottomLimitSwitch = getBottomLimitSwitch();
-    }
-
-    // the arm has reached the ideal arm position
-    if (getTopLimitSwitch() || m_arm.getSelectedSensorPosition() > Arm.UP_POSITION) {
-      m_verifiedArmState = true; // is at top
-    } else if (getBottomLimitSwitch() || m_arm.getSelectedSensorPosition() < Arm.DOWN_POSITION) {
-      m_verifiedArmState = false; // is at bottom
-    }
-    return m_verifiedArmState;
-  }
-
-  public void updateIntake() {
-    m_intake.set(ControlMode.PercentOutput, getIntakePower());
-  }
-
   // [true == fire] [false == intake]
   public void autonomousIntakeState(boolean state) {
     if (state) {
@@ -175,6 +118,51 @@ public class IntakeSubsystem extends BaseSubsystem {
     m_armState = true;
   }
 
+  public double getIntakePower() {
+    if (getRobotMode() == RobotMode.AUTO) {
+      return m_autoIntakeSpeed;
+    } else if (m_controller.getLeftTriggerAxis() > 0) {
+      return -MathUtils.clamp(m_controller.getBackButton() ? 1
+          : m_controller.getLeftTriggerAxis(), 0.0,
+          Intake.POWER_OUT.getDouble(Intake.DEFAULT_POWER_OUT));
+    } else if (!m_verifiedArmState && m_controller.getRightTriggerAxis() > 0) {
+      return MathUtils.clamp(
+          m_controller.getRightTriggerAxis(),
+          0.0,
+          Intake.POWER_IN.getDouble(Intake.DEFAULT_POWER_IN));
+    } else {
+      return 0.0;
+    }
+  }
+
+  public double getIntakeVelocity() {
+    return RobotContainer.getDrivetrain().getAcceleration();
+  }
+
+  public boolean updateArmState() {
+    if (m_controller.getStartButton()) {
+      m_arm.setSelectedSensorPosition(Arm.ABS_UP_POSITION);
+    } else if (m_arm.getSelectedSensorPosition() < -1) {
+      m_arm.setSelectedSensorPosition(0); // stop from going negative
+    }
+
+    // the arm has reached the ideal arm position
+    if (getTopLimitSwitch() || m_arm.getSelectedSensorPosition() > Arm.UP_POSITION) {
+      m_verifiedArmState = true; // is at top
+    } else if (getBottomLimitSwitch() || m_arm.getSelectedSensorPosition() < Arm.DOWN_POSITION) {
+      m_verifiedArmState = false; // is at bottom
+    }
+    return m_verifiedArmState;
+  }
+
+  public void updateIntake() {
+    if (!m_velocityIntake) {
+      m_intake.set(ControlMode.PercentOutput, getIntakePower());
+    } else {
+      m_intake.set(ControlMode.Velocity, getIntakeVelocity());
+    }
+  }
+
   public void updateArm() {
     final boolean rightBumper = m_controller.getRightBumper();
     final boolean leftBumper = m_controller.getLeftBumper();
@@ -192,13 +180,11 @@ public class IntakeSubsystem extends BaseSubsystem {
         m_arm.set(-Arm.TRAVEL_DOWN_POWER.getDouble(Arm.DEFAULT_TRAVEL_DOWN_POWER)); // from the top down power
       } else if (m_verifiedArmState || rightBumper) { // not hit the limit switch use distance power
         m_arm.set(-Arm.TRAVEL_DIFFERENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
-      } else if (getBottomLimitSwitch()) { // Hold while on limit switch
-        //m_arm.set(-m_armPidController.calculate(m_arm.getSelectedSensorPosition(), m_encoderHoldPosition)); // Configure offset from inital switch
-        /*if (m_arm.getSelectedSensorPosition() > m_encoderHoldPosition) {
-          m_arm.set(-Arm.TRAVEL_DIFFERENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
-        } else {
-          m_arm.set(0);
-        }*/
+      } else if (getBottomLimitSwitch() || getJointRotation().getDegrees() < 12) {
+        m_arm.set(MathUtils.clamp(
+            m_armPidController.calculate(getJointRotation().getDegrees(), 0),
+            -Arm.TRAVEL_DIFFERENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE),
+            0.0)); // use this to hold down arm without stalling
       }
     }
 

@@ -1,6 +1,6 @@
 package beartecs.template;
 
-import beartecs.Logging.RobotLogger;
+import beartecs.logger.RobotLogger;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;

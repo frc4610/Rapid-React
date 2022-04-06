@@ -1,4 +1,4 @@
-package beartecs;
+package beartecs.configs;
 
 public class SwerveConfig {
   public int DRIVE_MOTOR_DEVICE_NUMBER;

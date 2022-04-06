@@ -44,7 +44,6 @@ public class IntensityPattern implements AddressableLEDPattern {
 
   public void setIntensity(double intensity) {
     m_Intensity = intensity;
-
   }
 
 }

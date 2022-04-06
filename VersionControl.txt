@@ -15,3 +15,11 @@ Version 1.0.0:
   - Recalibrated Xbox controller deadbands due to 0.05 causing issues
   - Modified Arm constants + added limitswitch
   - Autonomous Paths added
+Version 1.0.2:
+  - Pigeon 2
+  - Internal Logger + DS Logger
+  - Rotation using PID + Gyroscope working
+  - Swerve Lib Modifications(Gyroscope interface with NavX, Pigeon 1 & 2 support)
+  - More configs for CAN, Pid, & etc
+  - Sysid Autonomous Option for quick configuration of Swerve Feedforward
+  - Added Examples for: Velocity based Intake, & Velocity based swerve drive

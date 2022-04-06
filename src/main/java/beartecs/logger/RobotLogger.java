@@ -1,4 +1,4 @@
-package beartecs.Logging;
+package beartecs.logger;
 
 // Credits to Team 6135
 
@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
+import beartecs.Constants;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.Robot;
@@ -209,12 +210,14 @@ public class RobotLogger {
     logger = Logger.getLogger(robotClass.getName());
     logger.setUseParentHandlers(false);
 
-    if (Robot.isSimulation()) {
-      // Starts recording to data log
-      DataLogManager.start();
+    if (Constants.ENABLE_DS_LOG_SAVE) {
+      if (!Robot.isSimulation()) {
+        // Starts recording to data log
+        DataLogManager.start();
 
-      // (alternatively) Record only DS control data
-      DriverStation.startDataLog(DataLogManager.getLog(), false);
+        // (alternatively) Record only DS control data
+        DriverStation.startDataLog(DataLogManager.getLog(), false);
+      }
     }
 
     this.logDir = logDir;
@@ -237,16 +240,16 @@ public class RobotLogger {
     String logFilePath = logDir.getAbsolutePath() + File.separator + dateFormat.format(date) + ".log";
 
     this.formatter = new RobotLoggerFormatter();
+    if (Constants.ENABLE_DS_LOG_SAVE) {
+      this.logFile = new File(logFilePath);
+    }
 
     if (useConsoleHandler) {
       this.consoleHandler = new ConsoleHandler();
-      this.logFile = new File(logFilePath);
       consoleHandler.setFormatter(formatter);
       logger.addHandler(consoleHandler);
-
     } else {
       this.fileHandler = new FileHandler();
-      this.logFile = new File(logFilePath);
       fileHandler.setFormatter(formatter);
       logger.addHandler(fileHandler);
     }

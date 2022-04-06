@@ -6,7 +6,7 @@ package frc.robot;
 
 import beartecs.Constants;
 import beartecs.LED.TimerPattern;
-import beartecs.Logging.RobotLogger;
+import beartecs.logger.RobotLogger;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.hal.can.CANStatus;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -73,9 +73,6 @@ public class Robot extends TimedRobot {
           ", receiveErrorCount=" + canBus.receiveErrorCount +
           ", transmitErrorCount=" + canBus.transmitErrorCount +
           '}');
-    }
-    if (RobotController.getInputVoltage() < Constants.CHECK_VOLTAGE) {
-      m_logger.logWarning("Low Voltage=" + RobotController.getInputVoltage());
     }
   }
 

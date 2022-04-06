@@ -1,6 +1,6 @@
 package beartecs.sysid;
 
-import beartecs.Logging.RobotLogger;
+import beartecs.logger.RobotLogger;
 import beartecs.swerve.SwerveModule;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
