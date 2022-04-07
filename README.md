@@ -6,26 +6,27 @@
 
 | Name | CAN Device | Id |
 | --- | --- | --- |
-| FRD1 | Talon FX | 1 |
-| BRD2 | Talon FX | 2 |
-| BLD3 | Talon FX | 3 |
-| FLT4 | Talon FX | 4 |
-| FRT5 | Talon FX | 5 |
-| BRT6 | Talon FX | 6 |
-| BLT7 | Talon FX | 7 |
-| FLD8 | Talon FX | 8 |
+| FRD | Talon FX | 1 |
+| BRD | Talon FX | 2 |
+| BLD | Talon FX | 3 |
+| FLS | Talon FX | 4 |
+| FRS | Talon FX | 5 |
+| BRS | Talon FX | 6 |
+| BLS | Talon FX | 7 |
+| FLD | Talon FX | 8 |
 | FRE | CANCoder | 9 |
 | BRE | CANCoder | 10 |
 | BLE | CANCoder | 11 |
 | FLE | CANCoder | 12 |
 | ARM | Talon FX | 13 |
 | INTAKE | Talon FX | 14 |
+| CANDLE | CANdle | 15 |
+| PIGEON | Pigeon 2 | 16 |
 
-## Firmware Version
+## RoboRIO wiring
+![RoboRIO_PINS](https://user-images.githubusercontent.com/98232538/162177238-916f35f6-f33d-463f-a577-e55d785b807d.png)
 
-naxX2-MXP (Gen2)->Firmware Version(4.0.442)
-
-## Robot controls
+## Robot controls # Subject to change
 1. LeftTrigger - Launches the balls from the intake when in firing position
 2. RightTrigger - moves the arm beetween upper position and lower position
 3. B-button - bypasses the ultrasonic allignment to fire balls
@@ -40,21 +41,12 @@ naxX2-MXP (Gen2)->Firmware Version(4.0.442)
 - [ ] Arm articulation
 - [ ] Intake motor
 - [ ] Field orientation(Reset on `start` button)
-- [ ] Limit power(Reset on `A` button)
-- [ ] LEDs and CANdle(Status lights)
+- [ ] Limit power(Reset on `Bummper` button)
 - [ ] Ultrasonic sensor
-- [ ] RoboRIO
-- [ ] NavX
-- [ ] Device status lights
-- [ ] Continuity
-- [ ] CAN bus
-- [ ] Power cables
-- [ ] PCD and breakers
-- [ ] Voltage
-- [ ] Controller Config
-- [ ] Network Hub
+- [ ] RoboRIO(Power & rsl)
+- [ ] PDP and breakers
 - [ ] Wire connections
-- [ ] Damage
+- [ ] Damage(METAL FLAKES!!!)
 
 ## Setting up module offsets
 
@@ -88,7 +80,6 @@ that is spinning in the incorrect direction. (I.e. `-Math.toRadians(<angle> + 18
 
 ## Credits
 
-- [ ] [Oblog](https://github.com/Oblarg/Oblog)
 - [ ] [Swerve Template by SDS](https://github.com/SwerveDriveSpecialties/swerve-template)
 - [ ] [Modified SwerveLib by SDS](https://github.com/SwerveDriveSpecialties/swerve-lib)
 - [ ] [Some util code from Team 2910](https://github.com/FRCTeam2910/Common)
