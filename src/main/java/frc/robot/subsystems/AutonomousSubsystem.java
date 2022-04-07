@@ -35,7 +35,7 @@ public class AutonomousSubsystem extends BaseSubsystem {
     m_autoChooser.setDefaultOption("1 Ball Auto", new AutoActionCmd(this, m_drivetrainSubsystem, m_intakeSubsystem)
         .executeIntakeFire()
         .executeAction((drivetrain, intake) -> drivetrain.drive(-1 * Motor.MAX_VELOCITY_MPS, 0, 0, false))
-        .executePause(1.4)
+        .executePause(1.3)
         .complete());
     m_autoChooser.addOption("4BallAutoLeft", new AutoActionCmd(this, m_drivetrainSubsystem, m_intakeSubsystem)
         .executeArmPosition(false)
