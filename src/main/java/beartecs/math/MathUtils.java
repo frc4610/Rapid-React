@@ -250,6 +250,7 @@ public class MathUtils {
     return true;
   }
 
+  // 0-360
   public static double angleWrap(double degrees) {
     double start = Math.floorMod((int) degrees + 180, 360); //will work for positive angles
 

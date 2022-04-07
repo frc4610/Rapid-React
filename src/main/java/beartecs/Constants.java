@@ -86,11 +86,11 @@ public final class Constants {
     public static final double DRIVE_GEAR_RATIO = 8.16;
     public static final double ANGLE_GEAR_RATIO = 12.8;
     public static final double MAX_POWER = 12;
-    public static final double DRIVE_POWER = 5.5;
+    public static final double DRIVE_POWER = 6;
   }
 
   public final static class Auto {
-    public static final double DRIVE_POWER = 8;
+    public static final double DRIVE_POWER = 6.5;
     // Constraint for the motion profilied robot angle controller
     private static final double THETA_CONSTRAINT_SCALAR = 0.8;
     public static final TrapezoidProfile.Constraints THETA_CONSTRAINTS = new TrapezoidProfile.Constraints(

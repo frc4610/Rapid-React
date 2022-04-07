@@ -38,7 +38,8 @@ public class RobotContainer {
   private final static XboxControllerExtended m_driverController = new XboxControllerExtended(0);
   private final static XboxControllerExtended m_operatorController = new XboxControllerExtended(1);
   private final static LEDSubsystem m_ledSubsystem = new LEDSubsystem();
-  private final static IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem(m_operatorController);
+  private final static IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem(m_driverController,
+      m_operatorController);
   private final static UltrasonicSubsystem m_ultrasonicSubsystem = new UltrasonicSubsystem(m_ledSubsystem);
   private final static AutonomousSubsystem m_autonomousSubsystem = new AutonomousSubsystem(m_drivetrainSubsystem,
       m_intakeSubsystem);

@@ -22,7 +22,7 @@ public class IntakeSubsystem extends BaseSubsystem {
 
   private final WPI_TalonFX m_intake = new WPI_TalonFX(Ids.INTAKE.deviceNumber, Ids.INTAKE.canBus);
   private final WPI_TalonFX m_arm = new WPI_TalonFX(Ids.ARM.deviceNumber, Ids.ARM.canBus);
-  private final XboxControllerExtended m_controller;
+  private final XboxControllerExtended m_driveController, m_opController;
   private final DigitalInput m_topLimitSwitch = new DigitalInput(Ids.DIO_TOP_LIMITSWTICH); // currently broken
   private final DigitalInput m_bottomLimitSwitch = new DigitalInput(Ids.DIO_BOTTOM_LIMITSWTICH);
 
@@ -40,8 +40,9 @@ public class IntakeSubsystem extends BaseSubsystem {
   private ProfiledPIDController m_armPidController = Arm.ARM_PID.getProfiledPidController();
   public static final double INTAKE_ENCODER_COEFFICIENT = 2.0 * Math.PI / Motor.TALON_TPR * Arm.GEAR_RATIO;
 
-  public IntakeSubsystem(XboxControllerExtended controller) {
-    m_controller = controller;
+  public IntakeSubsystem(XboxControllerExtended driveController, XboxControllerExtended opController) {
+    m_driveController = driveController;
+    m_opController = opController;
 
     m_arm.setInverted(false);
     m_arm.setNeutralMode(NeutralMode.Brake); // Force Motor in brake mode
@@ -90,11 +91,25 @@ public class IntakeSubsystem extends BaseSubsystem {
   }
 
   public boolean shouldGoUp() {
-    return m_controller.getRightTriggerAxis() > 0 || m_controller.getRightBumper();
+    return m_opController.getRightTriggerAxis() > 0
+        || m_driveController.getRightTriggerAxis() > 0
+        || m_opController.getRightBumper();
   }
 
   public boolean shouldGoDown() {
-    return !shouldGoUp() || m_controller.getLeftBumper();
+    return !shouldGoUp() || m_opController.getLeftBumper();
+  }
+
+  public double getFireSpeed() {
+    return m_opController.getLeftTriggerAxis() > 0
+        ? m_opController.getLeftTriggerAxis()
+        : m_driveController.getLeftTriggerAxis();
+  }
+
+  public double getIntakeSpeed() {
+    return m_opController.getRightTriggerAxis() > 0
+        ? m_opController.getRightTriggerAxis()
+        : m_driveController.getRightTriggerAxis();
   }
 
   // [true == fire] [false == intake]
@@ -121,13 +136,13 @@ public class IntakeSubsystem extends BaseSubsystem {
   public double getIntakePower() {
     if (getRobotMode() == RobotMode.AUTO) {
       return m_autoIntakeSpeed;
-    } else if (m_controller.getLeftTriggerAxis() > 0) {
-      return -MathUtils.clamp(m_controller.getBackButton() ? 1
-          : m_controller.getLeftTriggerAxis(), 0.0,
+    } else if (getFireSpeed() > 0) {
+      return -MathUtils.clamp(m_opController.getBackButton() ? 1
+          : getFireSpeed(), 0.0,
           Intake.POWER_OUT.getDouble(Intake.DEFAULT_POWER_OUT));
-    } else if (!m_verifiedArmState && m_controller.getRightTriggerAxis() > 0) {
+    } else if (!m_verifiedArmState && getIntakeSpeed() > 0) {
       return MathUtils.clamp(
-          m_controller.getRightTriggerAxis(),
+          getIntakeSpeed(),
           0.0,
           Intake.POWER_IN.getDouble(Intake.DEFAULT_POWER_IN));
     } else {
@@ -140,7 +155,7 @@ public class IntakeSubsystem extends BaseSubsystem {
   }
 
   public boolean updateArmState() {
-    if (m_controller.getStartButton()) {
+    if (m_opController.getStartButton()) {
       m_arm.setSelectedSensorPosition(Arm.ABS_UP_POSITION);
     } else if (m_arm.getSelectedSensorPosition() < 0) {
       m_arm.setSelectedSensorPosition(0); // stop from going negative
@@ -164,8 +179,8 @@ public class IntakeSubsystem extends BaseSubsystem {
   }
 
   public void updateArm() {
-    final boolean rightBumper = m_controller.getRightBumper();
-    final boolean leftBumper = m_controller.getLeftBumper();
+    final boolean rightBumper = m_opController.getRightBumper();
+    final boolean leftBumper = m_opController.getLeftBumper();
 
     if (m_armState) {
       if (Timer.getFPGATimestamp() - m_lastBurstTime < m_armTimeUp) {

@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import java.util.Optional;
 
+import beartecs.Constants.*;
 import beartecs.sysid.SysIdSwerveDrivetrainCmd;
 import beartecs.template.BaseSubsystem;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -33,7 +34,7 @@ public class AutonomousSubsystem extends BaseSubsystem {
         .complete());
     m_autoChooser.setDefaultOption("1 Ball Auto", new AutoActionCmd(this, m_drivetrainSubsystem, m_intakeSubsystem)
         .executeIntakeFire()
-        .executeAction((drivetrain, intake) -> drivetrain.drive(-1, 0, 0, false))
+        .executeAction((drivetrain, intake) -> drivetrain.drive(-1 * Motor.MAX_VELOCITY_MPS, 0, 0, false))
         .executePause(1.4)
         .complete());
     m_autoChooser.addOption("4BallAutoLeft", new AutoActionCmd(this, m_drivetrainSubsystem, m_intakeSubsystem)

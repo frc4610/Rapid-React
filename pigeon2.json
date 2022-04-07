@@ -1,0 +1,47 @@
+{
+  "Configs": [
+    {
+      "Name": "Feature Enable/Disable",
+      "Type": "",
+      "Description": "Enable and disable various Pigeon2 Features",
+      "Ordinal": 0,
+      "Values": {
+        "Disable No Motion Calibration": false,
+        "Disable Temperature Compensation": false,
+        "Enable Compass": false
+      }
+    },
+    {
+      "Name": "Mounting Orientation",
+      "Type": "",
+      "Description": "Mounting orientation configurations",
+      "Ordinal": 0,
+      "Values": {
+        "Pitch Pose": 0.77976608276367188,
+        "Roll Pose": -1.3275706768035889,
+        "Yaw Pose": -91.749801635742188
+      }
+    },
+    {
+      "Name": "Gyro Sensitivities",
+      "Type": "",
+      "Description": "Scaling the Gyro for enhanced sensitivity",
+      "Ordinal": 0,
+      "Values": {
+        "Yaw Error About X": 0.0,
+        "Yaw Error About Y": 0.0,
+        "Yaw Error About Z": 0.0
+      }
+    },
+    {
+      "Name": "Custom Params",
+      "Type": "",
+      "Description": "Custom parameters",
+      "Ordinal": 0,
+      "Values": {
+        "Custom Param 0": 0,
+        "Custom Param 1": 0
+      }
+    }
+  ]
+}
