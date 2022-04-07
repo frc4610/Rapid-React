@@ -39,6 +39,7 @@ public final class Constants {
     public static final CANConfig LED_CANDLE = new CANConfig(15, CANIVORE_NAME);
     public static final CANConfig PIGEON = new CANConfig(16);
 
+    // TODO: Reconfigure abs encoder offsets
     public static final SwerveConfig FRONT_LEFT = new SwerveConfig(8, 4, 11, -Math.toRadians(149.85));
     public static final SwerveConfig FRONT_RIGHT = new SwerveConfig(1, 5, 9, -Math.toRadians(181.40));
     public static final SwerveConfig BACK_LEFT = new SwerveConfig(3, 7, 12, -Math.toRadians(128.76));
@@ -98,7 +99,6 @@ public final class Constants {
 
     public static final PidConfig PID_XY = new PidConfig(3.0, 0.0, 0.02);
 
-    // TODO: Config Gains using sysid and our custom SysId class
     // kp: 0.05
     // Motor Feedback is using onboard sensor which is velocity corrected per 100ms(normal full rotation is 2048) yet the output's max is 1023
     // divide by 12 to convert from volts to percent output for CTRE // If we were using .set for arb ff

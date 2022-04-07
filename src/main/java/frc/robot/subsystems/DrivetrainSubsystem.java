@@ -64,9 +64,9 @@ public class DrivetrainSubsystem extends BaseSubsystem {
   private final InterpolatingTreeMap<Pose2d> m_lagCompensationMap = InterpolatingTreeMap
       .createBuffer(MAX_LATENCY_COMPENSATION_MAP_ENTRIES);
 
-  public static ShuffleboardTab m_DrivetrainTab, m_DriveDataTab;
+  public static ShuffleboardTab m_DriveDataTab;
   private final NetworkTableEntry m_isFieldOriented;
-  private static ShuffleboardLayout m_OdometryData, m_ChassisData, m_OtherData;
+  private static ShuffleboardLayout m_DrivetrainLayout, m_OdometryData, m_ChassisData, m_OtherData;
   // These are our modules. We initialize them in the constructor.
   private final SwerveModule m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule;
 
@@ -84,7 +84,8 @@ public class DrivetrainSubsystem extends BaseSubsystem {
     m_accelerometer = new BuiltInAccelerometer(Range.k8G);
     resetPose(new Pose2d(7, 2, Rotation2d.fromDegrees(-90)));
 
-    m_DrivetrainTab = addTab("Drivetrain");
+    m_DrivetrainLayout = addTab("Drivetrain").getLayout("Wheels", BuiltInLayouts.kGrid)
+        .withSize(4, 2);
     m_DriveDataTab = addTab("Drive Data");
     Mk3ModuleConfiguration configuration = new Mk3ModuleConfiguration();
 
@@ -94,7 +95,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
     m_frontLeftModule = Mk3SwerveModuleHelper.createFalcon500(
         // This parameter is optional, but will allow you to see the current state of
         // the module on the dashboard.
-        m_DrivetrainTab.getLayout("Front Left Module", BuiltInLayouts.kList)
+        m_DrivetrainLayout.getLayout("Front Left Module", BuiltInLayouts.kList)
             .withSize(2, 2)
             .withPosition(0, 0),
         configuration,
@@ -106,7 +107,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
 
     // We will do the same for the other modules
     m_frontRightModule = Mk3SwerveModuleHelper.createFalcon500(
-        m_DrivetrainTab.getLayout("Front Right Module", BuiltInLayouts.kList)
+        m_DrivetrainLayout.getLayout("Front Right Module", BuiltInLayouts.kList)
             .withSize(2, 2)
             .withPosition(2, 0),
         configuration,
@@ -117,7 +118,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
         Ids.FRONT_RIGHT.CAN_CODER_OFFSET);
 
     m_backLeftModule = Mk3SwerveModuleHelper.createFalcon500(
-        m_DrivetrainTab.getLayout("Back Left Module", BuiltInLayouts.kList)
+        m_DrivetrainLayout.getLayout("Back Left Module", BuiltInLayouts.kList)
             .withSize(2, 2)
             .withPosition(4, 0),
         configuration,
@@ -128,7 +129,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
         Ids.BACK_LEFT.CAN_CODER_OFFSET);
 
     m_backRightModule = Mk3SwerveModuleHelper.createFalcon500(
-        m_DrivetrainTab.getLayout("Back Right Module", BuiltInLayouts.kList)
+        m_DrivetrainLayout.getLayout("Back Right Module", BuiltInLayouts.kList)
             .withSize(2, 2)
             .withPosition(6, 0),
         configuration,
@@ -172,6 +173,10 @@ public class DrivetrainSubsystem extends BaseSubsystem {
     m_OtherData.addNumber("Gyro Rotation", () -> {
       return getGyroRotation().getDegrees();
     });
+    m_OtherData.addNumber("Acceleration", () -> {
+      return getAcceleration();
+    });
+
   }
 
   /**

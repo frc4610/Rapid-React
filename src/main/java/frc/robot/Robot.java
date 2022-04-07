@@ -74,6 +74,9 @@ public class Robot extends TimedRobot {
           ", transmitErrorCount=" + canBus.transmitErrorCount +
           '}');
     }
+    if (!RobotContainer.checkRoboRIO()) {
+      m_logger.logWarning("RoboRIO fault detected!");
+    }
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

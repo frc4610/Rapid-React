@@ -136,13 +136,13 @@ public class IntakeSubsystem extends BaseSubsystem {
   }
 
   public double getIntakeVelocity() {
-    return RobotContainer.getDrivetrain().getAcceleration();
+    return RobotContainer.getDrivetrain().getAcceleration() * RobotContainer.getDrivetrain().getAcceleration();
   }
 
   public boolean updateArmState() {
     if (m_controller.getStartButton()) {
       m_arm.setSelectedSensorPosition(Arm.ABS_UP_POSITION);
-    } else if (m_arm.getSelectedSensorPosition() < -1) {
+    } else if (m_arm.getSelectedSensorPosition() < 0) {
       m_arm.setSelectedSensorPosition(0); // stop from going negative
     }
 
