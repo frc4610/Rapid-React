@@ -130,7 +130,7 @@ public final class Constants {
 
     // Right angle might be 1:14
     // 9 to 84 connected to 30 which leads to 76
-    public static final double GEAR_RATIO = (22.0 / 64.0) * (1.0 / 15.0); // Custom gearbox -> 9:84->30:76
+    public static final double GEAR_RATIO = (22.0 / 64.0) * (22.0 / 15.0) * (1.0 / 7.0) * (1.0 / 4.0); // Custom gearbox -> 9:84->30:76
     // Might need more tuning but works
     public static final ProfiledPidConfig ARM_PID = new ProfiledPidConfig(0.55, 0.0, 0.5,
         new TrapezoidProfile.Constraints(3.5, 1.5));
