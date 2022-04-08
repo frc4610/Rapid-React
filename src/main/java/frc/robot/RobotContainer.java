@@ -72,15 +72,15 @@ public class RobotContainer {
         });
   }
 
-  public final static DrivetrainSubsystem getDrivetrain() {
-    return m_drivetrainSubsystem;
-  }
-
   public static void setDefaultTeleopCommand() {
     m_drivetrainSubsystem.zeroGyro();
     m_drivetrainSubsystem.setDefaultCommand(new UserControllerCmd(m_drivetrainSubsystem));
 
     configureDriveButtons();
+  }
+
+  public final static DrivetrainSubsystem getDrivetrain() {
+    return m_drivetrainSubsystem;
   }
 
   public static AutoActionCmd getAutonomousCommand() {
@@ -89,6 +89,10 @@ public class RobotContainer {
 
   public static LEDSubsystem getLEDSubsystem() {
     return m_ledSubsystem;
+  }
+
+  public final static UltrasonicSubsystem getUltrasonicSubsystem() {
+    return m_ultrasonicSubsystem;
   }
 
   /**

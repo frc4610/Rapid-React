@@ -14,7 +14,7 @@ public class UltrasonicSubsystem extends BaseSubsystem {
   private final ShuffleboardLayout m_ultrasonicLayout;
   private final UltrasonicMB1013 m_ultrasonicLeft, m_ultrasonicRight;
   private final LEDSubsystem m_ledSubsystem;
-  private boolean m_isEnabled;
+  private boolean m_isEnabled, m_isAligned;
 
   public UltrasonicSubsystem(LEDSubsystem ledSubsystem) {
     m_ledSubsystem = ledSubsystem;
@@ -56,13 +56,17 @@ public class UltrasonicSubsystem extends BaseSubsystem {
     return Math.min(m_ultrasonicLeft.getRangeInch(), m_ultrasonicRight.getRangeInch());
   }
 
+  public boolean isUltrasonicAligned() {
+    return m_isAligned;
+  }
+
   @Override
   public void periodic() {
+    m_isAligned = MathUtils.withinRange(getUltrasonicRotation().getDegrees(), -Ultrasonic.ANGULAR_THRESHOLD,
+        Ultrasonic.ANGULAR_THRESHOLD)
+        && MathUtils.withinRange(getUltrasonicDistance(), Ultrasonic.MIN_DISTANCE, Ultrasonic.MAX_DISTANCE);
     if (m_isEnabled && getRobotMode() != RobotMode.AUTO) {
-      double minDistance = getUltrasonicDistance();
-      if (MathUtils.withinRange(getUltrasonicRotation().getDegrees(), -Ultrasonic.ANGULAR_THRESHOLD,
-          Ultrasonic.ANGULAR_THRESHOLD)
-          && MathUtils.withinRange(minDistance, Ultrasonic.MIN_DISTANCE, Ultrasonic.MAX_DISTANCE)) {
+      if (isUltrasonicAligned()) {
         m_ledSubsystem.setPattern(LEDSubsystem.m_greenAlternating);
       } else {
         m_ledSubsystem.setAllianceColors();

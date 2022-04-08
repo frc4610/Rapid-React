@@ -29,10 +29,13 @@ public class UserControllerCmd extends CommandBase {
     @Override
     public void execute() {
         if (RobotContainer.getDriveReduction()) {
-            m_speedModifier = 0.2;
+            m_speedModifier = 0.34;
+        } else if (RobotContainer.getUltrasonicSubsystem().isUltrasonicAligned()) {
+            m_speedModifier = 0.9;
         } else {
             m_speedModifier = 1;
         }
+
         final double xSpeed = -m_xSpeedLimiter.calculate(RobotContainer.getDriveForwardAxis())
                 * Motor.MAX_VELOCITY_MPS * m_speedModifier;
 
