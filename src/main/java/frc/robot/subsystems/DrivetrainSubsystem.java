@@ -274,7 +274,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
           0.0, Math.toRadians(-45));
     } else {
 
-      // Speed Motifier
+      // Speed Modifier
       m_chassisSpeeds.vxMetersPerSecond *= m_speedModifier;
       m_chassisSpeeds.vyMetersPerSecond *= m_speedModifier;
       m_chassisSpeeds.omegaRadiansPerSecond *= m_speedModifier;

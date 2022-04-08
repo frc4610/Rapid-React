@@ -34,7 +34,7 @@ public class Force2d {
    * Constructs a Force2d with the provided force magnitude and angle. This is
    * essentially converting from polar coordinates to Cartesian coordinates.
    *
-   * @param mag The magnititude of the force 
+   * @param mag The magnitude of the force 
    * @param angle    The angle from the x-axis to the force vector.
    */
   public Force2d(double mag, Rotation2d angle) {
@@ -90,7 +90,7 @@ public class Force2d {
 
   /**
    * 
-   * @return a unit vector in the directino this force points
+   * @return a unit vector in the direction this force points
    */
   public Vector2d getUnitVector() {
     return new Vector2d(this.getX() / this.getNorm(), this.getY() / this.getNorm());

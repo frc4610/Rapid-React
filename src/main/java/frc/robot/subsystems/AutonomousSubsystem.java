@@ -48,7 +48,7 @@ public class AutonomousSubsystem extends BaseSubsystem {
         .executeDrivePath("4BallAutoThirdStage")
         .executeDrivePath("4BallAutoFourthStage")
         .executeArmPosition(true)
-        .executeDrivePath("4BallAutoFithStage")
+        .executeDrivePath("4BallAutoFifthStage")
         .executeIntakeFire()
         .executePause(1.69)
         .executeDrivePath("4BallAutoSixthStage")
@@ -67,7 +67,7 @@ public class AutonomousSubsystem extends BaseSubsystem {
         .executeDrivePath("4BallAutoFourthStage")
         .executeIntakeFire()
         .executePause(1.69)
-        .executeDrivePath("4BallAutoFithStage")
+        .executeDrivePath("4BallAutoFifthStage")
         .complete());
 
     m_autoChooser.addOption("HangarDump", new AutoActionCmd(this, m_drivetrainSubsystem, m_intakeSubsystem)

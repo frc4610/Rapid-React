@@ -90,7 +90,7 @@ public final class Constants {
 
   public final static class Auto {
     public static final double DRIVE_POWER = 6.5;
-    // Constraint for the motion profilied robot angle controller
+    // Constraint for the motion profiled robot angle controller
     private static final double THETA_CONSTRAINT_SCALAR = 0.8;
     public static final TrapezoidProfile.Constraints THETA_CONSTRAINTS = new TrapezoidProfile.Constraints(
         Motor.MAX_ANGULAR_VELOCITY_RPS,
@@ -109,7 +109,7 @@ public final class Constants {
   }
 
   public final static class Arm {
-    public static final double DEFAULT_TRAVEL_UP_POWER = 0.35;
+    public static final double DEFAULT_TRAVEL_UP_POWER = 0.369;
     public static final NetworkTableEntry TRAVEL_UP_POWER = m_tab.add("Arm up power", DEFAULT_TRAVEL_UP_POWER)
         .getEntry(); // .35
     public static final double DEFAULT_TRAVEL_DOWN_POWER = 0.33;
@@ -157,7 +157,7 @@ public final class Constants {
 
   // Can be used to calculate special limits 
   public static final double MASS = Units.lbsToKilograms(140);
-  public static final double INTERTIA = 1.0 / 12.0 * MASS * Math.pow((TRACKWIDTH_METERS * 1.1), 2) * 2;
+  public static final double INERTIA = 1.0 / 12.0 * MASS * Math.pow((TRACKWIDTH_METERS * 1.1), 2) * 2;
 
   public final static class Field {
     public static final double FIELD_LENGTH = Units.inchesToMeters(54.0 * 12.0);

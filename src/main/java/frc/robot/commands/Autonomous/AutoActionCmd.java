@@ -15,11 +15,11 @@ public class AutoActionCmd extends SequentialCommandGroup {
   private DrivetrainSubsystem m_drivetrainSubystem;
   private IntakeSubsystem m_intakeSubystem;
 
-  public AutoActionCmd(AutonomousSubsystem autonomousSubystem, DrivetrainSubsystem drivetrainSubsystem,
-      IntakeSubsystem intakeSubystem) {
-    m_autonomousSubystem = autonomousSubystem;
+  public AutoActionCmd(AutonomousSubsystem autonomousSubsystem, DrivetrainSubsystem drivetrainSubsystem,
+      IntakeSubsystem intakeSubsystem) {
+    m_autonomousSubystem = autonomousSubsystem;
     m_drivetrainSubystem = drivetrainSubsystem;
-    m_intakeSubystem = intakeSubystem;
+    m_intakeSubystem = intakeSubsystem;
     addRequirements(drivetrainSubsystem);
   }
 

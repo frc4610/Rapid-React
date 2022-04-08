@@ -29,8 +29,6 @@ public class IntakeSubsystem extends BaseSubsystem {
   public static final double INTAKE_OUT_TIME = 1;
   private final double m_armTimeUp = 0.85;
   private final double m_armTimeDown = 0.45;
-  // 38991 when up
-  // 1555 when down
 
   private boolean m_armState = true;
   private boolean m_verifiedArmState = true;

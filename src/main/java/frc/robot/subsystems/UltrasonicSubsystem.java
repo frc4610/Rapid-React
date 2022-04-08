@@ -16,8 +16,8 @@ public class UltrasonicSubsystem extends BaseSubsystem {
   private final LEDSubsystem m_ledSubsystem;
   private boolean m_isEnabled;
 
-  public UltrasonicSubsystem(LEDSubsystem ledsubsystem) {
-    m_ledSubsystem = ledsubsystem;
+  public UltrasonicSubsystem(LEDSubsystem ledSubsystem) {
+    m_ledSubsystem = ledSubsystem;
     m_ultrasonicTab = addTab("Ultrasonic");
     m_ultrasonicLeft = new UltrasonicMB1013(Ids.LEFT_ULTRASONIC);
     m_ultrasonicRight = new UltrasonicMB1013(Ids.RIGHT_ULTRASONIC);
