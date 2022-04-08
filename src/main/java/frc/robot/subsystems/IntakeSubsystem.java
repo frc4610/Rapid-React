@@ -97,7 +97,7 @@ public class IntakeSubsystem extends BaseSubsystem {
   }
 
   public boolean shouldGoDown() {
-    return !shouldGoUp() || m_opController.getLeftBumper();
+    return !shouldGoUp() || m_opController.getLeftBumper() || m_driveController.getLeftBumper();
   }
 
   public double getFireSpeed() {

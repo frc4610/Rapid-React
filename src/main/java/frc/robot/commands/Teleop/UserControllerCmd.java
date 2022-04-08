@@ -36,7 +36,6 @@ public class UserControllerCmd extends CommandBase {
         double rot = -m_rotLimiter.calculate(RobotContainer.getDriveRotationAxis())
                 * Motor.MAX_ANGULAR_VELOCITY_RPS;
 
-        // FIXME: Closest Angle from -180 to 180 // Optimize our turning
         if (RobotContainer.getDrivePOV().getDegrees() != -1) { // Pressing one of the POV keys
             double rotationOutput = m_rotationController
                     .calculate(

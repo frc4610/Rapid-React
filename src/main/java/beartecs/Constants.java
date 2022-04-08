@@ -39,7 +39,6 @@ public final class Constants {
     public static final CANConfig LED_CANDLE = new CANConfig(15, CANIVORE_NAME);
     public static final CANConfig PIGEON = new CANConfig(16);
 
-    // TODO: Reconfigure abs encoder offsets
     public static final SwerveConfig FRONT_LEFT = new SwerveConfig(8, 4, 11, -Math.toRadians(149.85));
     public static final SwerveConfig FRONT_RIGHT = new SwerveConfig(1, 5, 9, -Math.toRadians(181.40));
     public static final SwerveConfig BACK_LEFT = new SwerveConfig(3, 7, 12, -Math.toRadians(128.76));
@@ -110,13 +109,13 @@ public final class Constants {
   }
 
   public final static class Arm {
-    public static final double DEFAULT_TRAVEL_UP_POWER = 0.369;
+    public static final double DEFAULT_TRAVEL_UP_POWER = 0.35;
     public static final NetworkTableEntry TRAVEL_UP_POWER = m_tab.add("Arm up power", DEFAULT_TRAVEL_UP_POWER)
         .getEntry(); // .35
-    public static final double DEFAULT_TRAVEL_DOWN_POWER = 0.35;
+    public static final double DEFAULT_TRAVEL_DOWN_POWER = 0.33;
     public static final NetworkTableEntry TRAVEL_DOWN_POWER = m_tab.add("Arm down power", DEFAULT_TRAVEL_DOWN_POWER)
         .getEntry();
-    public static final double DEFAULT_TRAVEL_DISTANCE = 0.25;
+    public static final double DEFAULT_TRAVEL_DISTANCE = 0.2;
     public static final NetworkTableEntry TRAVEL_DIFFERENCE = m_tab
         .add("Arm travel difference", DEFAULT_TRAVEL_DISTANCE)
         .getEntry();
