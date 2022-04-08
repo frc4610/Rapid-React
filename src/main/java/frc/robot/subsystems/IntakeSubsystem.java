@@ -6,7 +6,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import beartecs.template.*;
-import beartecs.controller.XboxControllerExtended;
 import beartecs.math.MathUtils;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -15,6 +14,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import frc.robot.Controls;
 import frc.robot.RobotContainer;
 import beartecs.Constants.*;
 
@@ -22,7 +22,6 @@ public class IntakeSubsystem extends BaseSubsystem {
 
   private final WPI_TalonFX m_intake = new WPI_TalonFX(Ids.INTAKE.deviceNumber, Ids.INTAKE.canBus);
   private final WPI_TalonFX m_arm = new WPI_TalonFX(Ids.ARM.deviceNumber, Ids.ARM.canBus);
-  private final XboxControllerExtended m_driveController, m_opController;
   private final DigitalInput m_topLimitSwitch = new DigitalInput(Ids.DIO_TOP_LIMITSWTICH); // currently broken
   private final DigitalInput m_bottomLimitSwitch = new DigitalInput(Ids.DIO_BOTTOM_LIMITSWTICH);
 
@@ -38,10 +37,7 @@ public class IntakeSubsystem extends BaseSubsystem {
   private ProfiledPIDController m_armPidController = Arm.ARM_PID.getProfiledPidController();
   public static final double INTAKE_ENCODER_COEFFICIENT = 2.0 * Math.PI / Motor.TALON_TPR * Arm.GEAR_RATIO;
 
-  public IntakeSubsystem(XboxControllerExtended driveController, XboxControllerExtended opController) {
-    m_driveController = driveController;
-    m_opController = opController;
-
+  public IntakeSubsystem() {
     m_arm.setInverted(false);
     m_arm.setNeutralMode(NeutralMode.Brake); // Force Motor in brake mode
     m_arm.enableVoltageCompensation(true);
@@ -88,28 +84,6 @@ public class IntakeSubsystem extends BaseSubsystem {
     return !m_topLimitSwitch.get();
   }
 
-  public boolean shouldGoUp() {
-    return m_opController.getRightTriggerAxis() > 0
-        || m_driveController.getRightTriggerAxis() > 0
-        || m_opController.getRightBumper();
-  }
-
-  public boolean shouldGoDown() {
-    return !shouldGoUp() || m_opController.getLeftBumper() || m_driveController.getLeftBumper();
-  }
-
-  public double getFireSpeed() {
-    return m_opController.getLeftTriggerAxis() > 0
-        ? m_opController.getLeftTriggerAxis()
-        : m_driveController.getLeftTriggerAxis();
-  }
-
-  public double getIntakeSpeed() {
-    return m_opController.getRightTriggerAxis() > 0
-        ? m_opController.getRightTriggerAxis()
-        : m_driveController.getRightTriggerAxis();
-  }
-
   // [true == fire] [false == intake]
   public void autonomousIntakeState(boolean state) {
     if (state) {
@@ -134,13 +108,12 @@ public class IntakeSubsystem extends BaseSubsystem {
   public double getIntakePower() {
     if (getRobotMode() == RobotMode.AUTO) {
       return m_autoIntakeSpeed;
-    } else if (getFireSpeed() > 0) {
-      return -MathUtils.clamp(m_opController.getBackButton() ? 1
-          : getFireSpeed(), 0.0,
+    } else if (Controls.getIntakeFireSpeed() > 0) {
+      return -MathUtils.clamp(Controls.getIntakeFireSpeed(), 0.0,
           Intake.POWER_OUT.getDouble(Intake.DEFAULT_POWER_OUT));
-    } else if (!m_verifiedArmState && getIntakeSpeed() > 0) {
+    } else if (!m_verifiedArmState && Controls.getIntakeSpeed() > 0) {
       return MathUtils.clamp(
-          getIntakeSpeed(),
+          Controls.getIntakeSpeed(),
           0.0,
           Intake.POWER_IN.getDouble(Intake.DEFAULT_POWER_IN));
     } else {
@@ -153,7 +126,7 @@ public class IntakeSubsystem extends BaseSubsystem {
   }
 
   public boolean updateArmState() {
-    if (m_opController.getStartButton()) {
+    if (Controls.getIntakeResetEncoderButton()) {
       m_arm.setSelectedSensorPosition(Arm.ABS_UP_POSITION);
     } else if (m_arm.getSelectedSensorPosition() < 0) {
       m_arm.setSelectedSensorPosition(0); // stop from going negative
@@ -177,13 +150,11 @@ public class IntakeSubsystem extends BaseSubsystem {
   }
 
   public void updateArm() {
-    final boolean rightBumper = m_opController.getRightBumper();
-    final boolean leftBumper = m_opController.getLeftBumper();
 
     if (m_armState) {
       if (Timer.getFPGATimestamp() - m_lastBurstTime < m_armTimeUp) {
         m_arm.set(Arm.TRAVEL_UP_POWER.getDouble(Arm.DEFAULT_TRAVEL_UP_POWER)); // from the bottom up power
-      } else if (!m_verifiedArmState || leftBumper) {
+      } else if (!m_verifiedArmState || Controls.getIntakeForceUp()) {
         m_arm.set(Arm.TRAVEL_DIFFERENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE)); // not in up position apply power till we get there
       } else {
         m_arm.set(0); // stop the power // we don't need to supply power to it as it "locks" itself in a pivot
@@ -191,7 +162,7 @@ public class IntakeSubsystem extends BaseSubsystem {
     } else {
       if (Timer.getFPGATimestamp() - m_lastBurstTime < m_armTimeDown) {
         m_arm.set(-Arm.TRAVEL_DOWN_POWER.getDouble(Arm.DEFAULT_TRAVEL_DOWN_POWER)); // from the top down power
-      } else if (m_verifiedArmState || rightBumper) { // not hit the limit switch use distance power
+      } else if (m_verifiedArmState || Controls.getIntakeForceDown()) { // not hit the limit switch use distance power
         m_arm.set(-Arm.TRAVEL_DIFFERENCE.getDouble(Arm.DEFAULT_TRAVEL_DISTANCE));
       } else if (getBottomLimitSwitch() || getJointRotation().getDegrees() < 12) {
         m_arm.set(MathUtils.clamp(
@@ -201,11 +172,11 @@ public class IntakeSubsystem extends BaseSubsystem {
       }
     }
 
-    if (shouldGoUp() && m_armState) {
+    if (Controls.getIntakeRequestedUp() && m_armState) {
       if (m_verifiedArmState)
         m_lastBurstTime = Timer.getFPGATimestamp();
       m_armState = false;
-    } else if (shouldGoDown() && !m_armState) {
+    } else if (Controls.getIntakeRequestedDown() && !m_armState) {
       if (!m_verifiedArmState) // Fixes spamming right trigger causing motor stall
         m_lastBurstTime = Timer.getFPGATimestamp();
       m_armState = true;

@@ -6,6 +6,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.Controls;
 import frc.robot.RobotContainer;
 
 public class UserControllerCmd extends CommandBase {
@@ -28,7 +29,7 @@ public class UserControllerCmd extends CommandBase {
 
     @Override
     public void execute() {
-        if (RobotContainer.getDriveReduction()) {
+        if (Controls.getDriveReduction()) {
             m_speedModifier = 0.34;
         } else if (RobotContainer.getUltrasonicSubsystem().isUltrasonicAligned()) {
             m_speedModifier = 0.9;
@@ -36,20 +37,20 @@ public class UserControllerCmd extends CommandBase {
             m_speedModifier = 1;
         }
 
-        final double xSpeed = -m_xSpeedLimiter.calculate(RobotContainer.getDriveForwardAxis())
+        final double xSpeed = -m_xSpeedLimiter.calculate(Controls.getDriveForwardAxis())
                 * Motor.MAX_VELOCITY_MPS * m_speedModifier;
 
-        final double ySpeed = -m_ySpeedLimiter.calculate(RobotContainer.getDriveStrafeAxis())
+        final double ySpeed = -m_ySpeedLimiter.calculate(Controls.getDriveStrafeAxis())
                 * Motor.MAX_VELOCITY_MPS * m_speedModifier;
 
-        double rot = -m_rotLimiter.calculate(RobotContainer.getDriveRotationAxis())
+        double rot = -m_rotLimiter.calculate(Controls.getDriveRotationAxis())
                 * Motor.MAX_ANGULAR_VELOCITY_RPS * m_speedModifier;
 
-        if (RobotContainer.getDrivePOV().getDegrees() != -1) { // Pressing one of the POV keys
+        if (Controls.getDrivePOV().getDegrees() != -1) { // Pressing one of the POV keys
             double rotationOutput = m_rotationController
                     .calculate(
                             m_drivetrainSubsystem.getGyroRotation().getRadians(),
-                            Math.toRadians(-MathUtils.angleWrap(RobotContainer.getDrivePOV().getDegrees())));
+                            Math.toRadians(-MathUtils.angleWrap(Controls.getDrivePOV().getDegrees())));
 
             if (Math.abs(rotationOutput) < Controller.XBOX_DEADBAND) {
                 rotationOutput = 0.0;

@@ -12,11 +12,8 @@ import java.util.Scanner;
 import java.util.logging.Level;
 
 import beartecs.Constants;
-import beartecs.controller.XboxControllerExtended;
 import beartecs.logger.RobotLogger;
-import beartecs.math.MathUtils;
 import beartecs.swerve.sim.PoseTelemetry;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotController;
@@ -35,11 +32,8 @@ public class RobotContainer {
   public final static PoseTelemetry telemetry = new PoseTelemetry();
   public String branch = "null";
   private final static DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
-  private final static XboxControllerExtended m_driverController = new XboxControllerExtended(0);
-  private final static XboxControllerExtended m_operatorController = new XboxControllerExtended(1);
   private final static LEDSubsystem m_ledSubsystem = new LEDSubsystem();
-  private final static IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem(m_driverController,
-      m_operatorController);
+  private final static IntakeSubsystem m_intakeSubsystem = new IntakeSubsystem();
   private final static UltrasonicSubsystem m_ultrasonicSubsystem = new UltrasonicSubsystem(m_ledSubsystem);
   private final static AutonomousSubsystem m_autonomousSubsystem = new AutonomousSubsystem(m_drivetrainSubsystem,
       m_intakeSubsystem);
@@ -66,7 +60,7 @@ public class RobotContainer {
   }
 
   private static void configureDriveButtons() {
-    new Button(m_driverController::getBackButtonPressed)
+    new Button(Controls::getResetGyroButton)
         .whenPressed(() -> {
           m_drivetrainSubsystem.zeroGyro();
         });
@@ -142,25 +136,5 @@ public class RobotContainer {
       initLogger(m_logger);
     }
     return m_logger;
-  }
-
-  public static double getDriveForwardAxis() {
-    return MathUtils.modifyAxis(m_driverController.getLeftY(), Constants.Controller.XBOX_DEADBAND);
-  }
-
-  public static double getDriveStrafeAxis() {
-    return MathUtils.modifyAxis(m_driverController.getLeftX(), Constants.Controller.XBOX_DEADBAND);
-  }
-
-  public static double getDriveRotationAxis() {
-    return MathUtils.modifyAxis(m_driverController.getRightX(), Constants.Controller.XBOX_DEADBAND);
-  }
-
-  public static boolean getDriveReduction() {
-    return m_driverController.getRightBumperPressed();
-  }
-
-  public static Rotation2d getDrivePOV() {
-    return Rotation2d.fromDegrees(m_driverController.getPOV());
   }
 }
