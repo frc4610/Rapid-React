@@ -23,3 +23,9 @@ Version 1.0.2:
   - More configs for CAN, Pid, & etc
   - Sysid Autonomous Option for quick configuration of Swerve Feedforward
   - Added Examples for: Velocity based Intake, & Velocity based swerve drive
+Version 1.0.3:
+  - Pivot Power 
+  - Gearbox ratio added
+  - Pivot no longer stalls when down
+  - Auto added delay
+  - Ultrasonic sensor rotational reduction
