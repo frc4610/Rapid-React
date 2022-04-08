@@ -76,8 +76,6 @@ public class DrivetrainSubsystem extends BaseSubsystem {
   private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
   private final SwerveDriveOdometry m_odometry;
 
-  private double m_speedModifier = 1.0;
-
   public DrivetrainSubsystem() {
     m_gyro = GyroscopeHelper.createPigeon2CAN(Ids.PIGEON.deviceNumber, Ids.PIGEON.canBus); // 8.5cm from front bar // 30cm in the center of the bar
     m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroRotation());
@@ -243,10 +241,6 @@ public class DrivetrainSubsystem extends BaseSubsystem {
     return m_lagCompensationMap.getSample(timestamp);
   }
 
-  public void setSpeedModifier(double mod) {
-    m_speedModifier = mod;
-  }
-
   public void setModuleStates(SwerveModuleState[] states) {
     m_chassisSpeeds = m_kinematics.toChassisSpeeds(states);
   }
@@ -273,11 +267,6 @@ public class DrivetrainSubsystem extends BaseSubsystem {
       m_backRightModule.set(
           0.0, Math.toRadians(-45));
     } else {
-
-      // Speed Modifier
-      m_chassisSpeeds.vxMetersPerSecond *= m_speedModifier;
-      m_chassisSpeeds.vyMetersPerSecond *= m_speedModifier;
-      m_chassisSpeeds.omegaRadiansPerSecond *= m_speedModifier;
 
       SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
       SwerveDriveKinematics.desaturateWheelSpeeds(states, Motor.MAX_VELOCITY_MPS);

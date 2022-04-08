@@ -15,6 +15,7 @@ public class UserControllerCmd extends CommandBase {
     private final SlewRateLimiter m_ySpeedLimiter = new SlewRateLimiter(2);
     private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(5);
     private ProfiledPIDController m_rotationController = Auto.PID_THETA.getProfiledPidController();
+    private double m_speedModifier = 1.0;
 
     public UserControllerCmd(DrivetrainSubsystem drivetrainSubsystem) {
         this.m_drivetrainSubsystem = drivetrainSubsystem;
@@ -27,14 +28,19 @@ public class UserControllerCmd extends CommandBase {
 
     @Override
     public void execute() {
+        if (RobotContainer.getDriveReduction()) {
+            m_speedModifier = 0.2;
+        } else {
+            m_speedModifier = 1;
+        }
         final double xSpeed = -m_xSpeedLimiter.calculate(RobotContainer.getDriveForwardAxis())
-                * Motor.MAX_VELOCITY_MPS;
+                * Motor.MAX_VELOCITY_MPS * m_speedModifier;
 
         final double ySpeed = -m_ySpeedLimiter.calculate(RobotContainer.getDriveStrafeAxis())
-                * Motor.MAX_VELOCITY_MPS;
+                * Motor.MAX_VELOCITY_MPS * m_speedModifier;
 
         double rot = -m_rotLimiter.calculate(RobotContainer.getDriveRotationAxis())
-                * Motor.MAX_ANGULAR_VELOCITY_RPS;
+                * Motor.MAX_ANGULAR_VELOCITY_RPS * m_speedModifier;
 
         if (RobotContainer.getDrivePOV().getDegrees() != -1) { // Pressing one of the POV keys
             double rotationOutput = m_rotationController

@@ -70,16 +70,6 @@ public class RobotContainer {
         .whenPressed(() -> {
           m_drivetrainSubsystem.zeroGyro();
         });
-    new Button(m_driverController::getRightBumperPressed)
-        .whenPressed(() -> {
-          m_drivetrainSubsystem.setSpeedModifier(0.5);
-          m_driverController.setLeftVibration(0.1);
-          m_driverController.setRightVibration(0.1);
-        }).whenReleased(() -> {
-          m_drivetrainSubsystem.setSpeedModifier(1.0);
-          m_driverController.setLeftVibration(0.0);
-          m_driverController.setRightVibration(0.0);
-        });
   }
 
   public final static DrivetrainSubsystem getDrivetrain() {
@@ -160,6 +150,10 @@ public class RobotContainer {
 
   public static double getDriveRotationAxis() {
     return MathUtils.modifyAxis(m_driverController.getRightX(), Constants.Controller.XBOX_DEADBAND);
+  }
+
+  public static boolean getDriveReduction() {
+    return m_driverController.getRightBumperPressed();
   }
 
   public static Rotation2d getDrivePOV() {
