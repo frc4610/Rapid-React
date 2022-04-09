@@ -7,7 +7,7 @@ public interface DriveController {
 
     void setReferenceVoltage(double voltage);
 
-    double getStateVelocity();
+    double getVelocity();
 
     double getOutputVoltage();
 

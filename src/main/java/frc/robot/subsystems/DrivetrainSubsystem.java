@@ -212,6 +212,8 @@ public class DrivetrainSubsystem extends BaseSubsystem {
   // Ex: Drive 1 meter with drive fails where this would not
   private double getVelocityToVoltage(double speedMetersPerSecond) {
     double voltage = getRobotMode() == RobotMode.AUTO ? Auto.DRIVE_POWER : Motor.DRIVE_POWER;
+    if (speedMetersPerSecond < Motor.DRIVE_DEADBAND_MPS)
+      return 0;
     if (Motor.OPEN_LOOP)
       return speedMetersPerSecond / Motor.MAX_VELOCITY_MPS * voltage;
     return MathUtils.clamp(m_feedForward.calculate(speedMetersPerSecond), -voltage, voltage);

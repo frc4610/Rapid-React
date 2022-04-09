@@ -85,6 +85,7 @@ public final class Constants {
 
     public static final double DRIVE_GEAR_RATIO = 8.16;
     public static final double ANGLE_GEAR_RATIO = 12.8;
+    public static final double DRIVE_DEADBAND_MPS = 0.5;
     public static final double MAX_POWER = 12;
     public static final double DRIVE_POWER = 6.5;
   }
@@ -97,7 +98,7 @@ public final class Constants {
         Motor.MAX_ANGULAR_VELOCITY_RPS,
         Motor.MAX_ANGULAR_VELOCITY_RPS * THETA_CONSTRAINT_SCALAR);
 
-    public static final PidConfig PID_XY = new PidConfig(3.0, 0.0, 0.02);
+    public static final PidConfig PID_XY = new PidConfig(1.2, 0.0, 0.05);
 
     // kp: 0.05
     // Motor Feedback is using onboard sensor which is velocity corrected per 100ms(normal full rotation is 2048) yet the output's max is 1023
@@ -169,15 +170,16 @@ public final class Constants {
     public static final Pose2d HUB_CENTER_POSE = new Pose2d(HUB_CENTER_TRANSLATION, new Rotation2d(0));
   }
 
-  // Will fix some issues with abs positions when abs pos fails
-  public final static boolean ENABLE_ABS_ENCODER_POS_ERROR_CHECKS = true;
-  public final static int ABS_ENCODER_ERROR_RETRY_COUNT = 3;
+  public final static class Swerve {
+    public final static boolean ENABLE_ABS_ENCODER_POS_ERROR_CHECKS = true;
+    public final static int ABS_ENCODER_ERROR_RETRY_COUNT = 3;
 
-  public final static boolean ALIGN_RANGE_ENABLE = true;
-  public final static boolean BOOT_TO_ABS = true;
-  public final static boolean ENABLE_ABS_SET_MOTOR = true;
+    public final static boolean ALIGN_RANGE_ENABLE = true;
+    public final static boolean BOOT_TO_ABS = true;
+    public final static boolean ENABLE_ABS_SET_MOTOR = true;
+  }
 
-  public final class Sim {
+  public final static class Sim {
     static public final int STATUS_FRAME_PERIOD_MS = 20; // Falcons update every 250 ms but in sim we want it to update faster
     static public final double SAMPLE_RATE_SEC = 0.02;
   }

@@ -70,10 +70,10 @@ public class CanCoderFactoryBuilder {
                 Due to high can bus usage this can sometimes cause a hang so don't loop only have a set amount of tries
                 
             */
-            if (Constants.ENABLE_ABS_ENCODER_POS_ERROR_CHECKS) {
+            if (Constants.Swerve.ENABLE_ABS_ENCODER_POS_ERROR_CHECKS) {
                 ErrorCode code = encoder.getLastError();
 
-                for (int i = 0; i < Constants.ABS_ENCODER_ERROR_RETRY_COUNT; i++) {
+                for (int i = 0; i < Constants.Swerve.ABS_ENCODER_ERROR_RETRY_COUNT; i++) {
                     if (code == ErrorCode.OK)
                         break;
                     angle = Math.toRadians(encoder.getAbsolutePosition());
@@ -81,7 +81,7 @@ public class CanCoderFactoryBuilder {
                 }
 
                 CtreUtils.checkCtreError(code, "Failed to retrieve CANcoder " + encoder.getDeviceID()
-                        + " absolute position after " + Constants.ABS_ENCODER_ERROR_RETRY_COUNT + " tries");
+                        + " absolute position after " + Constants.Swerve.ABS_ENCODER_ERROR_RETRY_COUNT + " tries");
             }
             angle %= 2.0 * Math.PI;
             if (angle < 0.0) {

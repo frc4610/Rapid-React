@@ -10,7 +10,7 @@ public class CanCoderAbsoluteConfiguration {
     private final SensorInitializationStrategy initStrategy;
 
     public CanCoderAbsoluteConfiguration(int id, double offset) {
-        this(id, offset, Constants.BOOT_TO_ABS ? SensorInitializationStrategy.BootToAbsolutePosition
+        this(id, offset, Constants.Swerve.BOOT_TO_ABS ? SensorInitializationStrategy.BootToAbsolutePosition
                 : SensorInitializationStrategy.BootToZero);
     }
 

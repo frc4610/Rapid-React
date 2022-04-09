@@ -67,7 +67,7 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
 
         @Override
         public double getDriveVelocity() {
-            return driveController.getStateVelocity();
+            return driveController.getVelocity();
         }
 
         @Override
@@ -119,7 +119,7 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
 
             double difference = steerAngle - getSteerAngle();
 
-            if (Constants.ALIGN_RANGE_ENABLE && Math.abs(difference) < Math.toRadians(0.5)) { // Within range of a deadband don't update
+            if (Constants.Swerve.ALIGN_RANGE_ENABLE && Math.abs(difference) < Math.toRadians(1)) { // Within range of a deadband don't update
                 difference = 0;
             }
 

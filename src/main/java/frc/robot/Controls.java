@@ -45,23 +45,25 @@ public class Controls {
   public static boolean getIntakeRequestedUp() {
     return m_operatorController.getRightTriggerAxis() > 0
         || m_driverController.getRightTriggerAxis() > 0
-        || m_operatorController.getRightBumper();
+        || m_operatorController.getRightBumperPressed();
   }
 
   public static boolean getIntakeRequestedDown() {
-    return !getIntakeRequestedUp() || m_operatorController.getLeftBumper() || m_driverController.getLeftBumper();
+    return !getIntakeRequestedUp()
+        || m_operatorController.getLeftBumperPressed()
+        || m_driverController.getLeftBumperPressed();
   }
 
   public static boolean getIntakeForceDown() {
-    return m_operatorController.getRightBumper();
+    return m_operatorController.getRightBumperPressed();
   }
 
   public static boolean getIntakeForceUp() {
-    return m_operatorController.getLeftBumper();
+    return m_operatorController.getLeftBumperPressed();
   }
 
   public static boolean getIntakeResetEncoderButton() {
-    return m_operatorController.getStartButton();
+    return m_operatorController.getStartButtonPressed();
   }
 
   public static double getIntakeFireSpeed() {
