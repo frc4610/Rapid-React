@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -60,7 +61,10 @@ public class DrivetrainSubsystem extends BaseSubsystem {
   private static final int MAX_LATENCY_COMPENSATION_MAP_ENTRIES = 25;
 
   private final Gyroscope m_gyro;
-  private final BuiltInAccelerometer m_accelerometer;
+  private final BuiltInAccelerometer m_accelerometer; // 20ms update time
+  private final LinearFilter m_xAccelerometerFilter = LinearFilter.movingAverage(10);
+  private final LinearFilter m_yAccelerometerFilter = LinearFilter.movingAverage(10);
+  private Vector2d m_vecAccelerometer = new Vector2d(0, 0);
   private final InterpolatingTreeMap<Pose2d> m_lagCompensationMap = InterpolatingTreeMap
       .createBuffer(MAX_LATENCY_COMPENSATION_MAP_ENTRIES);
 
@@ -255,6 +259,8 @@ public class DrivetrainSubsystem extends BaseSubsystem {
 
   @Override
   public void periodic() {
+    m_vecAccelerometer.x = m_xAccelerometerFilter.calculate(m_accelerometer.getX());
+    m_vecAccelerometer.y = m_yAccelerometerFilter.calculate(m_accelerometer.getY());
     updateOdometry(getSwerveModuleStates()); // Update odometry based off wheel states, NOT requested chassis speeds
     if (Math.abs(m_chassisSpeeds.vxMetersPerSecond) == 0 && Math.abs(m_chassisSpeeds.vyMetersPerSecond) == 0
         && Math.abs(m_chassisSpeeds.omegaRadiansPerSecond) == 0 && Motor.DEFENSIVE) {
@@ -271,19 +277,35 @@ public class DrivetrainSubsystem extends BaseSubsystem {
       SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
       SwerveDriveKinematics.desaturateWheelSpeeds(states, Motor.MAX_VELOCITY_MPS);
 
-      m_frontLeftModule.set(getVelocityToVoltage(
-          states[0].speedMetersPerSecond),
-          states[0].angle.getRadians());
-      m_frontRightModule.set(getVelocityToVoltage(
-          states[1].speedMetersPerSecond),
-          states[1].angle.getRadians());
-      m_backLeftModule.set(getVelocityToVoltage(
-          states[2].speedMetersPerSecond),
-          states[2].angle.getRadians());
-      m_backRightModule.set(getVelocityToVoltage(
-          states[3].speedMetersPerSecond),
-          states[3].angle.getRadians());
+      if (!Motor.CLOSED_LOOP) {
+        m_frontLeftModule.set(getVelocityToVoltage(
+            states[0].speedMetersPerSecond),
+            states[0].angle.getRadians());
+        m_frontRightModule.set(getVelocityToVoltage(
+            states[1].speedMetersPerSecond),
+            states[1].angle.getRadians());
+        m_backLeftModule.set(getVelocityToVoltage(
+            states[2].speedMetersPerSecond),
+            states[2].angle.getRadians());
+        m_backRightModule.set(getVelocityToVoltage(
+            states[3].speedMetersPerSecond),
+            states[3].angle.getRadians());
+      } else {
+        m_frontLeftModule.setVelocity(
+            states[0].speedMetersPerSecond,
+            states[0].angle.getRadians());
+        m_frontRightModule.setVelocity(
+            states[1].speedMetersPerSecond,
+            states[1].angle.getRadians());
+        m_backLeftModule.setVelocity(
+            states[2].speedMetersPerSecond,
+            states[2].angle.getRadians());
+        m_backRightModule.setVelocity(
+            states[3].speedMetersPerSecond,
+            states[3].angle.getRadians());
+      }
     }
+
     Pose2d[] modulePose = { null, null, null, null };
     var swerveModules = getSwerveModuleStates();
     // Update the poses for the swerveModules. Note that the order of rotating the position and then
@@ -316,12 +338,12 @@ public class DrivetrainSubsystem extends BaseSubsystem {
   }
 
   public Vector2d getAccelerometer() {
-    return new Vector2d(m_accelerometer.getY(), m_accelerometer.getX());
+    return m_vecAccelerometer;
   }
 
   public double getAcceleration() {
     return Conversions.gToMPSsqrt(Math.sqrt(
-        (m_accelerometer.getY() * m_accelerometer.getY()) +
-            (m_accelerometer.getX() * m_accelerometer.getX())));
+        (m_vecAccelerometer.y * m_vecAccelerometer.y) +
+            (m_vecAccelerometer.x * m_vecAccelerometer.x)));
   }
 }

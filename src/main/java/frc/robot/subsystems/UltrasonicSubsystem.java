@@ -63,8 +63,8 @@ public class UltrasonicSubsystem extends BaseSubsystem {
   @Override
   public void periodic() {
     m_isAligned = MathUtils.withinRange(getUltrasonicRotation().getDegrees(), -Ultrasonic.ANGULAR_THRESHOLD,
-        Ultrasonic.ANGULAR_THRESHOLD)
-        && MathUtils.withinRange(getUltrasonicDistance(), Ultrasonic.MIN_DISTANCE, Ultrasonic.MAX_DISTANCE);
+        Ultrasonic.ANGULAR_THRESHOLD) &&
+        MathUtils.withinRange(getUltrasonicDistance(), Ultrasonic.MIN_DISTANCE, Ultrasonic.MAX_DISTANCE);
     if (m_isEnabled && getRobotMode() != RobotMode.AUTO) {
       if (isUltrasonicAligned()) {
         m_ledSubsystem.setPattern(LEDSubsystem.m_greenAlternating);

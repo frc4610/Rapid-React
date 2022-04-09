@@ -65,6 +65,7 @@ public final class Constants {
   // Motor Specific
   public final static class Motor {
     public static final boolean OPEN_LOOP = false;
+    public static final boolean CLOSED_LOOP = false;
     public static final boolean DEFENSIVE = true;
     public static final int MAX_RPM = 6380;
     public static final double MAX_VELOCITY_MPS = MAX_RPM / 60.0 *

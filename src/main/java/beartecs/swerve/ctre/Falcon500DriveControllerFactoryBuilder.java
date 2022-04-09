@@ -136,6 +136,10 @@ public final class Falcon500DriveControllerFactoryBuilder {
 
         @Override
         public void setVelocity(double velocity) {
+            // wheelRps = velocity / wheel circumfrence
+            // motorRps = wheelRps / driveGearRatio(sensorVelocityCoefficient)
+            // encoderCountPerSecond = motorRps * encoderCountPerRotation
+            // encoderCountPerSecond / updateFrameMps(10)
             motor.set(TalonFXControlMode.Velocity, velocity / sensorVelocityCoefficient);
         }
 
