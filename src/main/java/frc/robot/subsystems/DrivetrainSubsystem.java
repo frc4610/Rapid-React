@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -21,16 +20,15 @@ import edu.wpi.first.wpilibj.interfaces.Accelerometer.Range;
 
 import static beartecs.Constants.*;
 
-import beartecs.Vector2d;
 import beartecs.math.Conversions;
 import beartecs.math.InterpolatingTreeMap;
-import beartecs.math.MathUtils;
+import beartecs.math.Vector2d;
 import beartecs.swerve.Gyroscope;
 import beartecs.swerve.GyroscopeHelper;
 import beartecs.swerve.SwerveModule;
 import beartecs.swerve.config.Mk3ModuleConfiguration;
 import beartecs.swerve.config.Mk3SwerveModuleHelper;
-import beartecs.template.BaseSubsystem;
+import beartecs.systems.BaseSubsystem;
 
 public class DrivetrainSubsystem extends BaseSubsystem {
 
@@ -73,9 +71,6 @@ public class DrivetrainSubsystem extends BaseSubsystem {
   private static ShuffleboardLayout m_DrivetrainLayout, m_OdometryData, m_ChassisData, m_OtherData;
   // These are our modules. We initialize them in the constructor.
   private final SwerveModule m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule;
-
-  private SimpleMotorFeedforward m_feedForward = new SimpleMotorFeedforward(Auto.STATIC_GAIN, Auto.VELOCITY_GAIN,
-      Auto.ACCELERATION_GAIN);
 
   private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
   private final SwerveDriveOdometry m_odometry;
@@ -208,17 +203,6 @@ public class DrivetrainSubsystem extends BaseSubsystem {
         : new ChassisSpeeds(translation_x, translation_y, rotation);
   }
 
-  // Calcs from gains to drive accuratly
-  // Ex: Drive 1 meter with drive fails where this would not
-  private double getVelocityToVoltage(double speedMetersPerSecond) {
-    double voltage = getRobotMode() == RobotMode.AUTO ? Auto.DRIVE_POWER : Motor.DRIVE_POWER;
-    if (speedMetersPerSecond < Motor.DRIVE_DEADBAND_MPS)
-      return 0;
-    if (Motor.OPEN_LOOP)
-      return speedMetersPerSecond / Motor.MAX_VELOCITY_MPS * voltage;
-    return MathUtils.clamp(m_feedForward.calculate(speedMetersPerSecond), -voltage, voltage);
-  }
-
   public SwerveDriveKinematics getKinematics() {
     return m_kinematics;
   }
@@ -279,33 +263,18 @@ public class DrivetrainSubsystem extends BaseSubsystem {
       SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
       SwerveDriveKinematics.desaturateWheelSpeeds(states, Motor.MAX_VELOCITY_MPS);
 
-      if (!Motor.CLOSED_LOOP) {
-        m_frontLeftModule.set(getVelocityToVoltage(
-            states[0].speedMetersPerSecond),
-            states[0].angle.getRadians());
-        m_frontRightModule.set(getVelocityToVoltage(
-            states[1].speedMetersPerSecond),
-            states[1].angle.getRadians());
-        m_backLeftModule.set(getVelocityToVoltage(
-            states[2].speedMetersPerSecond),
-            states[2].angle.getRadians());
-        m_backRightModule.set(getVelocityToVoltage(
-            states[3].speedMetersPerSecond),
-            states[3].angle.getRadians());
-      } else {
-        m_frontLeftModule.setVelocity(
-            states[0].speedMetersPerSecond,
-            states[0].angle.getRadians());
-        m_frontRightModule.setVelocity(
-            states[1].speedMetersPerSecond,
-            states[1].angle.getRadians());
-        m_backLeftModule.setVelocity(
-            states[2].speedMetersPerSecond,
-            states[2].angle.getRadians());
-        m_backRightModule.setVelocity(
-            states[3].speedMetersPerSecond,
-            states[3].angle.getRadians());
-      }
+      m_frontLeftModule.setVelocity(
+          states[0].speedMetersPerSecond,
+          states[0].angle.getRadians());
+      m_frontRightModule.setVelocity(
+          states[1].speedMetersPerSecond,
+          states[1].angle.getRadians());
+      m_backLeftModule.setVelocity(
+          states[2].speedMetersPerSecond,
+          states[2].angle.getRadians());
+      m_backRightModule.setVelocity(
+          states[3].speedMetersPerSecond,
+          states[3].angle.getRadians());
     }
 
     Pose2d[] modulePose = { null, null, null, null };

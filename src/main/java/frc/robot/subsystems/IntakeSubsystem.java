@@ -5,8 +5,8 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
-import beartecs.template.*;
 import beartecs.math.MathUtils;
+import beartecs.systems.*;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -35,7 +35,7 @@ public class IntakeSubsystem extends BaseSubsystem {
   private double m_autoIntakeSpeed = 0;
   private boolean m_velocityIntake = false;
   private ProfiledPIDController m_armPidController = Arm.ARM_PID.getProfiledPidController();
-  public static final double INTAKE_ENCODER_COEFFICIENT = 2.0 * Math.PI / Motor.TALON_TPR * Arm.GEAR_RATIO;
+  public static final double INTAKE_ENCODER_COEFFICIENT = 2.0 * Math.PI / Talon.TICK_RESOLUTION * Arm.GEAR_RATIO;
 
   public IntakeSubsystem() {
     m_arm.setInverted(false);

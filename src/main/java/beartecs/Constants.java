@@ -62,13 +62,14 @@ public final class Constants {
     public static final int IMG_HEIGHT = 720;
   }
 
-  // Motor Specific
-  public final static class Motor {
-    public static final boolean OPEN_LOOP = false;
-    public static final boolean CLOSED_LOOP = false;
-    public static final boolean DEFENSIVE = true;
+  public final static class Talon {
+    public static final double TICK_RESOLUTION = 2048.0; // Ticks per Rotation
     public static final int MAX_RPM = 6380;
-    public static final double MAX_VELOCITY_MPS = MAX_RPM / 60.0 *
+  }
+
+  public final static class Motor {
+    public static final boolean DEFENSIVE = true;
+    public static final double MAX_VELOCITY_MPS = Talon.MAX_RPM / 60.0 *
         Mk3ModuleConfiguration.STANDARD.getDriveReduction() *
         Mk3ModuleConfiguration.STANDARD.getWheelDiameter() * Math.PI;
 
@@ -76,7 +77,6 @@ public final class Constants {
         Math.hypot(TRACKWIDTH_METERS / 2.0, WHEELBASE_METERS / 2.0);
 
     public static final double TURN_TOLERANCE = 12.0; // degrees
-    public static final double TALON_TPR = 2048.0; // Ticks per Rotation
 
     // SDS Billet Wheels 4"D X 1"W
     // 8.16:1 Gear Ratio
@@ -91,7 +91,6 @@ public final class Constants {
   }
 
   public final static class Auto {
-    public static final double DRIVE_POWER = 7;
     // Constraint for the motion profiled robot angle controller
     private static final double THETA_CONSTRAINT_SCALAR = 0.8;
     public static final TrapezoidProfile.Constraints THETA_CONSTRAINTS = new TrapezoidProfile.Constraints(
@@ -99,13 +98,6 @@ public final class Constants {
         Motor.MAX_ANGULAR_VELOCITY_RPS * THETA_CONSTRAINT_SCALAR);
 
     public static final PidConfig PID_XY = new PidConfig(1.2, 0.0, 0.05);
-
-    // kp: 0.05
-    // Motor Feedback is using onboard sensor which is velocity corrected per 100ms(normal full rotation is 2048) yet the output's max is 1023
-    // divide by 12 to convert from volts to percent output for CTRE // If we were using .set for arb ff
-    public static final double STATIC_GAIN = 0.49;
-    public static final double VELOCITY_GAIN = 2.1;
-    public static final double ACCELERATION_GAIN = 0.27;
 
     public static final ProfiledPidConfig PID_THETA = new ProfiledPidConfig(1.269, 0.0, 0.02, THETA_CONSTRAINTS);
   }

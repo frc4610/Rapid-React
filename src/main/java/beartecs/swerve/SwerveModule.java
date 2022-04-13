@@ -23,7 +23,7 @@ public interface SwerveModule {
 
     void configRampRate(double rampRate);
 
-    void set(double driveVoltage, double steerAngle);
+    void set(double driveVelocity, double steerAngle);
 
     void setVelocity(double driveVelocity, double steerAngle);
 }

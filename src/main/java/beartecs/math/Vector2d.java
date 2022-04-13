@@ -1,4 +1,4 @@
-package beartecs;
+package beartecs.math;
 
 /**
  * This is a 2D vector struct that supports basic vector operations.

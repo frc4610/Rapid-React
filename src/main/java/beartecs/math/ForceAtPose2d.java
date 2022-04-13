@@ -1,4 +1,4 @@
-package beartecs;
+package beartecs.math;
 
 import java.util.Objects;
 

@@ -1,4 +1,4 @@
-package beartecs;
+package beartecs.swerve.sim;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;

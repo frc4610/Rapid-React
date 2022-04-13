@@ -1,20 +1,20 @@
 package frc.robot;
 
 import beartecs.Constants;
-import beartecs.controller.XboxControllerExtended;
+import beartecs.controller.WPI_XboxController;
 import beartecs.math.MathUtils;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class Controls {
-  private final static XboxControllerExtended m_driverController = new XboxControllerExtended(0);
-  private final static XboxControllerExtended m_operatorController = new XboxControllerExtended(1);
+  private final static WPI_XboxController m_driverController = new WPI_XboxController(0);
+  private final static WPI_XboxController m_operatorController = new WPI_XboxController(1);
 
   // Should only be used if can't create a method
-  public final static XboxControllerExtended getDriveController() {
+  public final static WPI_XboxController getDriveController() {
     return m_driverController;
   }
 
-  public final static XboxControllerExtended getOperatorController() {
+  public final static WPI_XboxController getOperatorController() {
     return m_operatorController;
   }
 

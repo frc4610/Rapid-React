@@ -3,11 +3,11 @@ package beartecs.controller;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID;
 
-public class XboxControllerExtended extends XboxController {
+public class WPI_XboxController extends XboxController {
 
   private final DPadButton[] dpadButtons;
 
-  public XboxControllerExtended(int port) {
+  public WPI_XboxController(int port) {
     super(port);
     dpadButtons = new DPadButton[DPadButton.Direction.values().length];
     for (DPadButton.Direction dir : DPadButton.Direction.values()) {

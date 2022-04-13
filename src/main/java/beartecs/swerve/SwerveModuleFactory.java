@@ -101,7 +101,7 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
         }
 
         @Override
-        public void set(double driveVoltage, double steerAngle) {
+        public void set(double driveVelocity, double steerAngle) {
             if (Calibration.CALIBRATION_MODE.getBoolean(false)) {
                 if (Calibration.ZERO_WHEELS.getBoolean(false)) {
                     driveController.setReferenceVoltage(0);
@@ -109,6 +109,8 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
                 }
                 return;
             }
+
+            driveVelocity /= Constants.Motor.MAX_VELOCITY_MPS * Constants.Motor.MAX_POWER;
 
             steerAngle %= (2.0 * Math.PI);
             if (steerAngle < 0.0)
@@ -138,7 +140,7 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
             {
                 // Only need to add 180 deg here because the target angle will be put back into the range [0, 2pi)
                 steerAngle += Math.PI;
-                driveVoltage *= -1.0;
+                driveVelocity *= -1.0;
             }
 
             // Put the target angle back into the range [0, 2pi)
@@ -147,7 +149,7 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
                 steerAngle += 2.0 * Math.PI;
             }
 
-            driveController.setReferenceVoltage(driveVoltage);
+            driveController.setReferenceVoltage(driveVelocity);
             steerController.setReferenceAngle(steerAngle);
         }
 

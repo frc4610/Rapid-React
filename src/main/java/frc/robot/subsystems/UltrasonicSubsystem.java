@@ -1,9 +1,9 @@
 package frc.robot.subsystems;
 
-import beartecs.UltrasonicMB1013;
 import beartecs.Constants.*;
 import beartecs.math.MathUtils;
-import beartecs.template.BaseSubsystem;
+import beartecs.systems.BaseSubsystem;
+import beartecs.systems.UltrasonicMB1013;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;

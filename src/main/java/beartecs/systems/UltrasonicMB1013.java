@@ -1,4 +1,4 @@
-package beartecs;
+package beartecs.systems;
 
 import beartecs.Constants.*;
 import beartecs.math.MathUtils;

@@ -1,9 +1,12 @@
-package beartecs;
+package beartecs.swerve.sim;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import beartecs.math.Force2d;
+import beartecs.math.ForceAtPose2d;
+import beartecs.math.Vector2d;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;

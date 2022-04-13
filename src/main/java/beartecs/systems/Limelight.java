@@ -1,4 +1,4 @@
-package beartecs;
+package beartecs.systems;
 
 import beartecs.math.MathUtils;
 import edu.wpi.first.networktables.*;

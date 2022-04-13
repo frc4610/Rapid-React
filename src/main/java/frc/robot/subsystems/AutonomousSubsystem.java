@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import beartecs.Constants.*;
 import beartecs.sysid.SysIdSwerveDrivetrainCmd;
-import beartecs.template.BaseSubsystem;
+import beartecs.systems.BaseSubsystem;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;

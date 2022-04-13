@@ -109,7 +109,7 @@ public final class Falcon500SteerControllerFactoryBuilder {
                 ModuleConfiguration moduleConfiguration) {
             AbsoluteEncoder absoluteEncoder = encoderFactory.create(steerConfiguration.getEncoderConfiguration());
 
-            final double sensorPositionCoefficient = 2.0 * Math.PI / Constants.Motor.TALON_TPR
+            final double sensorPositionCoefficient = 2.0 * Math.PI / Constants.Talon.TICK_RESOLUTION
                     * moduleConfiguration.getSteerReduction();
             final double sensorVelocityCoefficient = sensorPositionCoefficient * 10.0;
 

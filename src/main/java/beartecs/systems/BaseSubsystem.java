@@ -1,4 +1,4 @@
-package beartecs.template;
+package beartecs.systems;
 
 import beartecs.logger.RobotLogger;
 import edu.wpi.first.networktables.NetworkTable;

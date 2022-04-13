@@ -1,5 +1,8 @@
-package beartecs;
+package beartecs.swerve.sim;
 
+import beartecs.math.Force2d;
+import beartecs.math.ForceAtPose2d;
+import beartecs.math.Vector2d;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;

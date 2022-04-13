@@ -1,4 +1,4 @@
-package beartecs;
+package beartecs.math;
 
 import org.ejml.simple.SimpleMatrix;
 
