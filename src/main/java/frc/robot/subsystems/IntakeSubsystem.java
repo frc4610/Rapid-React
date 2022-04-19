@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Controls;
 import frc.robot.RobotContainer;
 import beartecs.Constants.*;
+import beartecs.configs.GearRatioConfig;
 
 public class IntakeSubsystem extends BaseSubsystem {
 
@@ -36,6 +37,11 @@ public class IntakeSubsystem extends BaseSubsystem {
   private double m_autoIntakeSpeed = 0;
   private boolean m_velocityIntake = false;
   private ProfiledPIDController m_armPidController = Arm.ARM_PID.getProfiledPidController();
+
+  private final GearRatioConfig m_gearRatioConfig = new GearRatioConfig(
+      MotorUtils.TALON_TICK_RESOLUTION,
+      MotorUtils.TALON_MAX_RPM,
+      Arm.GEAR_RATIO);
 
   public IntakeSubsystem() {
     m_arm.setInverted(false);
@@ -61,7 +67,7 @@ public class IntakeSubsystem extends BaseSubsystem {
   }
 
   public Rotation2d getJointRotation() {
-    return Rotation2d.fromDegrees(MotorUtils.falconToDegrees(m_arm.getSelectedSensorPosition(), Arm.GEAR_RATIO));
+    return Rotation2d.fromDegrees(m_gearRatioConfig.toDegrees(m_arm.getSelectedSensorPosition()));
   }
 
   public boolean getArmState() {

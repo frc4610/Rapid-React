@@ -1,5 +1,6 @@
 package beartecs.swerve;
 
+import beartecs.configs.GearRatioConfig;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public interface SwerveModule {
@@ -18,6 +19,10 @@ public interface SwerveModule {
     SteerController getSteerController();
 
     SwerveModuleState getState();
+
+    GearRatioConfig getDriveGearRatioConfig();
+
+    GearRatioConfig getSteerGearRatioConfig();
 
     void resetDriveEncoder();
 

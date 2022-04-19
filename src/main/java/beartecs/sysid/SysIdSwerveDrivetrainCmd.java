@@ -15,7 +15,6 @@ public class SysIdSwerveDrivetrainCmd extends CommandBase {
   private Double m_prevTime = 0.0;
 
   public SysIdSwerveDrivetrainCmd(DrivetrainSubsystem drivetrainSubsystem) {
-
     m_drivetrainSubsystem = drivetrainSubsystem;
     addRequirements(drivetrainSubsystem);
   }

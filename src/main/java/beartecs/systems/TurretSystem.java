@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import beartecs.configs.GearRatioConfig;
 import beartecs.configs.LimitConfig;
 import beartecs.configs.ProfiledPidConfig;
 import beartecs.math.MathUtils;
@@ -18,7 +19,7 @@ public class TurretSystem {
   private final double m_targetHeight;
   private final double m_maxAngle; // Lime 180
   private final double m_minAngle; // Lime -180
-  private final double m_gearRatio;
+  private final GearRatioConfig m_gearRatio;
   private final double m_startAngle;
   private final double m_tickTolerance;
   private double m_errorOffset;
@@ -30,7 +31,7 @@ public class TurretSystem {
       Gyroscope gyro,
       Limelight vision,
       double targetHeight,
-      double gearRatio,
+      GearRatioConfig gearRatio,
       LimitConfig limitConfig,
       double startAngle,
       double tickTolerance,
@@ -54,8 +55,9 @@ public class TurretSystem {
     }
 
     MotorUtils.setSoftLimits(
-        MotorUtils.degreesToFalcon(m_maxAngle, m_gearRatio),
-        MotorUtils.degreesToFalcon(m_minAngle, m_gearRatio), m_turretMotor);
+        m_gearRatio.fromDegrees(m_maxAngle),
+        m_gearRatio.fromDegrees(m_minAngle),
+        m_turretMotor);
     m_turretMotor.setSensorPhase(false);
     m_turretMotor.setNeutralMode(NeutralMode.Brake);
   }
@@ -73,7 +75,7 @@ public class TurretSystem {
     * @param isAbsolute if the angle should consider the robot heading.
     */
   public double getAngle(boolean isAbsolute) {
-    double relAngle = MotorUtils.falconToDegrees(getPositionTicks(), m_gearRatio) - m_startAngle;
+    double relAngle = m_gearRatio.toDegrees(getPositionTicks()) - m_startAngle;
     return isAbsolute ? MathUtils.angleWrap(m_gyroscope.getGyroRotation().getDegrees() + relAngle) : relAngle;
   }
 
@@ -121,11 +123,11 @@ public class TurretSystem {
     if (isAbsolute) {
       angle -= m_gyroscope.getGyroRotation().getDegrees();
     }
-    double min = MotorUtils.degreesToFalcon(m_startAngle, m_gearRatio)
-        + MotorUtils.degreesToFalcon(m_minAngle, m_gearRatio);
-    double max = MotorUtils.degreesToFalcon(m_startAngle, m_gearRatio)
-        + MotorUtils.degreesToFalcon(m_maxAngle, m_gearRatio);
-    double initialTicks = MotorUtils.degreesToFalcon(m_startAngle + angle, m_gearRatio);
+    double min = m_gearRatio.fromDegrees(m_startAngle)
+        + m_gearRatio.fromDegrees(m_minAngle);
+    double max = m_gearRatio.fromDegrees(m_startAngle)
+        + m_gearRatio.fromDegrees(m_maxAngle);
+    double initialTicks = m_gearRatio.fromDegrees(m_startAngle + angle);
     double ticks = MathUtils.clamp(initialTicks, min, max);
     if (ticks == max) {
       initialTicks -= MotorUtils.TALON_TICK_RESOLUTION;
@@ -134,7 +136,7 @@ public class TurretSystem {
     }
     initialTicks = MathUtils.clamp(initialTicks, min, max);
     if (initialTicks == max || initialTicks == min) {
-      initialTicks = getPositionTicks() - MotorUtils.degreesToFalcon(m_startAngle, m_gearRatio) < 0 ? ticks : max;
+      initialTicks = getPositionTicks() - m_gearRatio.fromDegrees(m_startAngle) < 0 ? ticks : max;
     }
     initialTicks -= m_errorOffset;
     return initialTicks;
@@ -148,15 +150,15 @@ public class TurretSystem {
   private void checkWrapError() {
     final double lastWrapOffset = m_errorOffset;
     final double currPos = m_turretMotor.getSelectedSensorPosition();
-    boolean isOverRotated = currPos > MotorUtils.degreesToFalcon(m_maxAngle, m_gearRatio) + m_tickTolerance;
-    boolean isUnderRotated = currPos < MotorUtils.degreesToFalcon(m_minAngle, m_gearRatio) - m_tickTolerance;
+    boolean isOverRotated = currPos > m_gearRatio.fromDegrees(m_maxAngle) + m_tickTolerance;
+    boolean isUnderRotated = currPos < m_gearRatio.fromDegrees(m_minAngle) - m_tickTolerance;
     this.m_errorOffset = isOverRotated ? -MotorUtils.TALON_TICK_RESOLUTION
         : isUnderRotated ? MotorUtils.TALON_TICK_RESOLUTION : 0;
 
     if (lastWrapOffset != m_errorOffset) {
       MotorUtils.setSoftLimits(
-          MotorUtils.degreesToFalcon(m_maxAngle, m_gearRatio) - m_errorOffset,
-          MotorUtils.degreesToFalcon(m_minAngle, m_gearRatio) - m_errorOffset,
+          m_gearRatio.fromDegrees(m_maxAngle) - m_errorOffset,
+          m_gearRatio.fromDegrees(m_minAngle) - m_errorOffset,
           m_turretMotor);
     }
   }

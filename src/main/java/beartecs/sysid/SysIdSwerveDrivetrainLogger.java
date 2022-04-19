@@ -2,20 +2,16 @@ package beartecs.sysid;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
-import beartecs.Constants.Motor;
-import beartecs.math.MotorUtils;
+import beartecs.configs.GearRatioConfig;
 import beartecs.swerve.SwerveModule;
-import beartecs.swerve.config.Mk3ModuleConfiguration;
 
 public class SysIdSwerveDrivetrainLogger extends SysIdLogger {
-  public static double getDrivePositionMeters(WPI_TalonFX driveMotor) {
-    return MotorUtils.falconToMeters(driveMotor.getSelectedSensorPosition(),
-        Mk3ModuleConfiguration.STANDARD.getWheelCircumference(), Motor.DRIVE_GEAR_RATIO);
+  public static double getDrivePositionMeters(WPI_TalonFX driveMotor, GearRatioConfig gearRatio) {
+    return gearRatio.toMeters(driveMotor.getSelectedSensorPosition());
   }
 
-  public static double getDriveMetersPerSec(WPI_TalonFX driveMotor) {
-    return MotorUtils.falconToMPS(driveMotor.getSelectedSensorVelocity(),
-        Mk3ModuleConfiguration.STANDARD.getWheelCircumference(), Motor.DRIVE_GEAR_RATIO);
+  public static double getDriveMetersPerSec(WPI_TalonFX driveMotor, GearRatioConfig gearRatio) {
+    return gearRatio.toMPS(driveMotor.getSelectedSensorVelocity());
   }
 
   public void log(SwerveModule[] modules,
@@ -24,8 +20,8 @@ public class SysIdSwerveDrivetrainLogger extends SysIdLogger {
     m_data.add(m_timestamp);
     m_data.add(m_motorVoltage);
     for (SwerveModule mod : modules) {
-      m_data.add(getDrivePositionMeters((WPI_TalonFX) mod.getDriveMotor()));
-      m_data.add(getDriveMetersPerSec((WPI_TalonFX) mod.getDriveMotor()));
+      m_data.add(getDrivePositionMeters((WPI_TalonFX) mod.getDriveMotor(), mod.getDriveGearRatioConfig()));
+      m_data.add(getDriveMetersPerSec((WPI_TalonFX) mod.getDriveMotor(), mod.getDriveGearRatioConfig()));
     }
     m_data.add(measuredAngle);
     m_data.add(angularRate);

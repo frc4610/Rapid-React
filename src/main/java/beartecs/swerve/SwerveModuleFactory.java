@@ -2,6 +2,8 @@ package beartecs.swerve;
 
 import beartecs.Calibration;
 import beartecs.Constants;
+import beartecs.configs.GearRatioConfig;
+import beartecs.math.MotorUtils;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -23,7 +25,7 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
         var driveController = driveControllerFactory.create(driveConfiguration, moduleConfiguration);
         var steerController = steerControllerFactory.create(steerConfiguration, moduleConfiguration);
 
-        return new ModuleImplementation(driveController, steerController);
+        return new ModuleImplementation(driveController, steerController, moduleConfiguration);
     }
 
     public SwerveModule create(ShuffleboardLayout container, DriveConfiguration driveConfiguration,
@@ -37,16 +39,21 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
                 steerConfiguration,
                 moduleConfiguration);
 
-        return new ModuleImplementation(driveController, steerContainer);
+        return new ModuleImplementation(driveController, steerContainer, moduleConfiguration);
     }
 
     private static class ModuleImplementation implements SwerveModule {
         private final DriveController driveController;
         private final SteerController steerController;
+        private final ModuleConfiguration moduleConfiguration;
 
-        private ModuleImplementation(DriveController driveController, SteerController steerController) {
+        private ModuleImplementation(
+                DriveController driveController,
+                SteerController steerController,
+                ModuleConfiguration moduleConfiguration) {
             this.driveController = driveController;
             this.steerController = steerController;
+            this.moduleConfiguration = moduleConfiguration;
 
         }
 
@@ -88,6 +95,24 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
         @Override
         public SwerveModuleState getState() {
             return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getSteerAngle()));
+        }
+
+        @Override
+        public GearRatioConfig getDriveGearRatioConfig() {
+            return new GearRatioConfig(
+                    MotorUtils.TALON_TICK_RESOLUTION,
+                    MotorUtils.TALON_MAX_RPM,
+                    moduleConfiguration.getDriveReduction(),
+                    moduleConfiguration.getWheelCircumference());
+        }
+
+        @Override
+        public GearRatioConfig getSteerGearRatioConfig() {
+            return new GearRatioConfig(
+                    MotorUtils.TALON_TICK_RESOLUTION,
+                    MotorUtils.TALON_MAX_RPM,
+                    moduleConfiguration.getSteerReduction(),
+                    moduleConfiguration.getWheelCircumference());
         }
 
         @Override
