@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import beartecs.Constants;
+import beartecs.math.MotorUtils;
 import beartecs.swerve.*;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
@@ -109,7 +110,7 @@ public final class Falcon500SteerControllerFactoryBuilder {
                 ModuleConfiguration moduleConfiguration) {
             AbsoluteEncoder absoluteEncoder = encoderFactory.create(steerConfiguration.getEncoderConfiguration());
 
-            final double sensorPositionCoefficient = 2.0 * Math.PI / Constants.Talon.TICK_RESOLUTION
+            final double sensorPositionCoefficient = 2.0 * Math.PI / MotorUtils.TALON_TICK_RESOLUTION
                     * moduleConfiguration.getSteerReduction();
             final double sensorVelocityCoefficient = sensorPositionCoefficient * 10.0;
 

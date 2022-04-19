@@ -2,6 +2,11 @@ package beartecs.swerve;
 
 import java.util.Objects;
 
+import beartecs.Constants;
+import beartecs.swerve.sim.QuadSwerveSim;
+import beartecs.swerve.sim.SwerveModuleSim;
+import edu.wpi.first.math.system.plant.DCMotor;
+
 /**
  * A swerve module configuration.
  * <p>
@@ -80,6 +85,21 @@ public class ModuleConfiguration {
      */
     public boolean isSteerInverted() {
         return steerInverted;
+    }
+
+    public SwerveModuleSim createSim(SwerveModule module, String namePrefix) {
+        return new SwerveModuleSim(
+                (DCMotor) module.getSteerController().getSteerMotor(),
+                (DCMotor) module.getDriveController().getDriveMotor(),
+                getWheelDiameter() / 2,
+                1 / getSteerReduction(),
+                1 / getDriveReduction(),
+                1.0, // CANCoder is directly on the shaft
+                1 / getDriveReduction(),
+                1.1,
+                0.8,
+                Constants.SWERVE_CONFIG.MASS * 9.81 / QuadSwerveSim.NUM_MODULES,
+                0.01, namePrefix);
     }
 
     @Override

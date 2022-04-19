@@ -33,14 +33,14 @@ public class QuadSwerveSim {
 
     Pose2d curPose = new Pose2d();
 
-    double robotMass_kg;
-    double robotMOI;
+    double robotMass;
+    double robotInertia;
 
     public QuadSwerveSim(
             double wheelBaseWidth_m,
             double wheelBaseLength_m,
-            double robotMass_kg,
-            double robotMOI,
+            double robotMass,
+            double robotInertia,
             List<SwerveModuleSim> modules) {
         this.modules = modules;
 
@@ -56,8 +56,8 @@ public class QuadSwerveSim {
                 new Transform2d(robotToModuleTL.get(BL), new Rotation2d(0.0)),
                 new Transform2d(robotToModuleTL.get(BR), new Rotation2d(0.0)));
 
-        this.robotMass_kg = robotMass_kg;
-        this.robotMOI = robotMOI;
+        this.robotMass = robotMass;
+        this.robotInertia = robotInertia;
 
     }
 
@@ -141,7 +141,7 @@ public class QuadSwerveSim {
         // Apply Newton's 2nd law to get motion from forces
 
         //a = F/m in field frame
-        Vector2d accel = robotForceInFieldRefFrame.times(1 / robotMass_kg).getVector2d();
+        Vector2d accel = robotForceInFieldRefFrame.times(1 / robotMass).getVector2d();
 
         Vector2d velocity = new Vector2d(vel_prev.x + (accel.x + accel_prev.x) / 2 * dtSeconds, //Trapezoidal integration
                 vel_prev.y + (accel.y + accel_prev.y) / 2 * dtSeconds);
@@ -153,7 +153,7 @@ public class QuadSwerveSim {
         accel_prev = accel;
 
         //alpha = T/I in field frame
-        double rotAccel = netTorque / robotMOI;
+        double rotAccel = netTorque / robotInertia;
         double rotVel = rotVel_prev + (rotAccel + rotAccel_prev) / 2 * dtSeconds;
         double rotPosChange = (rotVel + rotVel_prev) / 2 * dtSeconds;
 
@@ -167,7 +167,7 @@ public class QuadSwerveSim {
         curPose = curPose.exp(motionThisLoop);
     }
 
-    public Pose2d getCurPose() {
+    public Pose2d getPose() {
         return curPose;
     }
 

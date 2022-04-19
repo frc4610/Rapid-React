@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import beartecs.Constants;
+import beartecs.math.MotorUtils;
 import beartecs.swerve.DriveController;
 import beartecs.swerve.DriveControllerFactory;
 import beartecs.swerve.ModuleConfiguration;
@@ -72,7 +73,7 @@ public final class Falcon500DriveControllerFactoryBuilder {
             TalonFXConfiguration motorConfiguration = new TalonFXConfiguration();
 
             double sensorPositionCoefficient = Math.PI * moduleConfiguration.getWheelDiameter()
-                    * moduleConfiguration.getDriveReduction() / Constants.Talon.TICK_RESOLUTION;
+                    * moduleConfiguration.getDriveReduction() / MotorUtils.TALON_TICK_RESOLUTION;
             double sensorVelocityCoefficient = sensorPositionCoefficient * 10.0; // 100ms of a second
 
             if (hasPidConstants()) {

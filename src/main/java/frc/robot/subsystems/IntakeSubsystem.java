@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import beartecs.math.MathUtils;
+import beartecs.math.MotorUtils;
 import beartecs.systems.*;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -35,7 +36,6 @@ public class IntakeSubsystem extends BaseSubsystem {
   private double m_autoIntakeSpeed = 0;
   private boolean m_velocityIntake = false;
   private ProfiledPIDController m_armPidController = Arm.ARM_PID.getProfiledPidController();
-  public static final double INTAKE_ENCODER_COEFFICIENT = 2.0 * Math.PI / Talon.TICK_RESOLUTION * Arm.GEAR_RATIO;
 
   public IntakeSubsystem() {
     m_arm.setInverted(false);
@@ -61,7 +61,7 @@ public class IntakeSubsystem extends BaseSubsystem {
   }
 
   public Rotation2d getJointRotation() {
-    return new Rotation2d(m_arm.getSelectedSensorPosition() * INTAKE_ENCODER_COEFFICIENT);
+    return Rotation2d.fromDegrees(MotorUtils.falconToDegrees(m_arm.getSelectedSensorPosition(), Arm.GEAR_RATIO));
   }
 
   public boolean getArmState() {
@@ -122,7 +122,8 @@ public class IntakeSubsystem extends BaseSubsystem {
   }
 
   public double getIntakeVelocity() {
-    return RobotContainer.getDrivetrain().getAcceleration() * RobotContainer.getDrivetrain().getAcceleration();
+    return RobotContainer.getDrivetrain().getAccelerationMeters()
+        * RobotContainer.getDrivetrain().getAccelerationMeters();
   }
 
   public boolean updateArmState() {

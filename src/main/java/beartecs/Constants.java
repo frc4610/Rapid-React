@@ -4,6 +4,8 @@ import beartecs.CAN.CANConfig;
 import beartecs.configs.PidConfig;
 import beartecs.configs.ProfiledPidConfig;
 import beartecs.configs.SwerveConfig;
+import beartecs.configs.SwerveDrivetrainConfig;
+import beartecs.math.MotorUtils;
 import beartecs.swerve.config.Mk3ModuleConfiguration;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -62,14 +64,9 @@ public final class Constants {
     public static final int IMG_HEIGHT = 720;
   }
 
-  public final static class Talon {
-    public static final double TICK_RESOLUTION = 2048.0; // Ticks per Rotation
-    public static final int MAX_RPM = 6380;
-  }
-
   public final static class Motor {
     public static final boolean DEFENSIVE = true;
-    public static final double MAX_VELOCITY_MPS = Talon.MAX_RPM / 60.0 *
+    public static final double MAX_VELOCITY_MPS = MotorUtils.TALON_MAX_RPM / 60.0 *
         Mk3ModuleConfiguration.STANDARD.getDriveReduction() *
         Mk3ModuleConfiguration.STANDARD.getWheelDiameter() * Math.PI;
 
@@ -143,6 +140,10 @@ public final class Constants {
   // Not used currently
   public static final double COLLISION_THRESHOLD_DELTA = 0.5;
 
+  public static final SwerveDrivetrainConfig SWERVE_CONFIG = new SwerveDrivetrainConfig(
+      0.65532,
+      0.76581,
+      Units.lbsToKilograms(140));
   // Robot is 31" long and 28" wide
   // The left-to-right distance between the drivetrain wheels
   public static final double TRACKWIDTH_METERS = 0.65532; // 0.56 //21.5"

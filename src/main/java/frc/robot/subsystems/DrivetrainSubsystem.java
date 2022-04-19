@@ -20,8 +20,8 @@ import edu.wpi.first.wpilibj.interfaces.Accelerometer.Range;
 
 import static beartecs.Constants.*;
 
-import beartecs.math.Conversions;
 import beartecs.math.InterpolatingTreeMap;
+import beartecs.math.MathUtils;
 import beartecs.math.Vector2d;
 import beartecs.swerve.Gyroscope;
 import beartecs.swerve.GyroscopeHelper;
@@ -170,8 +170,8 @@ public class DrivetrainSubsystem extends BaseSubsystem {
     m_OtherData.addNumber("Gyro Rotation", () -> {
       return getGyroRotation().getDegrees();
     });
-    m_OtherData.addNumber("Acceleration", () -> {
-      return getAcceleration();
+    m_OtherData.addNumber("Acceleration Meters", () -> {
+      return getAccelerationMeters();
     });
 
   }
@@ -312,8 +312,8 @@ public class DrivetrainSubsystem extends BaseSubsystem {
     return m_vecAccelerometer;
   }
 
-  public double getAcceleration() {
-    return Conversions.gToMPSsqrt(Math.sqrt(
+  public double getAccelerationMeters() {
+    return MathUtils.gUnitsToAccelerationMeters(Math.sqrt(
         (m_vecAccelerometer.y * m_vecAccelerometer.y) +
             (m_vecAccelerometer.x * m_vecAccelerometer.x)));
   }
