@@ -206,6 +206,7 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
             if (steerAngle < 0.0) {
                 steerAngle += 2.0 * Math.PI;
             }
+
             driveController.setVelocity(driveVelocity);
             steerController.setReferenceAngle(steerAngle);
         }

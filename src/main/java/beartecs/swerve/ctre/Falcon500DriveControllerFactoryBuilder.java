@@ -120,19 +120,24 @@ public final class Falcon500DriveControllerFactoryBuilder {
                             CAN_TIMEOUT_MS),
                     "Failed to configure Falcon status frame period");
 
-            return new ControllerImplementation(motor, sensorVelocityCoefficient);
+            return new ControllerImplementation(motor, sensorPositionCoefficient, sensorVelocityCoefficient);
         }
     }
 
     private class ControllerImplementation implements DriveController {
         private final WPI_TalonFX motor;
+        private final double sensorPositionCoefficient;
         private final double sensorVelocityCoefficient;
         private final double nominalVoltage = hasVoltageCompensation()
                 ? Falcon500DriveControllerFactoryBuilder.this.nominalVoltage
                 : 12.0;
 
-        private ControllerImplementation(WPI_TalonFX motor, double sensorVelocityCoefficient) {
+        private ControllerImplementation(
+                WPI_TalonFX motor,
+                double sensorPositionCoefficient,
+                double sensorVelocityCoefficient) {
             this.motor = motor;
+            this.sensorPositionCoefficient = sensorPositionCoefficient;
             this.sensorVelocityCoefficient = sensorVelocityCoefficient;
         }
 
@@ -148,22 +153,20 @@ public final class Falcon500DriveControllerFactoryBuilder {
                 if (motor.getInverted()) {
                     velocity *= -1.0;
                 }
-                motor.getSimCollection()
-                        .setIntegratedSensorVelocity((int) (velocity / sensorVelocityCoefficient));
+                setDriveEncoder(-1, velocity);
             }
         }
 
         @Override
         public void setReferenceVoltage(double voltage) {
             double percentOutput = voltage / nominalVoltage;
-            motor.set(TalonFXControlMode.PercentOutput, percentOutput);
+            motor.set(TalonFXControlMode.PercentOutput, percentOutput / sensorPositionCoefficient);
 
             if (RobotBase.isSimulation()) {
                 if (motor.getInverted()) {
                     percentOutput *= -1.0;
                 }
-                motor.getSimCollection()
-                        .setIntegratedSensorVelocity((int) (percentOutput / 600 * sensorVelocityCoefficient));
+                setDriveEncoder(percentOutput, -1);
             }
         }
 
@@ -173,7 +176,7 @@ public final class Falcon500DriveControllerFactoryBuilder {
             if (sensorVelocity < 0) {
                 sensorVelocity *= 0.98;
             }
-            return motor.getSelectedSensorVelocity() * sensorVelocityCoefficient;
+            return sensorVelocity * sensorVelocityCoefficient;
         }
 
         @Override
@@ -183,11 +186,11 @@ public final class Falcon500DriveControllerFactoryBuilder {
 
         @Override
         public void setDriveEncoder(double position, double velocity) {
-            // Position is in revolutions.  Velocity is in RPM
-            // CANCoder wants steps for postion.  Steps per 100ms for velocity
-            motor.getSimCollection().setIntegratedSensorRawPosition((int) (position * sensorVelocityCoefficient));
-            // Divide by 600 to go from RPM to Rotations per 100ms.  Multiply by encoder ticks per revolution.
-            motor.getSimCollection().setIntegratedSensorVelocity((int) (velocity / 600 * sensorVelocityCoefficient));
+            if (position != -1)
+                motor.getSimCollection()
+                        .setIntegratedSensorRawPosition((int) (position / sensorPositionCoefficient));
+            if (velocity != -1)
+                motor.getSimCollection().setIntegratedSensorVelocity((int) (velocity / sensorVelocityCoefficient));
         }
 
         @Override
