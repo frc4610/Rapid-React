@@ -144,7 +144,13 @@ public final class Falcon500DriveControllerFactoryBuilder {
         @Override
         public void setVelocity(double velocity) {
             motor.set(TalonFXControlMode.Velocity, velocity / sensorVelocityCoefficient);
-            //motor.set(TalonFXControlMode.Velocity, velocity / sensorVelocityCoefficient, , DemandType.ArbitraryFeedForward, m_feedforward.calculate(velocity) / nominalVoltage);
+            if (RobotBase.isSimulation()) {
+                if (motor.getInverted()) {
+                    velocity *= -1.0;
+                }
+                motor.getSimCollection()
+                        .setIntegratedSensorVelocity((int) (velocity / sensorVelocityCoefficient));
+            }
         }
 
         @Override

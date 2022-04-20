@@ -130,9 +130,9 @@ public class TurretSystem {
     double initialTicks = m_gearRatio.fromDegrees(m_startAngle + angle);
     double ticks = MathUtils.clamp(initialTicks, min, max);
     if (ticks == max) {
-      initialTicks -= MotorUtils.TALON_TICK_RESOLUTION;
+      initialTicks -= m_gearRatio.TICK_RESOLUTION;
     } else if (ticks == min) {
-      initialTicks += MotorUtils.TALON_TICK_RESOLUTION;
+      initialTicks += m_gearRatio.TICK_RESOLUTION;
     }
     initialTicks = MathUtils.clamp(initialTicks, min, max);
     if (initialTicks == max || initialTicks == min) {
@@ -144,7 +144,7 @@ public class TurretSystem {
 
   /**
   * Checks for turret overshoot / undershoot encoder issue.
-  * Encoder will jump +/- 4096 ticks (full rotation) during runtime.
+  * Encoder will jump +/- res ticks (full rotation) during runtime.
   * Fixes by offsetting returned values and modifying soft limits.
   */
   private void checkWrapError() {
@@ -152,8 +152,8 @@ public class TurretSystem {
     final double currPos = m_turretMotor.getSelectedSensorPosition();
     boolean isOverRotated = currPos > m_gearRatio.fromDegrees(m_maxAngle) + m_tickTolerance;
     boolean isUnderRotated = currPos < m_gearRatio.fromDegrees(m_minAngle) - m_tickTolerance;
-    this.m_errorOffset = isOverRotated ? -MotorUtils.TALON_TICK_RESOLUTION
-        : isUnderRotated ? MotorUtils.TALON_TICK_RESOLUTION : 0;
+    this.m_errorOffset = isOverRotated ? -m_gearRatio.TICK_RESOLUTION
+        : isUnderRotated ? m_gearRatio.TICK_RESOLUTION : 0;
 
     if (lastWrapOffset != m_errorOffset) {
       MotorUtils.setSoftLimits(

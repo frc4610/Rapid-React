@@ -11,7 +11,7 @@ public class SysIdSwerveDrivetrainLogger extends SysIdLogger {
   }
 
   public static double getDriveMetersPerSec(WPI_TalonFX driveMotor, GearRatioConfig gearRatio) {
-    return gearRatio.toMPS(driveMotor.getSelectedSensorVelocity());
+    return gearRatio.toVelocity(driveMotor.getSelectedSensorVelocity());
   }
 
   public void log(SwerveModule[] modules,

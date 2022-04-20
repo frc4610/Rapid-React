@@ -7,7 +7,7 @@ public class GearRatioConfig {
   public final double WHEEL_CIRCUMFRENCE;
 
   public GearRatioConfig(double tickRes, int maxRpm, double gearRatio) {
-    this(tickRes, maxRpm, gearRatio, 0);
+    this(tickRes, maxRpm, gearRatio, -1);
   }
 
   public GearRatioConfig(double tickRes, int maxRpm, double gearRatio, double wheelCircumference) {
@@ -39,7 +39,8 @@ public class GearRatioConfig {
   }
 
   // REQUIRED: WHEEL_CIRCUMFRENCE
-  public double toMPS(double velocitycounts) {
+  public double toVelocity(double velocitycounts) {
+    assert WHEEL_CIRCUMFRENCE != -1 : "Called function requiring use of circumfrence";
     double wheelRPM = toRPM(velocitycounts);
     double wheelMPS = (wheelRPM * WHEEL_CIRCUMFRENCE) / 60;
     return wheelMPS;
@@ -47,6 +48,7 @@ public class GearRatioConfig {
 
   // REQUIRED: WHEEL_CIRCUMFRENCE
   public double fromVelocity(double velocity) {
+    assert WHEEL_CIRCUMFRENCE != -1 : "Called function requiring use of circumfrence";
     double wheelRPM = ((velocity * 60) / WHEEL_CIRCUMFRENCE);
     double wheelVelocity = fromRPM(wheelRPM);
     return wheelVelocity;
@@ -54,8 +56,16 @@ public class GearRatioConfig {
 
   // REQUIRED: WHEEL_CIRCUMFRENCE
   public double toMeters(double falconTiks) {
+    assert WHEEL_CIRCUMFRENCE != -1 : "Called function requiring use of circumfrence";
     double wheelRevs = (falconTiks / TICK_RESOLUTION) / GEAR_RATIO;
     double meters = wheelRevs * WHEEL_CIRCUMFRENCE;
     return meters;
+  }
+
+  // REQUIRED: WHEEL_CIRCUMFRENCE
+  public double getMaxVelocity() {
+    assert WHEEL_CIRCUMFRENCE != -1 : "Called function requiring use of circumfrence";
+    return MAX_RPM / 60.0 *
+        GEAR_RATIO * WHEEL_CIRCUMFRENCE;
   }
 }

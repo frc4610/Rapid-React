@@ -138,7 +138,7 @@ public final class MathUtils {
   }
 
   public static int lerp(int a, int b, double v) {
-    return (int) lerp(a, b, v);
+    return (int) MathUtil.interpolate(a, b, v);
   }
 
   public static double lerp(double a, double b, double v) {

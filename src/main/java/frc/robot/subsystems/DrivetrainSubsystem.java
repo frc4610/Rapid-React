@@ -62,7 +62,7 @@ public class DrivetrainSubsystem extends BaseSubsystem {
   private final BuiltInAccelerometer m_accelerometer; // 20ms update time
   private final LinearFilter m_xAccelerometerFilter = LinearFilter.movingAverage(10);
   private final LinearFilter m_yAccelerometerFilter = LinearFilter.movingAverage(10);
-  private Vector2d m_vecAccelerometer = new Vector2d(0, 0);
+  private Vector2d m_vecAcceleration = new Vector2d(0, 0);
   private final InterpolatingTreeMap<Pose2d> m_lagCompensationMap = InterpolatingTreeMap
       .createBuffer(MAX_LATENCY_COMPENSATION_MAP_ENTRIES);
 
@@ -245,8 +245,8 @@ public class DrivetrainSubsystem extends BaseSubsystem {
 
   @Override
   public void periodic() {
-    m_vecAccelerometer.x = m_xAccelerometerFilter.calculate(m_accelerometer.getX());
-    m_vecAccelerometer.y = m_yAccelerometerFilter.calculate(m_accelerometer.getY());
+    m_vecAcceleration.x = m_xAccelerometerFilter.calculate(m_accelerometer.getX());
+    m_vecAcceleration.y = m_yAccelerometerFilter.calculate(m_accelerometer.getY());
     updateOdometry(getSwerveModuleStates()); // Update odometry based off wheel states, NOT requested chassis speeds
     if (Math.abs(m_chassisSpeeds.vxMetersPerSecond) == 0 && Math.abs(m_chassisSpeeds.vyMetersPerSecond) == 0
         && Math.abs(m_chassisSpeeds.omegaRadiansPerSecond) == 0 && Motor.DEFENSIVE) {
@@ -308,13 +308,13 @@ public class DrivetrainSubsystem extends BaseSubsystem {
     };
   }
 
-  public Vector2d getAccelerometer() {
-    return m_vecAccelerometer;
+  public Vector2d getAcceleration() {
+    return m_vecAcceleration;
   }
 
   public double getAccelerationMeters() {
     return MathUtils.gUnitsToAccelerationMeters(Math.sqrt(
-        (m_vecAccelerometer.y * m_vecAccelerometer.y) +
-            (m_vecAccelerometer.x * m_vecAccelerometer.x)));
+        (m_vecAcceleration.y * m_vecAcceleration.y) +
+            (m_vecAcceleration.x * m_vecAcceleration.x)));
   }
 }

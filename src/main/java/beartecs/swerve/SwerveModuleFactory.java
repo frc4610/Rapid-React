@@ -111,8 +111,7 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
             return new GearRatioConfig(
                     MotorUtils.TALON_TICK_RESOLUTION,
                     MotorUtils.TALON_MAX_RPM,
-                    moduleConfiguration.getSteerReduction(),
-                    moduleConfiguration.getWheelCircumference());
+                    moduleConfiguration.getSteerReduction());
         }
 
         @Override
@@ -207,7 +206,6 @@ public class SwerveModuleFactory<DriveConfiguration, SteerConfiguration> {
             if (steerAngle < 0.0) {
                 steerAngle += 2.0 * Math.PI;
             }
-
             driveController.setVelocity(driveVelocity);
             steerController.setReferenceAngle(steerAngle);
         }
